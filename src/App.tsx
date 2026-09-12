@@ -31,8 +31,42 @@ export const App: React.FC = () => {
   const [config, setConfig] = useState<GameConfig>(getStoredConfig);
   const [highScore, setHighScore] = useState<number>(getStoredHighScore);
 
-  // App navigation screen
-  const [screen, setScreen] = useState<'LANDING' | 'GAME' | 'JOURNAL'>('LANDING');
+  // App navigation screen with URL hash sync for GitHub Pages / browser
+  const getInitialScreen = (): 'LANDING' | 'GAME' | 'JOURNAL' => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#game' || hash === '#play') return 'LANDING';
+      return 'JOURNAL';
+    }
+    return 'JOURNAL';
+  };
+
+  const [screen, setScreenState] = useState<'LANDING' | 'GAME' | 'JOURNAL'>(getInitialScreen);
+
+  const setScreen = useCallback((newScreen: 'LANDING' | 'GAME' | 'JOURNAL') => {
+    setScreenState(newScreen);
+    if (typeof window !== 'undefined') {
+      if (newScreen === 'JOURNAL') {
+        window.location.hash = '#journal';
+      } else if (newScreen === 'LANDING') {
+        window.location.hash = '#game';
+      }
+    }
+  }, []);
+
+  // Listen to browser hash changes (back / forward navigation in browser)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#game' || hash === '#play') {
+        setScreenState('LANDING');
+      } else if (hash === '#journal' || hash === '') {
+        setScreenState('JOURNAL');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Filesystem food source
   const [files, setFiles] = useState<GameFile[]>(getDemoFiles);

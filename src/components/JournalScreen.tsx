@@ -38,7 +38,7 @@ const SCREENSHOTS: ScreenshotItem[] = [
     id: 'landing',
     title: 'Landing & Mode Selector Dashboard',
     subtitle: 'The Gateway to Useless Danger',
-    src: '/screenshots/landing.png',
+    src: './screenshots/landing.png',
     badge: 'UI / UX',
     description: 'The polished candy-pink retro entry point. Players choose between Safe Demo Mode (simulated files, 100% risk-free) or Real Danger Mode (electron-native Recycle Bin integration).',
     techHighlights: [
@@ -51,7 +51,7 @@ const SCREENSHOTS: ScreenshotItem[] = [
     id: 'gameplay',
     title: 'Active Gameplay & Pinky Vision HUD',
     subtitle: 'Steering with Landmark 20 in Real Time',
-    src: '/screenshots/gameplay.png',
+    src: './screenshots/gameplay.png',
     badge: 'Computer Vision & Canvas',
     description: 'The snake devours local files transformed into glossy 3D candy fruits. The corner HUD tracks the little finger tip with a glowing crosshair and shows direction intent.',
     techHighlights: [
@@ -64,7 +64,7 @@ const SCREENSHOTS: ScreenshotItem[] = [
     id: 'settings',
     title: 'Candy Customization Suite',
     subtitle: 'Fine-Tuning Sensitivity & Grids',
-    src: '/screenshots/settings.png',
+    src: './screenshots/settings.png',
     badge: 'State & Configuration',
     description: 'Comprehensive player settings with reactive sliders for pinky gesture sensitivity, grid dimensions (10x10, 12x12, 16x16), sound volume, and touch D-pad fallback.',
     techHighlights: [
@@ -77,7 +77,7 @@ const SCREENSHOTS: ScreenshotItem[] = [
     id: 'gameover',
     title: 'Game Over Modal & File Audit',
     subtitle: 'Celebrating High Scores & Auditing Recycled Files',
-    src: '/screenshots/gameover.png',
+    src: './screenshots/gameover.png',
     badge: 'Physics & Audit Trail',
     description: 'The session summary displaying total score, fruits devoured, and an audit table of files dispatched to the Recycle Bin with direct one-click OS Recycle Bin launcher.',
     techHighlights: [

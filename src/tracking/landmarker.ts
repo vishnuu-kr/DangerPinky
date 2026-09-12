@@ -16,9 +16,14 @@ export async function getHandLandmarker(): Promise<HandLandmarker> {
     let vision;
     const isFileProto = typeof window !== 'undefined' && window.location.protocol === 'file:';
 
-    // 1. Resolve WASM files (Local server /wasm -> relative ./wasm -> jsdelivr CDN)
+    const metaEnv = (import.meta as unknown as { env?: { BASE_URL?: string } }).env;
+    const basePath = metaEnv?.BASE_URL || './';
+    const localWasmPath = isFileProto ? './wasm' : `${basePath}wasm`;
+    const localModelPath = isFileProto ? './models/hand_landmarker.task' : `${basePath}models/hand_landmarker.task`;
+
+    // 1. Resolve WASM files (basePath wasm -> relative ./wasm -> jsdelivr CDN)
     try {
-      vision = await FilesetResolver.forVisionTasks(isFileProto ? './wasm' : '/wasm');
+      vision = await FilesetResolver.forVisionTasks(localWasmPath);
     } catch (e1) {
       console.warn('Primary WASM load failed, trying fallback path...', e1);
       try {
@@ -33,7 +38,6 @@ export async function getHandLandmarker(): Promise<HandLandmarker> {
 
     // 2. Initialize HandLandmarker (Local GPU -> Local CPU -> CDN CPU)
     let landmarker: HandLandmarker | null = null;
-    const localModelPath = isFileProto ? './models/hand_landmarker.task' : '/models/hand_landmarker.task';
 
     const candidateConfigs = [
       { path: localModelPath, delegate: 'GPU' as const },

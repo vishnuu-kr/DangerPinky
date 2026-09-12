@@ -45,7 +45,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
       <div className="w-full max-w-4xl bg-slate-950/80 rounded-3xl overflow-hidden border-2 border-pink-500/30 shadow-2xl backdrop-blur-md mb-8 group hover:border-pink-500/50 transition-all duration-300">
         <div className="relative w-full aspect-[2.6/1] overflow-hidden bg-emerald-950/40 flex items-center justify-center">
           <img
-            src="/images/danger_pinky_banner.png"
+            src="./images/danger_pinky_banner.png"
             alt="DangerPinky — The Cute Snake, The Real Danger!"
             className="w-full h-full object-cover object-center select-none pointer-events-none transform group-hover:scale-[1.01] transition-transform duration-500"
           />
