@@ -368,6 +368,125 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         </div>
       </section>
 
+      {/* Video Demonstration & Media Vault */}
+      <section className="mb-16">
+        <div className="text-center mb-8">
+          <span className="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30">
+            Recorded Footage & Assets
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-game font-black text-white mt-3">
+            Live Gameplay Video & Hardware Builds
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-2">
+            Watch the webcam pinky tracker devour local files in real time, inspect hardware setups, and browse full-resolution assets.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Main Demo Video Card */}
+          <div className="md:col-span-2 bg-slate-900/80 border-2 border-rose-500/40 rounded-3xl p-5 sm:p-6 backdrop-blur-md relative overflow-hidden group flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-mono font-bold text-rose-400 px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/30">
+                  ● OFFICIAL DEMO FOOTAGE
+                </span>
+                <span className="text-xs text-slate-400 font-mono">Google Drive Video</span>
+              </div>
+              <h3 className="text-xl font-game font-bold text-white mb-2">
+                Real-Time Pinky Calibration & Gameplay Demo
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed mb-4">
+                Watch the complete demonstration showing webcam calibration, 21-point optical pinky detection, candy fruit collisions, procedural Web Audio sound synthesis, and real-time safe file recycling.
+              </p>
+            </div>
+
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 mb-4 group-hover:border-rose-500/50 transition-colors">
+              <img
+                src="./screenshots/gameplay.png"
+                alt="DangerPinky Live Gameplay Demo"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-center justify-center">
+                <a
+                  href="https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-16 h-16 rounded-full bg-rose-500/90 hover:bg-rose-500 text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform group-hover:ring-4 group-hover:ring-rose-400/50 cursor-pointer"
+                  title="Watch Live Demo Video"
+                >
+                  <Play className="w-8 h-8 fill-white ml-1" />
+                </a>
+              </div>
+              <div className="absolute bottom-3 left-3 text-xs text-white/90 font-mono bg-black/60 px-2.5 py-1 rounded-md backdrop-blur-sm">
+                Watch on Google Drive ↗
+              </div>
+            </div>
+
+            <a
+              href="https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-candy-pink w-full py-2.5 px-4 rounded-full font-game font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md"
+            >
+              <Play className="w-4 h-4 fill-white" />
+              <span>Watch Full Gameplay Video (Google Drive)</span>
+              <ExternalLink className="w-4 h-4 ml-1 opacity-80" />
+            </a>
+          </div>
+
+          {/* Side Media Cards: Hardware & Full Vault */}
+          <div className="flex flex-col gap-5">
+            {/* Build Photos Card */}
+            <div className="bg-slate-900/80 border border-slate-800 hover:border-pink-500/40 rounded-3xl p-5 backdrop-blur-md flex-1 flex flex-col justify-between transition-colors">
+              <div>
+                <span className="text-xs font-mono font-bold text-pink-400 px-2.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20">
+                  HARDWARE
+                </span>
+                <h4 className="font-game font-bold text-base sm:text-lg text-white mt-2 mb-1">
+                  Build Photos & Hardware Setup
+                </h4>
+                <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                  Check out the physical testing station: optical webcam calibration and biometric pinky finger tracking.
+                </p>
+              </div>
+              <a
+                href="https://drive.google.com/file/d/17yqRVJh22dZAFbSfJG2-ILG1PS2boy4O/view?usp=drive_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-candy-pill w-full py-2 px-3 rounded-full text-xs font-semibold text-pink-300 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer border border-pink-500/30"
+              >
+                <span>View Build Photos</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              </a>
+            </div>
+
+            {/* Google Drive Vault */}
+            <div className="bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 rounded-3xl p-5 backdrop-blur-md flex-1 flex flex-col justify-between transition-colors">
+              <div>
+                <span className="text-xs font-mono font-bold text-amber-400 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                  ARCHIVE
+                </span>
+                <h4 className="font-game font-bold text-base sm:text-lg text-white mt-2 mb-1">
+                  Full Asset Drive Folder
+                </h4>
+                <p className="text-xs text-slate-300 font-sans leading-relaxed mb-3">
+                  Access the complete high-resolution media repository including raw gameplay captures, UI mockups, and assets.
+                </p>
+              </div>
+              <a
+                href="https://drive.google.com/drive/folders/1u7BUqhHbVeiD0sxTesiC41KkblEXHwSi?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-candy-pill w-full py-2 px-3 rounded-full text-xs font-semibold text-amber-300 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer border border-amber-500/30"
+              >
+                <span>Browse Drive Folder</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Building Timeline & Devlog Milestones */}
       <section className="mb-16">
         <div className="text-center mb-10">
