@@ -107,15 +107,18 @@ npm run build && npm run build:electron
 
 # Screenshots
 ![Landing Page](screenshots/landing.png)
+https://drive.google.com/drive/folders/1u7BUqhHbVeiD0sxTesiC41KkblEXHwSi?usp=sharing
 *DangerPinky Landing Dashboard — choose Safe Demo Mode or High-Stakes Danger Mode*
 
 ![Active Gameplay](screenshots/gameplay.png)
+https://drive.google.com/file/d/1E13dHVe5IdU1-mxnOFmG7JbfV21UzL75/view?usp=drive_link
 *Webcam Pinky Tracking in action — snake devouring local files rendered as 3D plump candy fruits*
 
 ![Candy Settings](screenshots/settings.png)
 *Candy Customization Suite — select grid sizes (10x10 standard, 12x12, 16x16), game modes, and sensitivity*
 
 ![Game Over Modal](screenshots/gameover.png)
+https://drive.google.com/file/d/12AMU697n9hAq0ShGtS5y6lWmXqVebLXe/view?usp=drive_link
 *Game Over modal showing session statistics, files eaten/recycled, and high score fanfare*
 
 # Diagrams
@@ -159,6 +162,7 @@ graph TD
 
 # Build Photos
 ![Hardware Components](screenshots/gameplay.png)
+https://drive.google.com/file/d/17yqRVJh22dZAFbSfJG2-ILG1PS2boy4O/view?usp=drive_link
 *Active hardware components in operation: Human pinky finger tracked in real-time in camera corner HUD, controlling live snake on screen.*
 
 ---
@@ -167,6 +171,7 @@ graph TD
 
 # Video
 [Add your demo video link here]
+https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link
 *Live demonstration showing webcam pinky calibration, gesture navigation, plump candy rendering, and real-time safe file recycling in action.*
 
 # Additional Demos
