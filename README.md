@@ -5,12 +5,10 @@
 > **The cute snake. The ultimate useless danger.**
 
 ## Basic Details
-### Team Name: [Team Name]
+### Team Name: VISHNU K R
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: VISHNU K R - SNM INSTITUTE OF MANAGEMENT AND TECHNOLOGY, MALIYANKARA
 
 ### Project Description
 DangerPinky is an arcade snake game where you steer an innocent-looking, candy-pink snake using only your webcam and your pinky finger. Instead of apples, the snake snacks on real files from your computer folder — and in Danger Mode, every file eaten is thrown straight into your OS Recycle Bin in real time!
@@ -38,7 +36,7 @@ For Software:
 - **Tools used**: Electron 34, Node.js IPC, Vitest (39 automated tests), Git, GitHub CLI
 
 For Hardware:
-*(N/A - Pure software/desktop webcam experience)*
+*(N/A - Software Project)*
 
 ---
 
@@ -58,7 +56,7 @@ npm install
 
 # Run
 ```bash
-# Run Desktop App (with full Danger Mode file recycling)
+# Run Desktop App (with Danger Mode Recycle Bin)
 npm run desktop
 # or after build:
 npm start
@@ -76,17 +74,17 @@ npm test
 
 For Software:
 
-# Screenshots
-![Landing Page](screenshots/landing.png)
+# Screenshots (Add at least 3)
+![Screenshot1](screenshots/landing.png)
 *DangerPinky Landing Dashboard — choose Safe Demo Mode or High-Stakes Danger Mode*
 
-![Active Gameplay](screenshots/gameplay.png)
+![Screenshot2](screenshots/gameplay.png)
 *Webcam Pinky Tracking in action — snake devouring local files rendered as 3D plump candy fruits*
 
-![Candy Settings](screenshots/settings.png)
+![Screenshot3](screenshots/settings.png)
 *Candy Customization Suite — select grid sizes (10x10 standard, 12x12, 16x16), game modes, and sensitivity*
 
-![Game Over Modal](screenshots/gameover.png)
+![Screenshot4](screenshots/gameover.png)
 *Game Over modal showing session statistics, files eaten/recycled, and high score fanfare*
 
 # Diagrams
@@ -129,9 +127,7 @@ For Hardware:
 ---
 
 ## Team Contributions
-- [Team Lead Name]: Pinky tracking algorithms, MediaPipe WASM integration, and game engine logic.
-- [Member 2 Name]: Candy Pink UI redesign, 3D candy canvas rendering, and procedural audio synthesizer.
-- [Member 3 Name]: Electron native IPC bridge, safe Recycle Bin integration, and test suite verification.
+- **VISHNU K R**: End-to-end conceptualization, MediaPipe computer vision pinky tracking algorithms, React 18 candy UI redesign, Electron native IPC file system bridge, procedural Web Audio synthesizer, and 39 Vitest automated tests.
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
