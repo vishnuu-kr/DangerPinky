@@ -1,11 +1,12 @@
 import React from 'react';
-import { Play, Flame, FolderOpen, ShieldCheck, Sparkles, Video, Crown, Heart, ArrowRight } from 'lucide-react';
+import { Play, Flame, FolderOpen, ShieldCheck, Sparkles, Video, Crown, Heart, ArrowRight, BookOpen } from 'lucide-react';
 
 interface LandingScreenProps {
   onStartWithCamera: () => void;
   onStartDemo: () => void;
   onOpenFolderPicker: () => void;
   onSelectRealFiles: () => void;
+  onOpenJournal: () => void;
   isDesktop?: boolean;
 }
 
@@ -14,6 +15,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
   onStartDemo,
   onOpenFolderPicker,
   onSelectRealFiles,
+  onOpenJournal,
   isDesktop = false
 }) => {
   return (
@@ -100,6 +102,14 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
         >
           <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />
           <span>Browse Demo Files</span>
+        </button>
+
+        <button
+          onClick={onOpenJournal}
+          className="btn-candy-pill px-4 py-2 rounded-full text-xs font-semibold text-amber-300 hover:text-white flex items-center gap-2 cursor-pointer border-amber-500/40"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+          <span>Read Dev Journal</span>
         </button>
       </div>
 
@@ -193,6 +203,35 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({
             <span>Play Demo Now</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
+        </div>
+      </div>
+
+      {/* Dev Journal & Building Story Banner */}
+      <div 
+        onClick={onOpenJournal}
+        className="w-full max-w-4xl p-5 rounded-3xl bg-gradient-to-r from-pink-950/60 via-slate-900/80 to-amber-950/60 border-2 border-pink-500/30 hover:border-pink-500/60 transition-all duration-300 shadow-xl backdrop-blur-md mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer group"
+      >
+        <div className="flex items-center gap-4 text-left">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 transition-transform">
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-white font-game font-bold text-base sm:text-lg">
+                The Making of DangerPinky
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                Devlog & Journal
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 font-sans mt-0.5">
+              Explore how we trained MediaPipe Landmark 20, built the 60FPS engine, and created Russian Roulette for files.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-game font-bold text-pink-300 group-hover:text-white px-4 py-2 rounded-full bg-pink-500/20 border border-pink-500/40 shrink-0">
+          <span>Read Full Journal</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
 

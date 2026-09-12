@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { LandingScreen } from './components/LandingScreen';
+import { Navbar } from './components/Navbar';
+import { JournalScreen } from './components/JournalScreen';
 import { GameHUD } from './components/GameHUD';
 import { GameCanvas } from './components/GameCanvas';
 import { CameraCornerHUD } from './components/CameraCornerHUD';
@@ -30,7 +32,7 @@ export const App: React.FC = () => {
   const [highScore, setHighScore] = useState<number>(getStoredHighScore);
 
   // App navigation screen
-  const [screen, setScreen] = useState<'LANDING' | 'GAME'>('LANDING');
+  const [screen, setScreen] = useState<'LANDING' | 'GAME' | 'JOURNAL'>('LANDING');
 
   // Filesystem food source
   const [files, setFiles] = useState<GameFile[]>(getDemoFiles);
@@ -311,13 +313,30 @@ export const App: React.FC = () => {
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_50%)] pointer-events-none" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.08),transparent_50%)] pointer-events-none" />
 
+      {/* Global Navigation Bar on non-game screens */}
+      {screen !== 'GAME' && (
+        <Navbar
+          currentScreen={screen}
+          onNavigate={(s) => setScreen(s)}
+          onPlayGame={handleStartDemo}
+        />
+      )}
+
       {screen === 'LANDING' ? (
         <LandingScreen
           onStartWithCamera={handleStartWithCamera}
           onStartDemo={handleStartDemo}
           onOpenFolderPicker={() => setIsFolderModalOpen(true)}
           onSelectRealFiles={handleSelectRealFiles}
+          onOpenJournal={() => setScreen('JOURNAL')}
           isDesktop={isDesktopApp()}
+        />
+      ) : screen === 'JOURNAL' ? (
+        <JournalScreen
+          onStartDemo={handleStartDemo}
+          onStartWithCamera={handleStartWithCamera}
+          onSelectRealFiles={handleSelectRealFiles}
+          onBackToLanding={() => setScreen('LANDING')}
         />
       ) : (
         <main className="w-full max-w-2xl flex flex-col items-center flex-1 my-auto justify-center">
