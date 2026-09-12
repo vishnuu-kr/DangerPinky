@@ -170,7 +170,6 @@ https://drive.google.com/file/d/17yqRVJh22dZAFbSfJG2-ILG1PS2boy4O/view?usp=drive
 ### Project Demo
 
 # Video
-[Add your demo video link here]
 https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link
 *Live demonstration showing webcam pinky calibration, gesture navigation, plump candy rendering, and real-time safe file recycling in action.*
 
