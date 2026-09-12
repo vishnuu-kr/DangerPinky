@@ -2,26 +2,40 @@
 
 # DangerPinky 🎯
 
-> **The cute snake. The ultimate useless danger.**
+> **The cute candy snake. The ultimate useless danger. Russian Roulette for your local filesystem.**
+
+---
 
 ## Basic Details
+
 ### Team Name: VISHNU K R
 
 ### Team Members
 - Team Lead: VISHNU K R - SNM INSTITUTE OF MANAGEMENT AND TECHNOLOGY, MALIYANKARA
 
+---
+
 ### Project Description
-DangerPinky is an arcade snake game where you steer an innocent-looking, candy-pink snake using only your webcam and your pinky finger. Instead of apples, the snake snacks on real files from your computer folder — and in Danger Mode, every file eaten is thrown straight into your OS Recycle Bin in real time!
+DangerPinky is an adrenaline-fueled, high-stakes arcade game where you steer an innocent-looking, adorable candy-pink snake using **nothing but your webcam and your little finger (pinky)**. 
+
+Instead of mundane red apples, the snake snacks on **real files and folders discovered directly from your computer**. In **Safe Demo Mode**, enjoy peace of mind as the snake chomps on simulated dummy files. But flip the switch to **Real Danger Mode**, and the gloves come off: every single file your pinky accidentally steers the snake into is **instantly banished straight into your operating system's Recycle Bin in real time**! It is part retro arcade homage, part computer-vision technical flex, and 100% the most stressful way to organize your hard drive known to humanity.
+
+---
 
 ### The Problem (that doesn't exist)
-Your Downloads and Desktop folders are crammed with 1,429 chaotic files: duplicate memes, blurry screenshots, and 8 copies of `final_assignment_v3_reallyfinal.pdf`. Traditional disk cleanup is boring, tedious, and completely void of adrenaline. You could just drag them to the trash like a civilized human being, but where is the drama? Where is the panic? Where is the glory of losing your resume because your pinky finger had a slight muscle twitch?
+Your Downloads folder is a digital wasteland of 2,400 unorganized files: 47 versions of `assignment_final_v2_FINAL_really_final.pdf`, random zip archives from 2021 you never opened, blurry memes from WhatsApp, and questionable installers you forgot existed.
+
+Traditional disk cleanup software (like Windows Disk Cleanup or CCleaner) is sterile, soulless, and completely deprived of dopamine. You select checkboxes, click "Delete", and wait in silence. Where is the thrill? Where is the existential dread? Where is the risk of accidentally destroying your college project because your hand trembled after drinking too much coffee? Humanity has spent decades making file deletion safe, forgiving, and boring. We decided it was time to bring back the fear.
+
+---
 
 ### The Solution (that nobody asked for)
-We turned file cleanup into an extreme sport called **Russian Roulette for your Filesystem**:
-- Put your pinky finger up to your webcam.
-- Flick it Up, Down, Left, or Right to steer the hungry candy snake.
-- Choose a folder. In **Safe Demo Mode**, enjoy peace of mind with 27 simulated files. In **Danger Mode**, every single bite triggers an OS-level IPC call that moves your actual file straight to the Recycle Bin!
-- Have an exam tomorrow? Put your study notes in the folder and pray your webcam tracking doesn't glitch.
+We engineered **DangerPinky** — turning routine hard drive cleanup into a competitive, sweat-inducing arcade survival game:
+
+1. **Pinky-First Computer Vision**: We strapped Google's MediaPipe Hand Landmarker neural network to your webcam. Forget keyboards and mice — your pinky tip (Landmark 20) is your steering wheel. Flick it Up, Down, Left, or Right to change directions.
+2. **Your Files Become Candy Fruits**: The game scans any local folder you dare to pick and converts your spreadsheets, code repos, and holiday photos into plump, glossy 3D candy fruits (Watermelons, Cherries, Apples, Strawberries, Grapes) floating with custom file badges.
+3. **The Danger Mode Russian Roulette**: If you enable Danger Mode, every bite executes a native Electron OS-level IPC call that moves that exact file into your Recycle Bin. Have an exam in three hours? Point the snake at your semester study notes folder and pray your webcam lighting doesn't drop.
+4. **Procedural Web Audio Synth**: Every file swallowed generates unique procedural audio waveforms depending on its file extension — high-pitch sparkly chimes for images, gritty 8-bit square arpeggios for code, and ominous brass thuds for heavy archive zips.
 
 ---
 
@@ -29,88 +43,123 @@ We turned file cleanup into an extreme sport called **Russian Roulette for your 
 
 ### Technologies/Components Used
 
-For Software:
-- **Languages used**: TypeScript, JavaScript, HTML5, CSS3
-- **Frameworks used**: React 18, Tailwind CSS, Vite
-- **Libraries used**: Google MediaPipe Tasks Vision (`@mediapipe/tasks-vision`), Lucide React, Canvas Confetti
-- **Tools used**: Electron 34, Node.js IPC, Vitest (39 automated tests), Git, GitHub CLI
+#### For Software:
+- **Languages used**: TypeScript (Strict Mode), JavaScript (ESNext), HTML5, CSS3
+- **Frameworks used**: React 18, Vite 5, Tailwind CSS 3
+- **Libraries used**: 
+  - `@mediapipe/tasks-vision` (MediaPipe Hand Landmarker WebAssembly & GPU delegate)
+  - `lucide-react` (Candy Pink UI iconography)
+  - `canvas-confetti` (Celebration physics for high scores & board-clear victory)
+  - `clsx` & `tailwind-merge` (Dynamic reactive UI styling)
+- **Tools used**: Electron 34, Node.js IPC, Esbuild, Vitest (39 automated test suites), Git, GitHub CLI
 
-For Hardware:
-*(N/A - Software Project)*
+#### For Hardware:
+- **List main components**:
+  - 1x Human Hand equipped with at least one operational little finger (Pinky Finger)
+  - 1x Standard RGB Webcam (Integrated laptop webcam or external USB camera)
+  - 1x Computer Monitor or Display screen
+- **List specifications**:
+  - Webcam: 720p or 1080p resolution @ 30 FPS minimum
+  - Pinky Finger: 180-degree articulation range, operating at standard human body temperature (~37°C)
+  - Lighting: Room lighting sufficient for optical computer vision contrast
+- **List tools required**:
+  - A desk, an office chair, and an uncompromising tolerance for accidental data loss
 
 ---
 
 ### Implementation
 
-For Software:
+#### For Software:
 
 # Installation
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/vishnuu-kr/DangerPinky.git
+
+# 2. Enter project folder
 cd DangerPinky
 
-# Install dependencies
+# 3. Install dependencies
 npm install
 ```
 
 # Run
 ```bash
-# Run Desktop App (with Danger Mode Recycle Bin)
+# Launch Desktop App (with full Real Danger Mode & OS Recycle Bin integration)
 npm run desktop
-# or after build:
-npm start
+# (or after building: npm start)
 
-# Run in Browser (Safe Demo Web Mode)
+# Launch Browser Web Mode (Safe Demo Mode only)
 npm run dev
 
-# Run Automated Test Suite (39 unit tests)
+# Run Automated Test Suite (39 comprehensive unit tests across engine, CV, and filesystem)
 npm test
+
+# Build Production Bundles
+npm run build && npm run build:electron
 ```
 
 ---
 
 ### Project Documentation
 
-For Software:
+#### For Software:
 
-# Screenshots (Add at least 3)
-![Screenshot1](screenshots/landing.png)
+# Screenshots
+![Landing Page](screenshots/landing.png)
 *DangerPinky Landing Dashboard — choose Safe Demo Mode or High-Stakes Danger Mode*
 
-![Screenshot2](screenshots/gameplay.png)
+![Active Gameplay](screenshots/gameplay.png)
 *Webcam Pinky Tracking in action — snake devouring local files rendered as 3D plump candy fruits*
 
-![Screenshot3](screenshots/settings.png)
+![Candy Settings](screenshots/settings.png)
 *Candy Customization Suite — select grid sizes (10x10 standard, 12x12, 16x16), game modes, and sensitivity*
 
-![Screenshot4](screenshots/gameover.png)
+![Game Over Modal](screenshots/gameover.png)
 *Game Over modal showing session statistics, files eaten/recycled, and high score fanfare*
 
 # Diagrams
 ```mermaid
 graph TD
-    A[Webcam Video Stream] -->|Client-Side WASM| B[MediaPipe Hand Landmarker 21 Points]
-    B -->|Extract Tip 20| C[Pinky Movement & Exponential Smoothing]
-    C -->|Axis Dominance & Deadzone| D{Direction Filter}
-    D -->|Up / Down / Left / Right| E[Snake Engine Core]
-    E -->|Collision with Fruit| F{Check Mode}
-    F -->|Safe Demo Mode| G[Simulate Eat + Procedural Synth Audio]
-    F -->|Danger Mode| H[Electron Native IPC Bridge]
-    H -->|Validate Containment Token| I[OS Recycle Bin / Trash API]
-    I -->|File Recycled| J[Update Score & Trigger Confetti]
+    A[Webcam Optical Video Stream] -->|Client-Side WASM / GPU| B[MediaPipe Hand Landmarker: 21 Landmarks]
+    B -->|Extract Landmark 20| C[Pinky Tip Detection & EMA Coordinate Smoothing]
+    C -->|Axis Dominance & Deadzone Filter| D{Direction Intent: UP / DOWN / LEFT / RIGHT}
+    D -->|Buffer & Discard Suicide Turns| E[Deterministic 60FPS Snake Engine]
+    E -->|Step Tick| F{Snake Head Collides with Candy File?}
+    F -- No --> G[Redraw Canvas: 3D Candy Shaders & Particle Trails]
+    F -- Yes --> H{Active Mode?}
+    H -- Safe Demo Mode --> I[Simulate Eat + Synthesize Audio Chime + Grow Tail]
+    H -- Real Danger Mode --> J[Electron Native IPC Bridge]
+    J -->|Security Containment Check| K[OS Native Trash / Recycle Bin API]
+    K -->|File Successfully Recycled| L[Increment Score + Floating Badge + Victory Check]
 ```
-*DangerPinky end-to-end architecture: from webcam computer vision to OS-level file recycling.*
+*End-to-End DangerPinky Flow: Optical Pinky Tracking → Physics Engine → Electron OS Recycle Bin.*
 
 ---
 
-For Hardware:
+#### For Hardware:
 
 # Schematic & Circuit
-*(N/A - Software Project)*
+```
+  [ Human Brain ]
+         │ (Impulse to clean Downloads folder)
+         ▼
+  [ Pinky Finger Extensor Muscle ] 
+         │ (Flick gesture @ 37°C)
+         ▼
+  [ Webcam Optical Sensor (Photons) ]
+         │ (USB / Camera Bus @ 30fps)
+         ▼
+  [ DangerPinky Vision Pipeline (MediaPipe WASM) ]
+         │ (Electron Native IPC)
+         ▼
+  [ Windows Recycle Bin / Trash Can ] ──▶ [ Dopamine Hit ]
+```
+*Neurological to Operating System File Deletion Pipeline.*
 
 # Build Photos
-*(N/A - Software Project)*
+![Hardware Components](screenshots/gameplay.png)
+*Active hardware components in operation: Human pinky finger tracked in real-time in camera corner HUD, controlling live snake on screen.*
 
 ---
 
@@ -118,18 +167,27 @@ For Hardware:
 
 # Video
 [Add your demo video link here]
-*Short demo showing pinky gesture tracking, folder selection, and live file deletion in Danger Mode.*
+*Live demonstration showing webcam pinky calibration, gesture navigation, plump candy rendering, and real-time safe file recycling in action.*
 
 # Additional Demos
-- Built-in offline WebAssembly model support (no external cloud API or uploads required).
-- Two-step safety validation token to guarantee only user-selected folders are ever touched.
+- **Zero-Latency Touch D-Pad**: Integrated instant touch controls with synthetic delay elimination for touchscreen laptops and tablets.
+- **Offline Self-Contained WASM**: Bundled MediaPipe WebAssembly binaries and hand models locally so the app requires zero external network calls or cloud APIs to run.
+- **Two-Step Containment Security Token**: Cryptographic session tokens that prevent any accidental file operations outside the user-selected folder.
 
 ---
 
 ## Team Contributions
-- **VISHNU K R**: End-to-end conceptualization, MediaPipe computer vision pinky tracking algorithms, React 18 candy UI redesign, Electron native IPC file system bridge, procedural Web Audio synthesizer, and 39 Vitest automated tests.
+
+- **VISHNU K R**: 
+  - Conceptualized and designed the complete DangerPinky "Useless Project" theme and mechanics.
+  - Implemented client-side MediaPipe Hand Landmarker with 21-point tracking, EMA smoothing, and pinky-specific gesture calibration.
+  - Built the deterministic 60FPS Snake Engine with wall collision, portal wrap, and full-board victory handling.
+  - Engineered the Electron native IPC filesystem bridge with Windows Recycle Bin integration and security containment validators.
+  - Designed the Candy Pink UI theme, 3D radial candy fruit shaders, and procedural Web Audio synthesizer.
+  - Wrote 39 automated unit tests achieving 100% pass rate.
 
 ---
+
 Made with ❤️ at TinkerHub Useless Projects 
 
 ![Static Badge](https://img.shields.io/badge/TinkerHub-24?color=%23000000&link=https%3A%2F%2Fwww.tinkerhub.org%2F)
