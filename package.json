@@ -1,0 +1,42 @@
+{
+  "name": "filesnake",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist-electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:electron": "esbuild electron/main.ts --bundle --platform=node --target=node18 --external:electron --outfile=dist-electron/main.cjs && esbuild electron/preload.ts --bundle --platform=node --target=node18 --external:electron --outfile=dist-electron/preload.cjs",
+    "start": "electron .",
+    "desktop": "npm run build && npm run build:electron && electron .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:desktop": "electron scripts/test-local-server.cjs",
+    "test:real-mode": "esbuild scripts/verify-real-mode.ts --bundle --platform=node --target=node18 --external:electron --outfile=dist-scripts/verify-real-mode.cjs && electron dist-scripts/verify-real-mode.cjs",
+    "verify:settings": "electron scripts/verify-candy-settings.cjs"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.14",
+    "canvas-confetti": "^1.9.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.395.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "electron": "^44.3.0",
+    "playwright": "^1.63.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
+  }
+}
