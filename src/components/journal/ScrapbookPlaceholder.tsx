@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera, Coffee, Terminal, Hand } from 'lucide-react';
+import { Camera, Coffee, Terminal, Hand, Users, Bug, Laptop } from 'lucide-react';
 
 interface ScrapbookPlaceholderProps {
   tag: string;
@@ -38,13 +38,17 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   }
 
   const isNapkinSketch = lowerTag.includes('sketch') || lowerTag.includes('napkin');
-  const isTerminalArtifact = lowerTag.includes('terminal') || lowerTag.includes('test') || lowerTag.includes('ipc');
-  const isCoffeeMoment = lowerTag.includes('coffee') || lowerTag.includes('tea');
+  const isTerminalArtifact = lowerTag.includes('terminal') || lowerTag.includes('test') || lowerTag.includes('ipc') || lowerTag.includes('vitest');
+  // Strict regex for tea so words like 'teams' never trigger tea stall
+  const isCoffeeMoment = lowerTag.includes('coffee') || /\b(tea|chai)\b/i.test(lowerTag);
+  const isBugArtifact = lowerTag.includes('bug') || lowerTag.includes('suicide') || lowerTag.includes('180');
+  const isVenueSetup = lowerTag.includes('teams') || lowerTag.includes('opening') || lowerTag.includes('floor') || lowerTag.includes('setting up');
+  const isWorkstation = lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('3 am');
 
-  const cleanLabel = tag.replace(/^\[ADD (PHOTO|SCREENSHOT|SKETCH|TERMINAL LOG):\s*/i, '').replace(/\]$/, '');
+  const cleanLabel = tag.replace(/^\[ADD (PHOTO|SCREENSHOT|SKETCH|TERMINAL LOG|BUG SCREENSHOT):\s*/i, '').replace(/\]$/, '');
 
   const inner = (
-    <div className={`inline-block w-full transition-transform duration-300 hover:scale-[1.01] hover:rotate-0 ${rotateClass} ${className}`}>
+    <div className={`inline-block w-full max-w-full p-0.5 transition-transform duration-300 hover:scale-[1.005] hover:rotate-0 ${rotateClass} ${className}`}>
       {/* Polaroid outer frame */}
       <div
         className={`${compact ? 'p-2 pb-2.5' : 'p-2.5 pb-3.5'} bg-white shadow-[0_8px_24px_rgba(0,0,0,0.5),0_2px_6px_rgba(0,0,0,0.3)] border border-slate-200/40 relative`}
@@ -68,28 +72,28 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
             />
           ) : isNapkinSketch ? (
             /* Real Napkin Diagram SVG */
-            <div className="w-full h-full p-4 bg-[#141b2d] flex flex-col justify-between text-slate-300 font-mono text-[11px]">
+            <div className="w-full h-full p-3.5 bg-[#141b2d] flex flex-col justify-between text-slate-300 font-mono text-[11px]">
               <div className="flex items-center justify-between text-pink-400 border-b border-pink-500/30 pb-1 text-[10px]">
                 <span>NAPKIN SCRATCHPAD // 12:30 AM</span>
                 <span>P20 ➔ P17</span>
               </div>
-              <div className="my-auto flex items-center justify-center gap-4 text-center">
-                <div className="p-2 rounded border border-dashed border-pink-400/50 bg-pink-500/10">
-                  <Hand className="w-6 h-6 text-pink-400 mx-auto mb-1" />
-                  <span className="text-[9px] text-pink-300 block">PINKY (P20)</span>
+              <div className="my-auto flex items-center justify-center gap-3 text-center">
+                <div className="p-1.5 rounded border border-dashed border-pink-400/50 bg-pink-500/10">
+                  <Hand className="w-5 h-5 text-pink-400 mx-auto mb-0.5" />
+                  <span className="text-[8.5px] text-pink-300 block font-bold">PINKY</span>
                 </div>
-                <span className="text-amber-400 font-bold text-base">➔</span>
-                <div className="p-2 rounded border border-dashed border-emerald-400/50 bg-emerald-500/10">
-                  <div className="text-base">🐍</div>
-                  <span className="text-[9px] text-emerald-300 block">SNAKE</span>
+                <span className="text-amber-400 font-bold text-sm">➔</span>
+                <div className="p-1.5 rounded border border-dashed border-emerald-400/50 bg-emerald-500/10">
+                  <div className="text-sm">🐍</div>
+                  <span className="text-[8.5px] text-emerald-300 block font-bold">SNAKE</span>
                 </div>
-                <span className="text-amber-400 font-bold text-base">➔</span>
-                <div className="p-2 rounded border border-dashed border-rose-400/50 bg-rose-500/10">
-                  <div className="text-base">🗑️</div>
-                  <span className="text-[9px] text-rose-300 block">RECYCLE</span>
+                <span className="text-amber-400 font-bold text-sm">➔</span>
+                <div className="p-1.5 rounded border border-dashed border-rose-400/50 bg-rose-500/10">
+                  <div className="text-sm">🗑️</div>
+                  <span className="text-[8.5px] text-rose-300 block font-bold">RECYCLE</span>
                 </div>
               </div>
-              <div className="text-[9px] text-slate-500 text-center font-handwriting text-sm">
+              <div className="text-[9px] text-slate-400 text-center font-handwriting text-xs">
                 &ldquo;What if pinky moves snake, snake eats real file?&rdquo;
               </div>
             </div>
@@ -119,12 +123,78 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
               </div>
               <div className="my-auto text-center space-y-1">
                 <div className="text-2xl">☕</div>
-                <div className="font-handwriting text-lg text-amber-100">
+                <div className="font-handwriting text-base text-amber-100">
                   &ldquo;No photo. Just black tea, tired laughs, and the idea.&rdquo;
                 </div>
               </div>
               <div className="text-[9px] text-amber-400/60 text-center">
                 Vishnu + TinkerHub night crew
+              </div>
+            </div>
+          ) : isBugArtifact ? (
+            /* Debugger Crash Dump Artifact */
+            <div className="w-full h-full p-3.5 bg-[#1a0f14] text-rose-300 font-mono text-[10.5px] flex flex-col justify-between">
+              <div className="flex items-center justify-between text-rose-400 border-b border-rose-500/30 pb-1 text-[9.5px]">
+                <span className="flex items-center gap-1">
+                  <Bug className="w-3 h-3 text-rose-400" />
+                  <span>CRASH LOG // 03:15 AM</span>
+                </span>
+                <span className="text-rose-500">STATUS: REPRODUCED</span>
+              </div>
+              <div className="my-auto text-center space-y-1">
+                <div className="text-xs text-rose-200 font-bold">
+                  FATAL: Instant 180° Direction Inversion
+                </div>
+                <div className="text-[9.5px] text-slate-400 font-mono">
+                  nextDir = OPPOSITE(currentDir) ➔ Head bit neck segment 1
+                </div>
+              </div>
+              <div className="text-[9px] text-rose-400/80 text-center">
+                Fix: 1-Tick Direction Buffer Queue in GameEngine.ts
+              </div>
+            </div>
+          ) : isVenueSetup ? (
+            /* Event Floor / Teams Setting Up Artifact */
+            <div className="w-full h-full p-3.5 bg-[#0a151b] flex flex-col justify-between text-cyan-200 font-mono text-xs">
+              <div className="flex items-center justify-between text-cyan-400 text-[10px] border-b border-cyan-500/30 pb-1">
+                <span className="flex items-center gap-1">
+                  <Users className="w-3 h-3 text-cyan-400" />
+                  <span>SNMIMT AUDITORIUM // 05:00 PM</span>
+                </span>
+                <span className="text-slate-500">KICKOFF</span>
+              </div>
+              <div className="my-auto text-center space-y-1">
+                <div className="text-[11px] font-bold text-white uppercase tracking-wider">
+                  Event Opening & Setup
+                </div>
+                <div className="font-handwriting text-sm text-cyan-100/90">
+                  &ldquo;Monitors unboxed, whiteboards filled, hall buzzing.&rdquo;
+                </div>
+              </div>
+              <div className="text-[9px] text-cyan-400/70 text-center">
+                TinkerHub Useless Projects 3.0 Floor
+              </div>
+            </div>
+          ) : isWorkstation ? (
+            /* 3 AM Workstation Reality Artifact */
+            <div className="w-full h-full p-3.5 bg-[#120f1c] flex flex-col justify-between text-purple-200 font-mono text-xs">
+              <div className="flex items-center justify-between text-purple-400 text-[10px] border-b border-purple-500/30 pb-1">
+                <span className="flex items-center gap-1">
+                  <Laptop className="w-3 h-3 text-purple-400" />
+                  <span>WORKBENCH // 04:30 AM</span>
+                </span>
+                <span className="text-slate-500">LOG 11</span>
+              </div>
+              <div className="my-auto text-center space-y-1">
+                <div className="text-[11px] font-bold text-white uppercase tracking-wider">
+                  Hardware Reality
+                </div>
+                <div className="font-handwriting text-sm text-purple-200">
+                  &ldquo;Tangled USB cords, glowing webcam HUD, stubborn code.&rdquo;
+                </div>
+              </div>
+              <div className="text-[9px] text-purple-400/70 text-center">
+                Testing Station · Vishnu K R
               </div>
             </div>
           ) : (
@@ -141,7 +211,7 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
                 <div className="text-[11px] font-bold text-white uppercase tracking-wider">
                   {cleanLabel}
                 </div>
-                <div className="font-handwriting text-base text-pink-300/90">
+                <div className="font-handwriting text-sm text-pink-300/90">
                   &ldquo;Documenting everyone else while having no code of my own.&rdquo;
                 </div>
               </div>

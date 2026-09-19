@@ -494,8 +494,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div className="masking-tape-strip -top-2.5 left-4" />
                     <div>
                       <div className="flex items-center gap-1.5 text-[11px] font-mono text-pink-400 font-bold uppercase tracking-wider mb-1">
-                        <Share2 className="w-3 h-3" />
-                        <span className="truncate">{PROLOGUE_DATA.outreachRole.title}</span>
+                        <Share2 className="w-3 h-3 shrink-0" />
+                        <span className="leading-tight">Outreach Lead // SNMIMT</span>
                       </div>
                       <p className="text-[10.5px] text-slate-400 font-sans mb-1.5">
                         My official role while other teams coded:
@@ -571,7 +571,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               </>
             }
             rightContent={
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Tilted Sticky Note */}
                 <div className="sticky-note sticky-note-amber w-full max-w-sm">
                   <div className="sticky-note-tape" />
@@ -584,10 +584,26 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 </div>
 
                 <ScrapbookPlaceholder
+                  compact
                   tag={CHAPTERS[0].scrapbookTags?.[0] || '[ADD PHOTO: Teams setting up]'}
                   caption="Teams opening laptops, ideas flying. My repo was empty."
                   rotate="ccw"
                 />
+
+                {/* Discarded Project Audit Slip */}
+                <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-mono space-y-1.5">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 text-[10px]">
+                    <span className="text-pink-400 font-bold">SCRAPPED PROJECT AUDIT</span>
+                    <span className="text-slate-500">18:30 IST</span>
+                  </div>
+                  <div className="text-[11px] text-slate-300 font-sans leading-relaxed">
+                    <strong>Conflict Post-Mortem:</strong> Another team pitched an audio-cursor idea 20 minutes in. Rather than build a duplicate on campus, I archived my repo and stepped away.
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t border-slate-800/60">
+                    <span>Outcome: Zero lines of code. 100% outreach duty.</span>
+                    <span className="ink-stamp ink-stamp-red text-[8px] py-0.2 px-1">ABANDONED</span>
+                  </div>
+                </div>
               </div>
             }
           />
@@ -669,6 +685,31 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   caption="Running around with phone documenting everyone else"
                   rotate="cw"
                 />
+
+                {/* Media Lead Dispatch Status Card */}
+                <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-mono space-y-1.5">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 text-[10px]">
+                    <span className="text-cyan-400 font-bold">DISPATCH DISK STATS</span>
+                    <span className="text-slate-500">SNMIMT CAMPUS</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                    <div className="p-1.5 rounded bg-slate-900/60 border border-slate-800">
+                      <div className="text-base font-bold text-white font-mono">14</div>
+                      <div className="text-[9px] text-slate-400">Stories Filed</div>
+                    </div>
+                    <div className="p-1.5 rounded bg-slate-900/60 border border-slate-800">
+                      <div className="text-base font-bold text-white font-mono">22</div>
+                      <div className="text-[9px] text-slate-400">Squads Filmed</div>
+                    </div>
+                    <div className="p-1.5 rounded bg-slate-900/60 border border-rose-500/30">
+                      <div className="text-base font-bold text-rose-400 font-mono">0</div>
+                      <div className="text-[9px] text-rose-400/80">Commits Made</div>
+                    </div>
+                  </div>
+                  <p className="text-[10.5px] text-slate-400 font-sans italic pt-0.5">
+                    &ldquo;Watching 40 developers build in Python, Rust, and Flutter while I stood by the door with an empty VS Code window.&rdquo;
+                  </p>
+                </div>
               </div>
             }
           />
@@ -723,19 +764,54 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               </>
             }
             rightContent={
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <ScrapbookPlaceholder
-                  compact
-                  tag="[ADD PHOTO: Late night coffee]"
-                  caption="Tired conversations & black tea at midnight"
-                  rotate="ccw"
-                />
-                <ScrapbookPlaceholder
-                  compact
-                  tag="[ADD SKETCH: First napkin sketch]"
-                  caption="First scribble: Pinky Snake concept"
-                  rotate="cw"
-                />
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <ScrapbookPlaceholder
+                    compact
+                    tag="[ADD PHOTO: Late night coffee]"
+                    caption="Tired conversations & black tea at midnight"
+                    rotate="ccw"
+                  />
+                  <ScrapbookPlaceholder
+                    compact
+                    tag="[ADD SKETCH: First napkin sketch]"
+                    caption="First scribble: Pinky Snake concept"
+                    rotate="cw"
+                  />
+                </div>
+
+                {/* Field Audio Log // Dialogue Transcript */}
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-amber-500/30 font-mono text-xs text-slate-300 shadow-lg space-y-2">
+                  <div className="flex items-center justify-between border-b border-amber-500/20 pb-1.5 text-[10px]">
+                    <span className="flex items-center gap-1.5 text-amber-400 font-bold">
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                      <span>AUDIO LOG // HOSTEL TEA STALL</span>
+                    </span>
+                    <span className="text-slate-500">00:14 IST</span>
+                  </div>
+                  <div className="space-y-1.5 text-[11px] leading-relaxed font-sans">
+                    <p>
+                      <strong className="text-amber-300 font-mono text-[10.5px]">Friend:</strong>{' '}
+                      <span className="text-slate-300">&ldquo;Bro, hackathon is half over. You really doing nothing?&rdquo;</span>
+                    </p>
+                    <p>
+                      <strong className="text-pink-400 font-mono text-[10.5px]">Vishnu:</strong>{' '}
+                      <span className="text-slate-200">&ldquo;What if I make a snake game that follows my pinky finger with the webcam?&rdquo;</span>
+                    </p>
+                    <p>
+                      <strong className="text-amber-300 font-mono text-[10.5px]">Friend:</strong>{' '}
+                      <span className="text-slate-400">&ldquo;That sounds completely useless. You&rsquo;re definitely gonna lose.&rdquo;</span>
+                    </p>
+                    <p>
+                      <strong className="text-pink-400 font-mono text-[10.5px]">Vishnu:</strong>{' '}
+                      <span className="text-emerald-400 font-semibold">&ldquo;Perfect. That&rsquo;s literally the name of the hackathon.&rdquo;</span>
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t border-slate-800">
+                    <span>Decisive Turning Point</span>
+                    <span className="ink-stamp ink-stamp-pink text-[8px] py-0.2 px-1">PROJECT GREENLIT</span>
+                  </div>
+                </div>
               </div>
             }
           />
@@ -1941,8 +2017,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         {/* ─── BOTTOM SPREAD PAGER FOOTER (Spread Mode Navigation) ─── */}
         {viewMode === 'spread' && (
           <div className="mt-6 rounded-2xl bg-slate-950/95 border border-slate-800/80 shadow-2xl overflow-hidden backdrop-blur-xl">
-            {/* Progress bar strip */}
-            <div className="h-[2px] bg-slate-900 w-full relative">
+            {/* Reading Progress Indicator */}
+            <div className="h-1 bg-slate-900/90 border-b border-slate-800/60 w-full relative overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-pink-600 via-pink-400 to-amber-400 transition-all duration-500 ease-out"
                 style={{ width: `${((spreadIndex + 1) / sectionIds.length) * 100}%` }}
@@ -1986,9 +2062,14 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     />
                   ))}
                 </div>
-                <div className="font-mono text-[10px] text-slate-500 tracking-widest">
-                  SPREAD {spreadIndex + 1} <span className="text-slate-700">/</span> {sectionIds.length}
-                  <span className="ml-2 text-[9px] text-slate-700 hidden sm:inline">· ← → to flip</span>
+                <div className="font-mono text-[10px] text-slate-500 tracking-widest flex items-center justify-center gap-1.5">
+                  <span>SPREAD {spreadIndex + 1} <span className="text-slate-700">/</span> {sectionIds.length}</span>
+                  <span className="text-slate-700 hidden sm:inline">·</span>
+                  <span className="text-[9px] text-slate-500 hidden sm:inline-flex items-center gap-1">
+                    <kbd className="px-1 py-0.2 rounded bg-slate-900 border border-slate-800 text-slate-400 text-[8.5px] font-mono">←</kbd>
+                    <kbd className="px-1 py-0.2 rounded bg-slate-900 border border-slate-800 text-slate-400 text-[8.5px] font-mono">→</kbd>
+                    <span className="text-slate-500">to flip</span>
+                  </span>
                 </div>
               </div>
 

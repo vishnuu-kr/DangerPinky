@@ -95,7 +95,7 @@ export const BookCover: React.FC<BookCoverProps> = ({ onOpenBook, onPlayGame, on
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[9px]">ARTIFACT:</span>
-                  <span className="text-emerald-400 font-semibold text-xs truncate block">Pinky + File Eater</span>
+                  <span className="text-emerald-400 font-bold text-xs block">DangerPinky v1.0</span>
                 </div>
               </div>
             </div>
