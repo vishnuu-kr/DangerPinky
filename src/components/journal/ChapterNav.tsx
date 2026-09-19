@@ -191,6 +191,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
           {viewMode === 'spread' && onPrevPage && onNextPage && (
             <div className="hidden sm:flex items-center gap-1 bg-slate-900/90 border border-slate-800 rounded-lg px-1 py-0.5 text-xs font-mono">
               <button
+                type="button"
                 onClick={onPrevPage}
                 disabled={!canPrev}
                 className="p-1 rounded hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 hover:text-white transition-colors cursor-pointer"
@@ -202,6 +203,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
                 {currentPage && totalPages ? `${currentPage}/${totalPages}` : 'SPREAD'}
               </span>
               <button
+                type="button"
                 onClick={onNextPage}
                 disabled={!canNext}
                 className="p-1 rounded hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300 hover:text-white transition-colors cursor-pointer"

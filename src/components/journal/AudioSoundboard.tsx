@@ -3,7 +3,11 @@ import { Volume2, VolumeX, Sparkles, Activity } from 'lucide-react';
 import { sound } from '../../game/audio';
 import { SOUNDBOARD_DATA, SoundboardItem } from '../../data/journalChapters';
 
-export const AudioSoundboard: React.FC = () => {
+interface AudioSoundboardProps {
+  compact?: boolean;
+}
+
+export const AudioSoundboard: React.FC<AudioSoundboardProps> = ({ compact = false }) => {
   const [activeSoundId, setActiveSoundId] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(sound.getVolume());
   const [isMuted, setIsMuted] = useState<boolean>(sound.getMuted());
@@ -76,6 +80,64 @@ export const AudioSoundboard: React.FC = () => {
       text: 'text-emerald-400'
     }
   };
+
+  if (compact) {
+    return (
+      <div className="bg-slate-950/90 border border-pink-500/30 rounded-xl p-2.5 shadow-lg relative overflow-hidden">
+        <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-slate-800">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+            <span className="text-[10px] font-mono font-bold text-pink-300 uppercase tracking-wider">
+              Procedural Audio Oscillators
+            </span>
+            <span className="text-[9px] font-mono text-slate-500 hidden sm:inline">· 0 MP3 files · Real math</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleToggleMute}
+              className="p-1 rounded text-slate-400 hover:text-white cursor-pointer transition-colors"
+              title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolumeChange}
+              className="w-14 accent-pink-500 cursor-pointer h-1 bg-slate-800 rounded"
+              title={`Volume: ${Math.round(volume * 100)}%`}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-5 gap-1.5">
+          {SOUNDBOARD_DATA.map((item) => {
+            const isPlaying = activeSoundId === item.id;
+            const styling = waveformColors[item.waveform] || waveformColors.sine;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleTrigger(item)}
+                className={`p-1.5 rounded-lg border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between group ${
+                  isPlaying
+                    ? 'bg-pink-600/30 border-pink-400 shadow-[0_0_12px_rgba(255,59,148,0.5)] -translate-y-0.5'
+                    : 'bg-slate-900/70 border-slate-800 hover:border-pink-500/40 hover:bg-slate-850'
+                }`}
+              >
+                <span className="text-base select-none group-hover:scale-110 transition-transform">{item.emoji}</span>
+                <span className="text-[9.5px] font-mono font-bold text-white truncate max-w-full mt-0.5">{item.name}</span>
+                <span className={`text-[7.5px] font-mono uppercase px-1 py-0.2 rounded border font-semibold mt-0.5 ${styling.badge}`}>
+                  {item.waveform}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-900/90 border-2 border-pink-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden">

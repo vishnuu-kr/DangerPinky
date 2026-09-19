@@ -42,12 +42,12 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
         {fullWidthContent ? (
           <div
-            className={`p-6 sm:p-10 lg:p-12 ${
+            className={`p-5 sm:p-8 lg:p-10 ${
               paperTone === 'cream' ? 'paper-cream' : 'paper-dark'
-            } relative flex flex-col justify-between min-h-full`}
+            } relative flex flex-col justify-between h-full min-h-full`}
           >
             {/* Running Header */}
-            <div className="book-running-head text-slate-400 mb-4 flex items-center justify-between border-b border-slate-800/60 pb-3 shrink-0">
+            <div className="book-running-head text-slate-400 mb-3 flex items-center justify-between border-b border-slate-800/60 pb-2 shrink-0">
               <span>{leftRunningHead}</span>
               <span className="text-pink-400 font-mono tracking-widest text-[11px] font-bold">
                 [ FOLD-OUT TECHNICAL SCHEMATIC ]
@@ -56,12 +56,12 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
             </div>
 
             {/* Fold-out Content Area */}
-            <div className="flex-1 space-y-6 pb-2">
+            <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto custom-page-scrollbar">
               {fullWidthContent}
             </div>
 
             {/* Folio Page Numbers */}
-            <div className="flex justify-between items-center mt-auto pt-3 border-t border-slate-800/40 text-xs font-mono text-slate-500 shrink-0">
+            <div className="flex justify-between items-center mt-auto pt-2 border-t border-slate-800/40 text-xs font-mono text-slate-500 shrink-0">
               <span>— PAGE {leftPageNumber} —</span>
               <span className="ink-stamp ink-stamp-green text-[9px]">DOUBLE-PAGE FOLD-OUT</span>
               <span>— PAGE {rightPageNumber} —</span>
@@ -69,13 +69,13 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
           </div>
         ) : (
           <div
-            className={`grid grid-cols-1 lg:grid-cols-2 items-stretch ${
+            className={`grid grid-cols-1 lg:grid-cols-2 items-stretch h-full ${
               paperTone === 'cream' ? 'paper-cream' : 'paper-dark'
             } ${isSpreadMode ? 'book-spread-grid' : ''}`}
           >
             {/* ─── LEFT PAGE (VERSO) ─── */}
             <div
-              className="p-5 sm:p-7 lg:p-8 lg:pr-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative min-h-full"
+              className="p-5 sm:p-7 lg:p-8 lg:pr-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full"
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">
@@ -84,7 +84,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Left Page Content */}
-              <div className="flex-1 space-y-4 pb-2">
+              <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto custom-page-scrollbar">
                 {leftContent}
               </div>
 
@@ -96,7 +96,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
             {/* ─── RIGHT PAGE (RECTO) ─── */}
             <div
-              className="p-5 sm:p-7 lg:p-8 lg:pl-10 flex flex-col justify-between relative min-h-full"
+              className="p-5 sm:p-7 lg:p-8 lg:pl-10 flex flex-col justify-between relative h-full min-h-full"
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">
@@ -105,7 +105,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Right Page Content */}
-              <div className="flex-1 space-y-4 pb-2">
+              <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto custom-page-scrollbar">
                 {rightContent}
               </div>
 

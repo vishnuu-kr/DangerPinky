@@ -9,6 +9,8 @@ interface ScrapbookPlaceholderProps {
   isVerified?: boolean;
   rotate?: 'cw' | 'ccw' | 'none';
   imgSrc?: string;
+  compact?: boolean;
+  className?: string;
 }
 
 export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
@@ -17,6 +19,8 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   evidenceUrl,
   rotate = 'cw',
   imgSrc,
+  compact = false,
+  className = '',
 }) => {
   const rotateClass = rotate === 'cw' ? 'rotate-1' : rotate === 'ccw' ? '-rotate-1' : '';
 
@@ -40,10 +44,10 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   const cleanLabel = tag.replace(/^\[ADD (PHOTO|SCREENSHOT|SKETCH|TERMINAL LOG):\s*/i, '').replace(/\]$/, '');
 
   const inner = (
-    <div className={`inline-block w-full transition-transform duration-300 hover:scale-[1.01] hover:rotate-0 ${rotateClass}`}>
+    <div className={`inline-block w-full transition-transform duration-300 hover:scale-[1.01] hover:rotate-0 ${rotateClass} ${className}`}>
       {/* Polaroid outer frame */}
       <div
-        className="bg-white p-2.5 pb-3.5 shadow-[0_8px_24px_rgba(0,0,0,0.5),0_2px_6px_rgba(0,0,0,0.3)] border border-slate-200/40 relative"
+        className={`${compact ? 'p-2 pb-2.5' : 'p-2.5 pb-3.5'} bg-white shadow-[0_8px_24px_rgba(0,0,0,0.5),0_2px_6px_rgba(0,0,0,0.3)] border border-slate-200/40 relative`}
         style={{ borderRadius: '2px' }}
       >
         {/* Masking tape on top corner */}
@@ -53,7 +57,9 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
         />
 
         {/* Image / Artifact Container */}
-        <div className="w-full aspect-[16/10] bg-slate-950 border border-slate-800 relative overflow-hidden flex flex-col items-center justify-center">
+        <div className={`w-full bg-slate-950 border border-slate-800 relative overflow-hidden flex flex-col items-center justify-center ${
+          compact ? 'aspect-[16/8] max-h-[160px]' : 'aspect-[16/10] max-h-[210px]'
+        }`}>
           {resolvedImage ? (
             <img
               src={resolvedImage}
