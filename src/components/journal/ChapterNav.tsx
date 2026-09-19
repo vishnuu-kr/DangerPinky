@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Play, ChevronDown, CheckCircle2, Circle, BookOpen, Scroll, Sun, Moon, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Menu, X, Play, ChevronDown, CheckCircle2, Circle, BookOpen, Scroll, Sun, Moon, ChevronLeft, ChevronRight, ArrowLeft, Share2, HelpCircle } from 'lucide-react';
 import { CHAPTERS, HERO_DATA, PROLOGUE_DATA, FINAL_REFLECTION } from '../../data/journalChapters';
 
 interface ChapterNavProps {
@@ -17,6 +17,8 @@ interface ChapterNavProps {
   totalPages?: number;
   canPrev?: boolean;
   canNext?: boolean;
+  onShare?: () => void;
+  onOpenShortcuts?: () => void;
 }
 
 interface NavItem {
@@ -40,7 +42,9 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
   currentPage,
   totalPages,
   canPrev,
-  canNext
+  canNext,
+  onShare,
+  onOpenShortcuts
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -250,6 +254,30 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             </button>
           )}
 
+          {/* Share Action */}
+          {onShare && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-pink-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
+              title="Share Devlog (or Copy Link)"
+            >
+              <Share2 className="w-3.5 h-3.5 text-pink-400" />
+            </button>
+          )}
+
+          {/* Keyboard Shortcuts Dossier */}
+          {onOpenShortcuts && (
+            <button
+              type="button"
+              onClick={onOpenShortcuts}
+              className="hidden sm:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
+              title="Keyboard Shortcuts Manual (?)"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+            </button>
+          )}
+
           {/* Mobile current section indicator */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -325,6 +353,30 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
                 </button>
               );
             })}
+          </div>
+
+          {/* Mobile Utilities */}
+          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+            {onShare && (
+              <button
+                type="button"
+                onClick={onShare}
+                className="flex-1 py-2 px-3 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-300 font-mono text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Share2 className="w-3.5 h-3.5 text-pink-400" />
+                <span>Share Devlog</span>
+              </button>
+            )}
+            {onOpenShortcuts && (
+              <button
+                type="button"
+                onClick={onOpenShortcuts}
+                className="flex-1 py-2 px-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-mono text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Shortcuts (?)</span>
+              </button>
+            )}
           </div>
         </div>
       )}

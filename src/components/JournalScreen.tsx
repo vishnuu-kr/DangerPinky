@@ -37,6 +37,7 @@ import { FinalReflection } from './journal/FinalReflection';
 import { BookSpread } from './journal/BookSpread';
 import { RibbonBookmark } from './journal/RibbonBookmark';
 import { AudioSoundboard } from './journal/AudioSoundboard';
+import { KeyboardShortcutsModal } from './journal/KeyboardShortcutsModal';
 
 interface JournalScreenProps {
   onStartDemo: () => void;
@@ -178,7 +179,72 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   const [activeMilestoneIdx, setActiveMilestoneIdx] = useState<number>(0);
   const [activeBreakthroughIdx, setActiveBreakthroughIdx] = useState<number>(0);
   const [activeBugIdx, setActiveBugIdx] = useState<number>(0);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const showToast = (msg: string) => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    setToastMessage(msg);
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastMessage(null);
+    }, 2800);
+  };
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href.split('#')[0] + '#journal';
+    const shareData = {
+      title: 'DangerPinky — Devlog & Game',
+      text: 'DangerPinky: Russian Roulette for your filesystem, controlled by your pinky finger. 18-hour makeathon field log by Vishnu K R.',
+      url: shareUrl
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // User cancelled or share dismissed
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Devlog link copied to clipboard!');
+        return;
+      } catch {
+        // clipboard fallback
+      }
+    }
+    showToast('Link: ' + shareUrl);
+  };
+
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (viewMode !== 'spread') return;
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (viewMode !== 'spread' || touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+
+    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      if (deltaX < 0) {
+        goToNextSpread();
+      } else {
+        goToPrevSpread();
+      }
+    }
+  };
 
   const triggerPageFlip = (dir: 'next' | 'prev') => {
     if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
@@ -238,10 +304,23 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
     return `block ${flipAnim}`;
   };
 
-  // Keyboard navigation for page turns in book spread mode
+  // Keyboard navigation for page turns in book spread mode & shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+        return;
+      }
+      if (e.key === 't' || e.key === 'T') {
+        setPaperTone((prev) => (prev === 'dark' ? 'cream' : 'dark'));
+        return;
+      }
+      if (e.key === 'v' || e.key === 'V') {
+        setViewMode((prev) => (prev === 'spread' ? 'scroll' : 'spread'));
+        return;
+      }
       if (viewMode !== 'spread') return;
       if (e.key === 'ArrowRight') {
         goToNextSpread();
@@ -322,6 +401,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         totalPages={sectionIds.length}
         canPrev={spreadIndex > 0}
         canNext={spreadIndex < sectionIds.length - 1}
+        onShare={handleShare}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       {/* Hanging Silk Ribbon Bookmark */}
@@ -331,7 +412,11 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className={`relative ${viewMode === 'spread' ? 'book-stage' : ''}`}>
+        <div
+          className={`relative ${viewMode === 'spread' ? 'book-stage' : ''}`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
 
           {/* 3D Physical Page Turn Leaf Overlay */}
           {viewMode === 'spread' && isFlipping && flipDirection && (
@@ -1948,6 +2033,20 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
           </button>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-pink-300 font-mono text-xs font-bold px-4 py-2 rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.8)] border border-pink-500/40 flex items-center gap-2 animate-bounce-gentle">
+          <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Keyboard Shortcuts Dossier Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+      />
     </div>
   );
 };

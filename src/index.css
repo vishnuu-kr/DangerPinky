@@ -1093,3 +1093,40 @@
     ) !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CLEAN PRINT STYLESHEET (EXPORT FIELD NOTES TO PDF / PRINT)
+   ══════════════════════════════════════════════════════════════════════════ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+  .desk-grid,
+  .book-stage,
+  .book-spread,
+  .book-spread-fixed {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+  .book-spread-grid {
+    display: block !important;
+    height: auto !important;
+  }
+  header,
+  nav,
+  button,
+  .reading-progress-bar,
+  .book-spine-crease {
+    display: none !important;
+  }
+  section {
+    page-break-after: always;
+    break-after: page;
+  }
+}
+

@@ -1,0 +1,20 @@
+{
+  "name": "DangerPinky — The Cute Snake, The Real Danger!",
+  "short_name": "DangerPinky",
+  "description": "Russian Roulette for your filesystem, controlled by your pinky finger. Official TinkerHub Useless Projects 3.0 Devlog & Game.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "categories": ["games", "entertainment", "developer"],
+  "icons": [
+    {
+      "src": "./snake-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
