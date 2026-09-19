@@ -217,6 +217,46 @@ class SoundSynthesizer {
     osc.start(t);
     osc.stop(t + 0.06);
   }
+
+  public playPageTurn() {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(950, t);
+      filter.frequency.exponentialRampToValueAtTime(320, t + 0.11);
+      filter.Q.setValueAtTime(1.8, t);
+
+      const gain = this.ctx.createGain();
+      const baseVol = 0.09 * this.masterVolume;
+      gain.gain.setValueAtTime(0.005, t);
+      gain.gain.linearRampToValueAtTime(baseVol, t + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      noise.start(t);
+      noise.stop(t + 0.12);
+    } catch {
+      // Graceful fallback if Web Audio is restricted
+    }
+  }
 }
 
 export const sound = new SoundSynthesizer();

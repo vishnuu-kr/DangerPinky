@@ -36,6 +36,8 @@ export const App: React.FC = () => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#game' || hash === '#play') return 'LANDING';
+      if (hash === '#journal') return 'JOURNAL';
+      if (isDesktopApp()) return 'LANDING';
       return 'JOURNAL';
     }
     return 'JOURNAL';
@@ -60,8 +62,10 @@ export const App: React.FC = () => {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#game' || hash === '#play') {
         setScreenState('LANDING');
-      } else if (hash === '#journal' || hash === '') {
+      } else if (hash === '#journal') {
         setScreenState('JOURNAL');
+      } else if (hash === '') {
+        setScreenState(isDesktopApp() ? 'LANDING' : 'JOURNAL');
       }
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -347,8 +351,8 @@ export const App: React.FC = () => {
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_50%)] pointer-events-none" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.08),transparent_50%)] pointer-events-none" />
 
-      {/* Global Navigation Bar on non-game screens */}
-      {screen !== 'GAME' && (
+      {/* Global Navigation Bar on Landing Screen */}
+      {screen === 'LANDING' && (
         <Navbar
           currentScreen={screen}
           onNavigate={(s) => setScreen(s)}
