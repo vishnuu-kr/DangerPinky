@@ -1231,9 +1231,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <ScrapbookPlaceholder
                   compact
-                  tag="[ADD PHOTO: Event atmosphere — Vishnu doing outreach while coding]"
+                  tag="[ADD PHOTO: Event atmosphere — Live TinkerHub stories]"
                   videoSrc="./videos/vishnu_outreach_cheer.mp4"
-                  caption="Vishnu filming live TinkerHub stories: participants cheering at 09:03 PM"
+                  caption="Live TinkerHub stories: participants cheering at 09:03 PM"
                   rotate="cw"
                 />
               </div>

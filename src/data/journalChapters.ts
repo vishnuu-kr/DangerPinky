@@ -785,7 +785,7 @@ if (head.x === food.x && head.y === food.y) {
     scrapbookTag: '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
     scrapbookTags: [
       '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
-      '[ADD PHOTO: Event atmosphere — Vishnu doing outreach while coding]',
+      '[ADD PHOTO: Event atmosphere — Live TinkerHub stories while coding]',
       '[ADD SCREENSHOT: TinkerHub social media posts going up during the build]'
     ]
   },
