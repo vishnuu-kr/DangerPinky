@@ -940,22 +940,15 @@
     color: #64748b;
   }
 
-  /* Elegant Editorial Book Drop Cap */
-  .book-drop-cap p:first-of-type::first-letter,
-  .book-drop-cap::first-letter {
-    float: left;
-    font-size: 2.35rem;
-    line-height: 0.88;
-    margin-right: 0.35rem;
-    margin-top: 0.08rem;
-    padding: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 900;
-    color: #ec4899;
+  /* Elegant Editorial Lead-in Prose */
+  .book-drop-cap p:first-of-type {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #f8fafc;
+    font-weight: 450;
   }
-  .paper-cream .book-drop-cap p:first-of-type::first-letter,
-  .paper-cream .book-drop-cap::first-letter {
-    color: #db2777;
+  .paper-cream .book-drop-cap p:first-of-type {
+    color: #1c1917;
   }
 
   /* Paper Tone: Dark Archival */

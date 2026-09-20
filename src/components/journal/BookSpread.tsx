@@ -33,9 +33,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 }) => {
   const isSpreadMode = viewMode === 'spread';
 
-  const gridColsClass = layoutVariant === 'editorial'
-    ? 'grid-cols-1 lg:grid-cols-[1.12fr_0.88fr]'
-    : 'grid-cols-1 lg:grid-cols-2';
+  const gridColsClass = 'grid-cols-1 lg:grid-cols-2';
 
   const leftTextureClass = layoutVariant === 'notebook' ? 'paper-dots' : '';
   const rightTextureClass = layoutVariant === 'technical' ? 'paper-grid' : layoutVariant === 'notebook' ? 'paper-dots' : '';
@@ -86,7 +84,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
           >
             {/* ─── LEFT PAGE (VERSO) ─── */}
             <div
-              className={`p-5 sm:p-7 lg:p-8 lg:pr-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full ${leftTextureClass}`}
+              className={`p-5 sm:p-7 lg:p-8 lg:pr-12 xl:pr-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full ${leftTextureClass}`}
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">
@@ -116,7 +114,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
             {/* ─── RIGHT PAGE (RECTO) ─── */}
             <div
-              className={`p-5 sm:p-7 lg:p-8 lg:pl-10 flex flex-col justify-between relative h-full min-h-full ${rightTextureClass}`}
+              className={`p-5 sm:p-7 lg:p-8 lg:pl-12 xl:pl-14 flex flex-col justify-between relative h-full min-h-full ${rightTextureClass}`}
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">

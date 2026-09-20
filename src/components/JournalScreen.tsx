@@ -493,7 +493,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <div className="flex flex-col gap-1 mb-3">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-sans font-black tracking-tight text-white leading-tight mb-1">
+                    <h2 className="text-xl sm:text-2xl font-sans font-black tracking-tight text-white leading-tight mb-1">
                       {PROLOGUE_DATA.title}
                     </h2>
                     <p className="text-sm font-sans italic text-pink-300/90">
@@ -512,7 +512,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               </>
             }
             rightContent={
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {/* 2-Column Document Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {/* Outreach Clipboard Card */}
@@ -567,6 +567,38 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   caption="Teams setting up around 5 PM — meanwhile I had zero project"
                   rotate="cw"
                 />
+
+                {/* Event Opening Census Slip */}
+                <div className="dispatch-tape-slip -rotate-0.5 border-cyan-500/30 shadow-xl space-y-2">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-cyan-500/20 text-[10px] font-mono">
+                    <span className="text-cyan-400 font-bold flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>EVENT ROSTER // 05:30 PM KICKOFF</span>
+                    </span>
+                    <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">CAMPUS AUDITORIUM</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[9.5px]">
+                    <div className="p-1.5 rounded bg-slate-900/70 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px] uppercase">Registered</span>
+                      <span className="text-white font-bold text-[11px]">40+ Builders</span>
+                    </div>
+                    <div className="p-1.5 rounded bg-slate-900/70 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px] uppercase">Active Teams</span>
+                      <span className="text-emerald-300 font-bold text-[11px]">12 Squads</span>
+                    </div>
+                    <div className="p-1.5 rounded bg-slate-900/70 border border-rose-500/30">
+                      <span className="text-rose-400 block text-[7.5px] uppercase">Vishnu Code</span>
+                      <span className="text-rose-400 font-bold text-[11px]">0 Lines</span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-300 font-sans leading-snug">
+                    Auditorium bustling with participants setting up multi-monitor rigs and discussing API keys. Outreach Lead phone battery at 88%. Project repository: not yet created.
+                  </p>
+                  <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                    <span>TinkerHub SNMIMT UP 3.0</span>
+                    <span className="text-pink-400 font-semibold">T-MINUS 18 HOURS</span>
+                  </div>
+                </div>
               </div>
             }
           />
