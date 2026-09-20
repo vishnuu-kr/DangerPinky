@@ -93,7 +93,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Left Page Content */}
-              <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
+              <div className={`flex-1 min-h-0 space-y-3 pb-1 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
                 {leftContent}
               </div>
 
@@ -123,7 +123,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Right Page Content */}
-              <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
+              <div className={`flex-1 min-h-0 space-y-3 pb-1 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
                 {rightContent}
               </div>
 

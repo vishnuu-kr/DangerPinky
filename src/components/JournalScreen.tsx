@@ -507,7 +507,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <div className="chapter-divider max-w-md mb-3" />
 
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={PROLOGUE_DATA.narrative} pullquoteIndex={2} />
+                  <EditorialProse narratives={PROLOGUE_DATA.narrative} pullquoteIndex={2} maxParagraphs={3} />
                 </div>
               </>
             }
@@ -625,7 +625,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="better to have nothing than step on someone's project"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[0].narrative} highlightIndex={2} />
+                  <EditorialProse narratives={CHAPTERS[0].narrative} highlightIndex={2} maxParagraphs={3} />
                 </div>
 
                 <div className="p-2.5 mt-2.5 rounded-lg bg-rose-500/[0.04] border border-rose-500/20 text-rose-300 font-handwriting text-sm text-center">
@@ -693,40 +693,30 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="clock ticking: 6 PM... 8 PM... still nothing"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[1].narrative} pullquoteIndex={1} />
+                  <EditorialProse narratives={CHAPTERS[1].narrative} pullquoteIndex={1} maxParagraphs={3} />
                 </div>
 
-                {/* Quiet Anchor Artifact: Empty Terminal Thermal Receipt */}
-                <div className="thermal-receipt -rotate-1 mt-2 shadow-lg">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-1 mb-1.5 text-[10px]">
+                {/* Quiet Anchor Artifact: Compact Terminal Thermal Receipt */}
+                <div className="thermal-receipt -rotate-1 mt-1 shadow-lg">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-1 mb-1 text-[10px]">
                     <span className="font-mono font-bold text-rose-400 flex items-center gap-1.5">
                       <Terminal className="w-3.5 h-3.5" />
                       <span>TERMINAL AUDIT // 21:00 IST</span>
                     </span>
                     <span className="ink-stamp ink-stamp-red text-[7px] py-0 px-1">0 COMMITS</span>
                   </div>
-                  <div className="space-y-1 font-mono text-[10px] text-slate-300 py-1">
-                    <div className="text-slate-400">
-                      <span className="text-pink-400 font-bold">$</span> cd ~/projects/dangerpinky
-                    </div>
-                    <div className="text-rose-400/90 pl-3">
-                      bash: cd: /home/vishnu/projects/dangerpinky: No such file or directory
-                    </div>
-                    <div className="text-slate-400">
+                  <div className="space-y-0.5 font-mono text-[10px] text-slate-300 py-0.5">
+                    <div>
                       <span className="text-pink-400 font-bold">$</span> git status
                     </div>
                     <div className="text-rose-400/90 pl-3">
                       fatal: not a git repository (or any of the parent directories): .git
                     </div>
                   </div>
-                  <div className="pt-1.5 mt-1 border-t border-slate-800 text-[9px] font-mono text-slate-400 flex justify-between items-center">
+                  <div className="pt-1 mt-0.5 border-t border-slate-800 text-[9px] font-mono text-slate-400 flex justify-between items-center">
                     <span>Active workspace: None</span>
                     <span className="text-amber-400 font-semibold">100% OUTREACH DUTY</span>
                   </div>
-                </div>
-
-                <div className="p-2 rounded-lg bg-amber-500/[0.05] border border-amber-500/20 text-amber-200 font-handwriting text-sm text-center">
-                  &ldquo;Telling everyone else to document their build... while my screen was black.&rdquo;
                 </div>
               </>
             }
@@ -830,7 +820,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="midnight coffee: where stupid ideas become brilliant"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[2].narrative} highlightIndex={2} />
+                  <EditorialProse narratives={CHAPTERS[2].narrative} highlightIndex={2} maxParagraphs={3} />
                 </div>
 
                 {/* Field Audio Log // Dialogue Transcript as Authentic Taped Dispatch */}
@@ -2227,7 +2217,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="the roadmap of useless ambition"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[15].narrative} pullquoteIndex={0} />
+                  <EditorialProse narratives={CHAPTERS[15].narrative} pullquoteIndex={0} maxParagraphs={3} />
                 </div>
 
                 {/* Field Slip: Future Sprint Notes */}
