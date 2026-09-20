@@ -1863,7 +1863,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     compact
                     tag="[ADD VIDEO: 05:18 AM Dawn Lab Fatigue — Pushing through exhaustion to sunrise]"
                     videoSrc="./videos/dawn_lab_exhaustion.mp4"
-                    caption="05:18 AM: Head in hands, weary eyes, and pushing through the dawn fatigue"
+                    caption="05:18 AM: Documenting another team pushing through dawn fatigue — weary eyes & head in hands"
                     rotate="cw"
                   />
                 </div>
