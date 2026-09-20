@@ -156,30 +156,47 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
           </div>
 
           {/* Official TinkerHub UP 3.0 Wrap Poster Artifact */}
-          <div className="relative p-2 bg-white rounded-sm shadow-xl transform -rotate-0.5 hover:rotate-0 transition-transform duration-300">
+          <div className="relative p-2.5 bg-slate-950/90 rounded-lg border border-pink-500/30 shadow-xl flex items-center gap-3">
             <div
-              className="absolute -top-2 left-6 w-10 h-3.5 opacity-80 z-10"
-              style={{
-                background: 'rgba(254, 240, 138, 0.7)',
-                borderLeft: '1.5px dashed rgba(0,0,0,0.15)',
-                borderRight: '1.5px dashed rgba(0,0,0,0.15)',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                transform: 'rotate(-2deg)'
-              }}
+              className="absolute -top-2 left-6 w-10 h-3.5 opacity-80 z-10 masking-tape-strip"
+              style={{ transform: 'rotate(-2deg)' }}
             />
-            <div className="w-full bg-slate-950 rounded-sm overflow-hidden flex items-center justify-center aspect-[21/9] max-h-[110px]">
+            {/* Uncropped Portrait Poster Frame */}
+            <a
+              href="./images/useless_3_thankyou.png"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative w-20 sm:w-24 shrink-0 bg-slate-900 rounded overflow-hidden border border-slate-700 shadow-md group cursor-pointer block"
+              title="Click to view full high-res wrap poster"
+            >
               <img
                 src="./images/useless_3_thankyou.png"
                 alt="TinkerHub Useless Projects 3.0 Official Thank You Poster"
-                className="w-full h-full object-cover object-center"
+                className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
-            </div>
-            <div className="mt-1 px-1 flex items-center justify-between text-slate-700">
-              <span className="font-handwriting text-xs text-slate-800">
-                Official Wrap: TinkerHub SNMIMT Useless Projects 3.0
-              </span>
-              <span className="font-mono text-[8px] text-slate-400">SNMIMT CAMPUS</span>
+              <div className="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-[8px] font-mono font-bold bg-slate-950/90 text-pink-300 px-1 py-0.5 rounded border border-pink-500/40">
+                  VIEW ↗
+                </span>
+              </div>
+            </a>
+
+            <div className="flex-1 min-w-0 pr-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="ink-stamp ink-stamp-pink text-[7.5px] py-0 px-1">CAMPUS WRAP</span>
+                <span className="text-[8.5px] font-mono text-slate-400">SNMIMT AUDITORIUM</span>
+              </div>
+              <h4 className="text-xs sm:text-[13px] font-bold text-white font-sans truncate">
+                TinkerHub UP 3.0 Official Poster
+              </h4>
+              <p className="text-[10px] sm:text-[10.5px] text-slate-300 font-sans leading-relaxed mt-0.5">
+                The official celebration dispatch commemorating 12 builder squads, 40+ makers, and 18 hours of delightfully useless engineering.
+              </p>
+              <div className="mt-1 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                <span className="font-handwriting text-xs text-pink-300">↳ &ldquo;thank you for making it useless&rdquo;</span>
+                <span className="text-pink-400 font-semibold">ALL-ACCESS</span>
+              </div>
             </div>
           </div>
 

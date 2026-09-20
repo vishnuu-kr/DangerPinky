@@ -93,6 +93,23 @@ export const App: React.FC = () => {
     if (typeof window !== 'undefined') {
       (window as any).__openSettings = () => setIsSettingsModalOpen(true);
       (window as any).__closeSettings = () => setIsSettingsModalOpen(false);
+      (window as any).__triggerGameOver = (customStats?: any) => {
+        setGameOverStats({
+          score: 540,
+          highScore: 540,
+          isNewHighScore: true,
+          filesEaten: [
+            { name: 'thesis_final_v2.docx', size: 1420000, category: 'docs', extension: 'docx' },
+            { name: 'production_database_dump.sql', size: 4890000, category: 'code', extension: 'sql' },
+            { name: 'grandma_birthday_photo.raw', size: 18200000, category: 'media', extension: 'raw' },
+            { name: 'tax_return_2024.pdf', size: 840000, category: 'docs', extension: 'pdf' },
+            { name: 'passwords_backup.kdbx', size: 120000, category: 'archives', extension: 'kdbx' }
+          ],
+          durationSeconds: 78,
+          timestamp: Date.now(),
+          ...customStats
+        });
+      };
     }
   }, []);
 

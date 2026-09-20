@@ -43,9 +43,14 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   // Determine if this should show a real screenshot or authentic photo
   let resolvedImage = imgSrc;
   if (!resolvedImage && !resolvedVideo) {
-    if (lowerTag.includes('gameplay') || lowerTag.includes('hud') || lowerTag.includes('landmark') || lowerTag.includes('prototype') || lowerTag.includes('v0.1') || lowerTag.includes('lime')) {
+    // Specific photo mapping rules (most specific first)
+    if (lowerTag.includes('vishnu') || lowerTag.includes('solo') || lowerTag.includes('3 am') || lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('unplugged') || lowerTag.includes('tea cups') || lowerTag.includes('tangled')) {
+      resolvedImage = './images/hackathon/vishnu_solo_night.jpg';
+    } else if (lowerTag.includes('first working') || lowerTag.includes('snake eating') || lowerTag.includes('full loop')) {
       resolvedImage = './screenshots/gameplay.png';
-    } else if (lowerTag.includes('gameover') || lowerTag.includes('game over') || lowerTag.includes('recycle bin')) {
+    } else if (lowerTag.includes('gameplay') || lowerTag.includes('hud') || lowerTag.includes('landmark') || lowerTag.includes('prototype') || lowerTag.includes('v0.1') || lowerTag.includes('lime')) {
+      resolvedImage = './screenshots/gameplay.png';
+    } else if (lowerTag.includes('gameover') || lowerTag.includes('game over') || lowerTag.includes('audit table')) {
       resolvedImage = './screenshots/gameover.png';
     } else if (lowerTag.includes('settings') || lowerTag.includes('sensitivity')) {
       resolvedImage = './screenshots/settings.png';
@@ -59,12 +64,10 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
       resolvedImage = './images/hackathon/computer_lab_wide.jpg';
     } else if (lowerTag.includes('cubicle') || lowerTag.includes('laptop') || lowerTag.includes('setting up')) {
       resolvedImage = './images/hackathon/lab_coding_cubicle.jpg';
-    } else if (lowerTag.includes('dinner') || lowerTag.includes('food') || lowerTag.includes('corridor') || lowerTag.includes('late night coffee') || lowerTag.includes('coffee run') || lowerTag.includes('cups')) {
+    } else if (lowerTag.includes('dinner') || lowerTag.includes('food') || lowerTag.includes('dinner break') || lowerTag.includes('corridor dinner')) {
       resolvedImage = './images/hackathon/dinner_break_corridor.jpg';
     } else if (lowerTag.includes('outreach') || lowerTag.includes('story') || lowerTag.includes('instagram') || lowerTag.includes('cheer')) {
       resolvedImage = './images/hackathon/vishnu_outreach_story.jpg';
-    } else if (lowerTag.includes('vishnu') || lowerTag.includes('solo') || lowerTag.includes('3 am') || lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('unplugged')) {
-      resolvedImage = './images/hackathon/vishnu_solo_night.jpg';
     } else if (lowerTag.includes('smartboard') || lowerTag.includes('neon') || lowerTag.includes('morning sun') || lowerTag.includes('sunrise') || lowerTag.includes('window')) {
       resolvedImage = './images/hackathon/smartboard_morning.jpg';
     } else if (lowerTag.includes('courtyard') || lowerTag.includes('sun') || lowerTag.includes('final push') || lowerTag.includes('10 am')) {
@@ -201,6 +204,60 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
 
   // 2. HAND-DRAWN NAPKIN SKETCH ON GRAPH PAPER
   if (isNapkinSketch) {
+    // 2B. Dedicated WebRTC Multiplayer Duel Schematic (Chapter 16)
+    if (lowerTag.includes('battle') || lowerTag.includes('multiplayer') || lowerTag.includes('two-player') || lowerTag.includes('split screen') || lowerTag.includes('duel')) {
+      return (
+        <div className={`field-schematic ${rotateClass} ${className} shadow-xl`}>
+          <div className="flex items-center justify-between text-cyan-400 border-b border-white/10 pb-1.5 mb-2 text-[10px] font-mono">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span>NAPKIN ARCHITECTURE // WEBRTC MULTIPLAYER DUEL</span>
+            </span>
+            <span className="text-slate-400 font-mono text-[9px]">P2P DATACHANNEL</span>
+          </div>
+
+          <div className="py-2.5 flex items-center justify-around text-center">
+            <div className="p-2 rounded border border-dashed border-pink-500/40 bg-pink-500/[0.07] min-w-[72px]">
+              <Hand className="w-4 h-4 text-pink-400 mx-auto mb-1" />
+              <span className="text-[9px] font-mono font-bold text-pink-300 block">PLAYER 1</span>
+              <span className="text-[7.5px] font-mono text-slate-400">Pinky Cam</span>
+            </div>
+
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-amber-400 font-bold text-xs">➔</span>
+              <span className="text-[7.5px] font-mono text-cyan-300 font-bold">WEBRTC</span>
+              <span className="text-amber-400 font-bold text-xs">⬅️</span>
+            </div>
+
+            <div className="p-2 rounded border border-dashed border-amber-500/40 bg-amber-500/[0.08] min-w-[80px]">
+              <div className="text-sm mb-0.5">📁💥</div>
+              <span className="text-[9px] font-mono font-bold text-amber-300 block">SHARED DIR</span>
+              <span className="text-[7.5px] font-mono text-slate-400">Downloads/</span>
+            </div>
+
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-amber-400 font-bold text-xs">⬅️</span>
+              <span className="text-[7.5px] font-mono text-cyan-300 font-bold">SYNC</span>
+              <span className="text-amber-400 font-bold text-xs">➔</span>
+            </div>
+
+            <div className="p-2 rounded border border-dashed border-emerald-500/40 bg-emerald-500/[0.07] min-w-[72px]">
+              <Hand className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+              <span className="text-[9px] font-mono font-bold text-emerald-300 block">PLAYER 2</span>
+              <span className="text-[7.5px] font-mono text-slate-400">Pinky Cam</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+            <p className="font-handwriting text-cyan-200 text-xs sm:text-[13px] leading-tight">
+              &ldquo;{caption || 'Who devours the other player\'s thesis draft first over peer-to-peer data channel?'}&rdquo;
+            </p>
+            <span className="font-mono text-[8px] text-slate-500 shrink-0">FUTURE SPRINT</span>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={`field-schematic ${rotateClass} ${className} shadow-xl`}>
         <div className="flex items-center justify-between text-pink-400 border-b border-white/10 pb-1.5 mb-2 text-[10px] font-mono">

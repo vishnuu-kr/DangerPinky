@@ -1558,7 +1558,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     </div>
 
                     <div>
-                      <pre className="terminal-block text-[10.5px] overflow-x-auto max-h-20 leading-tight">
+                      <pre className="terminal-block text-[10px] sm:text-[10.5px] max-h-20 leading-tight whitespace-pre-wrap break-all overflow-y-auto custom-page-scrollbar">
                         <code>{selectedTech.codeSnippet}</code>
                       </pre>
                     </div>
@@ -1568,6 +1568,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag={CHAPTERS[8].scrapbookTag || '[ADD SCREENSHOT: First working Danger Mode]'}
+                  imgSrc="./screenshots/gameplay.png"
                   caption="04:30 AM: Full loop working — Pinky -> Snake -> Recycle Bin"
                   rotate="cw"
                 />
@@ -1764,7 +1765,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag={CHAPTERS[10].scrapbookTag || '[ADD PHOTO: Empty tea cups, tangled cables]'}
-                  caption="Empty black tea cups, spicy banana chips, and the unplugged webcam"
+                  imgSrc="./images/hackathon/vishnu_solo_night.jpg"
+                  caption="03:45 AM: Empty black tea cups, spicy banana chips, and the unplugged webcam panic"
                   rotate="ccw"
                 />
 
@@ -2306,31 +2308,49 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="the roadmap of useless ambition"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[15].narrative} pullquoteIndex={0} maxParagraphs={3} />
+                  <EditorialProse narratives={CHAPTERS[15].narrative} pullquoteIndex={0} maxParagraphs={4} />
                 </div>
 
-                {/* Field Slip: Future Sprint Notes */}
-                <div className="relative p-3 rounded-lg bg-slate-950/80 border border-cyan-500/30 shadow-xl">
-                  <div className="masking-tape-strip -top-2.5 left-8" />
-                  <div className="flex items-center justify-between gap-2 mb-2 border-b border-slate-800/80 pb-1">
-                    <span className="ink-stamp ink-stamp-cyan text-[8.5px] py-0.5 px-1.5">POST-HACKATHON</span>
-                    <span className="text-[9.5px] font-mono text-slate-500">BACKLOG</span>
+                {/* Sticky Note: Open Source Wishlist */}
+                <div className="sticky-note sticky-note-pink max-w-sm mt-1">
+                  <div className="sticky-note-tape" />
+                  <div className="text-[9px] font-mono text-pink-800 uppercase tracking-wider mb-0.5 font-sans">
+                    // Open-Source Wishlist
                   </div>
-                  <h4 className="font-sans font-bold text-white text-xs mb-1">
-                    Unfinished Inventions
-                  </h4>
-                  <p className="text-[11px] text-slate-400 font-sans leading-relaxed mb-2">
-                    18 hours proved the concept. An additional weekend could turn this into a full multiplayer party game where two friends duel over deleting files.
+                  <p className="text-xs sm:text-[12.5px] text-slate-900 font-bold leading-snug">
+                    &ldquo;If you want to build a two-player WebRTC pinky battle where someone deletes your node_modules... PRs are very welcome.&rdquo;
                   </p>
-                  <div className="text-[10px] font-mono text-cyan-300 flex items-center justify-between border-t border-slate-800/80 pt-1.5">
-                    <span>↳ Status: Open Source</span>
-                    <span>↳ PRs welcome</span>
+                </div>
+
+                {/* Field Slip: Future Sprint Scope Analysis */}
+                <div className="relative p-2.5 rounded-lg bg-slate-950/80 border border-cyan-500/30 shadow-xl mt-2">
+                  <div className="masking-tape-strip -top-2.5 left-8" />
+                  <div className="flex items-center justify-between gap-2 mb-1.5 border-b border-slate-800/80 pb-1">
+                    <span className="ink-stamp ink-stamp-cyan text-[8px] py-0.2 px-1">POST-HACKATHON</span>
+                    <span className="text-[9px] font-mono text-slate-500">BACKLOG AUDIT</span>
                   </div>
+                  <div className="grid grid-cols-3 gap-1 text-center font-mono text-[9px] mb-1.5">
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">PLAYERS</span>
+                      <span className="text-white font-bold">1 → 2 P2P</span>
+                    </div>
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">TRASH PARITY</span>
+                      <span className="text-emerald-400 font-bold">Win / Mac / Nix</span>
+                    </div>
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">SPEED BOOST</span>
+                      <span className="text-amber-300 font-bold">Voice Turbo</span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-sans leading-relaxed">
+                    18 hours proved the concept. An additional weekend turns this from a solo gag into an unhinged multiplayer LAN party tournament.
+                  </p>
                 </div>
               </>
             }
             rightContent={
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     {
@@ -2356,15 +2376,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   ].map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-cyan-500/40 transition-colors"
+                      className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-cyan-500/40 transition-colors"
                     >
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-0.5">
                         <span className="font-mono text-[8px] px-1 py-0.2 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
                           {item.tag}
                         </span>
                       </div>
                       <h4 className="font-sans font-bold text-[11px] text-white mb-0.5 line-clamp-1">{item.title}</h4>
-                      <p className="text-[10px] text-slate-400 font-sans leading-snug line-clamp-2">{item.desc}</p>
+                      <p className="text-[9.5px] text-slate-400 font-sans leading-snug line-clamp-2">{item.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -2374,6 +2394,34 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   caption="Napkin draft: WebRTC peer connection duel over shared directory"
                   rotate="ccw"
                 />
+
+                {/* 36-Hour Hackathon Extension Spec Slip */}
+                <div className="dispatch-tape-slip rotate-0.5 border-cyan-500/30 text-xs font-mono shadow-xl space-y-1">
+                  <div className="flex items-center justify-between border-b border-cyan-500/20 pb-1 text-[10px]">
+                    <span className="text-cyan-400 font-bold flex items-center gap-1.5">
+                      <span>RFC-001 // WEBRTC PROTOCOL SPEC</span>
+                    </span>
+                    <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">DRAFT</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1 text-center text-[9px]">
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">SYNC LATENCY</span>
+                      <span className="text-cyan-300 font-bold">&lt; 35ms P2P</span>
+                    </div>
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">SIGNALING</span>
+                      <span className="text-pink-300 font-bold">WebSockets</span>
+                    </div>
+                    <div className="p-1 rounded bg-slate-900/60 border border-slate-800">
+                      <span className="text-slate-500 block text-[7.5px]">SAFETY GUARD</span>
+                      <span className="text-emerald-300 font-bold">Recycle Bin</span>
+                    </div>
+                  </div>
+                  <div className="pt-1 border-t border-slate-800/80 text-[9px] text-slate-400 flex justify-between items-center">
+                    <span>Multiplayer Target: 2 players, 1 folder</span>
+                    <span className="text-cyan-400 font-semibold">STATUS: RFC OPEN</span>
+                  </div>
+                </div>
               </div>
             }
           />

@@ -895,24 +895,35 @@
     );
   }
 
-  /* Silk Bookmark Ribbon */
+  /* Silk Bookmark Ribbon — Physically sewn into hardcover spine */
   .book-ribbon {
     position: absolute;
     top: -14px;
-    right: 48px;
-    width: 30px;
-    height: 145px;
+    width: 26px;
+    height: 125px;
     background: linear-gradient(180deg, #be185d 0%, #db2777 40%, #e11d48 100%);
     box-shadow:
       0 8px 24px rgba(0, 0, 0, 0.75),
       inset 0 2px 4px rgba(255, 255, 255, 0.4);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 16px), 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%);
     z-index: 45;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     cursor: pointer;
   }
   .book-ribbon:hover {
-    transform: translateY(10px);
+    transform: translateY(8px);
+  }
+
+  @media (max-width: 1023px) {
+    .book-ribbon {
+      top: -8px;
+      height: 44px;
+      width: 22px;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 8px), 0 100%);
+    }
+    .book-ribbon:hover {
+      transform: translateY(4px);
+    }
   }
 
   /* Book running headers & footers */
