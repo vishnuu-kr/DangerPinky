@@ -37,6 +37,10 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
       resolvedVideo = './videos/vishnu_night_desk.mp4';
     } else if (lowerTag.includes('neon video') || (lowerTag.includes('smartboard') && lowerTag.includes('video'))) {
       resolvedVideo = './videos/smartboard_neon_draw.mp4';
+    } else if (lowerTag.includes('midnight lab') || lowerTag.includes('lab buzz') || lowerTag.includes('aisle') || (lowerTag.includes('midnight') && lowerTag.includes('video'))) {
+      resolvedVideo = './videos/midnight_lab_buzz.mp4';
+    } else if (lowerTag.includes('dawn') || lowerTag.includes('exhaustion') || lowerTag.includes('05:18') || (lowerTag.includes('5 am') && lowerTag.includes('video')) || lowerTag.includes('fatigue')) {
+      resolvedVideo = './videos/dawn_lab_exhaustion.mp4';
     }
   }
 
@@ -44,7 +48,19 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   let resolvedImage = imgSrc;
   if (!resolvedImage && !resolvedVideo) {
     // Specific photo mapping rules (most specific first)
-    if (lowerTag.includes('vishnu') || lowerTag.includes('solo') || lowerTag.includes('3 am') || lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('unplugged') || lowerTag.includes('tea cups') || lowerTag.includes('tangled')) {
+    if (
+      (lowerTag.includes('official') && lowerTag.includes('poster')) ||
+      lowerTag.includes('official poster') ||
+      lowerTag.includes('event poster') ||
+      lowerTag.includes('call for makers') ||
+      lowerTag.includes('why not') ||
+      lowerTag.includes('poster 3.0') ||
+      lowerTag.includes('useless projects 3.0 event')
+    ) {
+      resolvedImage = './images/hackathon/useless_3_official_poster.png';
+    } else if (lowerTag.includes('hallway team') || lowerTag.includes('hallway selfie') || lowerTag.includes('01:34') || lowerTag.includes('camaraderie')) {
+      resolvedImage = './images/hackathon/hallway_team_0134am.jpg';
+    } else if (lowerTag.includes('vishnu') || lowerTag.includes('solo') || lowerTag.includes('3 am') || lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('unplugged') || lowerTag.includes('tea cups') || lowerTag.includes('tangled')) {
       resolvedImage = './images/hackathon/vishnu_solo_night.jpg';
     } else if (lowerTag.includes('first working') || lowerTag.includes('snake eating') || lowerTag.includes('full loop')) {
       resolvedImage = './screenshots/gameplay.png';
@@ -54,7 +70,7 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
       resolvedImage = './screenshots/gameover.png';
     } else if (lowerTag.includes('settings') || lowerTag.includes('sensitivity')) {
       resolvedImage = './screenshots/settings.png';
-    } else if (lowerTag.includes('banner') || lowerTag.includes('poster') || lowerTag.includes('cover')) {
+    } else if (lowerTag.includes('danger pinky banner') || lowerTag.includes('game banner') || lowerTag.includes('book cover') || lowerTag.includes('title cover') || lowerTag.includes('banner')) {
       resolvedImage = './images/danger_pinky_banner.png';
     } else if (lowerTag.includes('countdown') || lowerTag.includes('clock') || lowerTag.includes('timer')) {
       resolvedImage = './images/hackathon/countdown_clock.jpg';
@@ -173,7 +189,7 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
             <img
               src={resolvedImage}
               alt={caption || cleanLabel}
-              className="w-full h-full object-cover"
+              className={`w-full h-full ${resolvedImage.includes('poster') ? 'object-contain bg-red-950/40' : 'object-cover'}`}
               loading="lazy"
             />
           </div>

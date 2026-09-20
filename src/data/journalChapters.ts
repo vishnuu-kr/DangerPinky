@@ -204,6 +204,7 @@ export const PROLOGUE_DATA = {
     "I'd won Useless Projects 2.0 with NoseTrack, so people kind of assumed I'd have something funny queued up. I didn't. The event started at 05:00 PM, laptops were cracking open, whiteboards were filling with wild sketches — and I was standing in the middle of the room with my phone out, posting Stories for TinkerHub, while quietly panicking because my own workspace was completely empty."
   ],
   scrapbookTags: [
+    '[ADD PHOTO: Official Useless Projects 3.0 Event Poster — TinkerHub SNMIMT]',
     '[ADD PHOTO: TinkerHub Useless Projects 3.0 event opening — teams setting up]',
     '[ADD SCREENSHOT: NoseTrack repository — Useless Projects 2.0 winning project]',
     '[ADD PHOTO: Vishnu doing outreach — taking event photos]'
@@ -640,8 +641,9 @@ export const CHAPTERS: Chapter[] = [
       "I kept trying to think of something. I'd sit down for five minutes, try to brainstorm, come up with nothing useful, then someone would ping me about an Instagram post and I'd go back to that. This cycle repeated for a while. Hours, honestly.",
       "I wasn't stressed exactly. But I was aware of the clock. Everyone had something. I had outreach work and no project."
     ],
-    scrapbookTag: '[ADD PHOTO: Event floor busy with teams — contrast with empty project space]',
+    scrapbookTag: '[ADD VIDEO: 11:58 PM Midnight Computer Lab — Participants buzzing before tea run]',
     scrapbookTags: [
+      '[ADD VIDEO: 11:58 PM Midnight Computer Lab — Participants buzzing before tea run]',
       '[ADD PHOTO: Event floor busy with teams building]',
       '[ADD SCREENSHOT: TinkerHub outreach content being created during the event]'
     ]
@@ -780,8 +782,9 @@ if (head.x === food.x && head.y === food.y) {
       "JOB 02: Apparent Game Builder. MediaPipe hand tracking, HTML5 Canvas 60 FPS loop, Electron native IPC, procedural Web Audio synthesizer, Vitest test suites.",
       "I was literally writing code with one hand and holding my phone with the other. And the funniest part? I was telling everyone else to document their build while completely forgetting to document my own. I was so busy capturing everyone else's 2 AM struggles that I barely took photos of my own screen."
     ],
-    scrapbookTag: '[ADD PHOTO: Split-moment — phone out posting content, laptop open with code]',
+    scrapbookTag: '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
     scrapbookTags: [
+      '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
       '[ADD PHOTO: Event atmosphere — Vishnu doing outreach while coding]',
       '[ADD SCREENSHOT: TinkerHub social media posts going up during the build]'
     ]
@@ -993,7 +996,11 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
         { time: '10:45 AM', task: 'Official submission to TinkerHub Useless Projects 3.0 portal' }
       ]
     },
-    scrapbookTag: '[ADD SCREENSHOT: Terminal output of vitest showing 39 green test passes]'
+    scrapbookTag: '[ADD VIDEO: 05:18 AM Dawn Lab Fatigue — Pushing through exhaustion to sunrise]',
+    scrapbookTags: [
+      '[ADD VIDEO: 05:18 AM Dawn Lab Fatigue — Pushing through exhaustion to sunrise]',
+      '[ADD SCREENSHOT: Terminal output of vitest showing 39 green test passes]'
+    ]
   },
 
   // -------------------------------------------------------------------------

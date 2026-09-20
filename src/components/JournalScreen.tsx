@@ -580,8 +580,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <ScrapbookPlaceholder
                   compact
-                  tag={PROLOGUE_DATA.scrapbookTags[0]}
-                  caption="Teams setting up around 5 PM — meanwhile I had zero project"
+                  tag="[ADD PHOTO: Official Useless Projects 3.0 Event Poster — TinkerHub SNMIMT]"
+                  imgSrc="./images/hackathon/useless_3_official_poster.png"
+                  caption="Official UP 3.0 Call-for-Makers: 'celebrating the joy of why nots' (11-12 SEP, SNMIMT)"
                   rotate="cw"
                 />
 
@@ -782,8 +783,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <ScrapbookPlaceholder
                   compact
-                  tag={CHAPTERS[1].scrapbookTags?.[0] || '[ADD PHOTO: Event floor busy]'}
-                  caption="Running around with phone documenting everyone else"
+                  tag="[ADD VIDEO: 11:58 PM Midnight Computer Lab — Participants buzzing before tea run]"
+                  videoSrc="./videos/midnight_lab_buzz.mp4"
+                  caption="11:58 PM: Midnight computer lab buzz right before the tea stall run"
                   rotate="cw"
                 />
 
@@ -1122,36 +1124,43 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="this was probably a bad idea"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[5].narrative} pullquoteIndex={3} maxParagraphs={3} />
+                  <EditorialProse narratives={CHAPTERS[5].narrative} pullquoteIndex={3} maxParagraphs={2} />
                 </div>
 
                 {/* The Split-Screen Reality Card filling the lower half of left page */}
-                <div className="mt-3 p-3 rounded-xl bg-slate-950/90 border border-slate-800 shadow-lg space-y-2">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                    <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="mt-2 p-2 rounded-lg bg-slate-950/90 border border-slate-800 shadow-md space-y-1">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-1">
+                    <span className="text-[9.5px] font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                       <span>THE SPLIT-SCREEN OBSESSION</span>
                     </span>
-                    <span className="ink-stamp ink-stamp-cyan text-[7.5px] py-0.2 px-1">PARALLEL WORK</span>
+                    <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">PARALLEL WORK</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-[10.5px] font-sans">
-                    <div className="p-2 rounded bg-amber-950/20 border border-amber-500/20">
-                      <span className="text-[9px] font-mono font-bold text-amber-400 block mb-0.5">JOB 01 // OUTREACH</span>
-                      <p className="text-slate-300 leading-snug">
-                        Documenting 50 builders, capturing 2 AM Instagram reels, answering queries: &ldquo;Document your build!&rdquo;
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-sans">
+                    <div className="p-1.5 rounded bg-amber-950/20 border border-amber-500/20">
+                      <span className="text-[8.5px] font-mono font-bold text-amber-400 block mb-0.5">JOB 01 // OUTREACH</span>
+                      <p className="text-slate-300 leading-tight">
+                        Documenting 50 builders, capturing 2 AM Instagram reels: &ldquo;Document your build!&rdquo;
                       </p>
                     </div>
-                    <div className="p-2 rounded bg-pink-950/20 border border-pink-500/20">
-                      <span className="text-[9px] font-mono font-bold text-pink-400 block mb-0.5">JOB 02 // DANGERPINKY</span>
-                      <p className="text-slate-300 leading-snug">
-                        MediaPipe Landmark 20 extraction, 60 FPS HTML5 Canvas engine loop, trashItem OS safety integration.
+                    <div className="p-1.5 rounded bg-pink-950/20 border border-pink-500/20">
+                      <span className="text-[8.5px] font-mono font-bold text-pink-400 block mb-0.5">JOB 02 // DANGERPINKY</span>
+                      <p className="text-slate-300 leading-tight">
+                        MediaPipe Landmark 20 extraction, 60 FPS HTML5 Canvas engine, trashItem OS safety.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-pink-500/[0.06] border border-pink-500/30 text-pink-300 font-handwriting text-base transform -rotate-1 text-center">
-                  &ldquo;Telling everyone to document... while I forgot my own screen.&rdquo;
+                {/* Authentic 01:34 AM Hallway Team Selfie */}
+                <div className="mt-2">
+                  <ScrapbookPlaceholder
+                    compact
+                    tag="[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]"
+                    imgSrc="./images/hackathon/hallway_team_0134am.jpg"
+                    caption="01:34 AM corridor break: Telling everyone to document while I was building DangerPinky"
+                    rotate="cw"
+                  />
                 </div>
               </>
             }
@@ -1857,6 +1866,17 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* 05:18 AM Dawn Lab Fatigue Live Cam Clip */}
+                <div className="mt-2.5">
+                  <ScrapbookPlaceholder
+                    compact
+                    tag="[ADD VIDEO: 05:18 AM Dawn Lab Fatigue — Pushing through exhaustion to sunrise]"
+                    videoSrc="./videos/dawn_lab_exhaustion.mp4"
+                    caption="05:18 AM: Head in hands, weary eyes, and pushing through the dawn fatigue"
+                    rotate="cw"
+                  />
                 </div>
               </>
             }

@@ -30,3 +30,4 @@ FileSnake-Test/
 verify_server.py
 *.docx
 prd_extracted.txt
+scratch/
