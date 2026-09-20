@@ -4,6 +4,10 @@
 
 > **The cute candy snake. The ultimate useless danger. Russian Roulette for your local filesystem.**
 
+[![Live Web Demo & Field Notes Devlog](https://img.shields.io/badge/Live%20Demo%20%26%20Devlog-Visit%20Site-ec4899?style=for-the-badge&logo=google-chrome&logoColor=white)](https://vishnuu-kr.github.io/DangerPinky/)
+[![Video Demo](https://img.shields.io/badge/Demo%20Video-Google%20Drive-4285F4?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link)
+[![Build Tests](https://img.shields.io/badge/Automated%20Tests-116%20Passed-10b981?style=for-the-badge&logo=vitest&logoColor=white)](https://github.com/vishnuu-kr/DangerPinky)
+
 ---
 
 ## Basic Details
@@ -51,7 +55,7 @@ We engineered **DangerPinky** — turning routine hard drive cleanup into a comp
   - `lucide-react` (Candy Pink UI iconography)
   - `canvas-confetti` (Celebration physics for high scores & board-clear victory)
   - `clsx` & `tailwind-merge` (Dynamic reactive UI styling)
-- **Tools used**: Electron 34, Node.js IPC, Esbuild, Vitest (39 automated test suites), Git, GitHub CLI
+- **Tools used**: Electron 34, Node.js IPC, Esbuild, Vitest (116 automated test suites across 7 test files), Git, GitHub CLI
 
 #### For Hardware:
 - **List main components**:
@@ -92,7 +96,7 @@ npm run desktop
 # Launch Browser Web Mode (Safe Demo Mode only)
 npm run dev
 
-# Run Automated Test Suite (39 comprehensive unit tests across engine, CV, and filesystem)
+# Run Automated Test Suite (116 comprehensive unit tests across engine, CV, and filesystem)
 npm test
 
 # Build Production Bundles
@@ -170,14 +174,15 @@ https://drive.google.com/file/d/17yqRVJh22dZAFbSfJG2-ILG1PS2boy4O/view?usp=drive
 ### Project Demo
 
 # Video
-[Add your demo video link here]
-https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link
-*Live demonstration showing webcam pinky calibration, gesture navigation, plump candy rendering, and real-time safe file recycling in action.*
+[![Watch DangerPinky Demo Video](https://img.shields.io/badge/Watch%20Demo%20Video-Google%20Drive-4285F4?style=for-the-badge&logo=google-drive&logoColor=white)](https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link)
+
+*Live demonstration showing webcam pinky calibration, gesture navigation, plump candy rendering, and real-time safe file recycling in action: [Watch on Google Drive](https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive_link)*
 
 # Additional Demos
 - **Zero-Latency Touch D-Pad**: Integrated instant touch controls with synthetic delay elimination for touchscreen laptops and tablets.
 - **Offline Self-Contained WASM**: Bundled MediaPipe WebAssembly binaries and hand models locally so the app requires zero external network calls or cloud APIs to run.
 - **Two-Step Containment Security Token**: Cryptographic session tokens that prevent any accidental file operations outside the user-selected folder.
+- **19-Chapter Editorial Dev Journal ("Field Notes")**: Complete interactive documentary devlog chronicling the 18-hour sprint from zero idea to gold master, complete with thermal receipts, forensic autopsies, audio soundboard, and hand-drawn schematics.
 
 ---
 
@@ -189,7 +194,8 @@ https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/view?usp=drive
   - Built the deterministic 60FPS Snake Engine with wall collision, portal wrap, and full-board victory handling.
   - Engineered the Electron native IPC filesystem bridge with Windows Recycle Bin integration and security containment validators.
   - Designed the Candy Pink UI theme, 3D radial candy fruit shaders, and procedural Web Audio synthesizer.
-  - Wrote 39 automated unit tests achieving 100% pass rate.
+  - Authored the 19-chapter editorial Field Notes project journal with interactive hardware relics and historical sprint timeline.
+  - Wrote 116 automated unit tests achieving 100% pass rate.
 
 ---
 

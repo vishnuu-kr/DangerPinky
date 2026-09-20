@@ -9,6 +9,12 @@ if (!fs.existsSync(srcDir)) {
   process.exit(1);
 }
 
+// Clean stale assets so old bundles don't pollute git history
+const destAssetsDir = path.join(destDir, 'assets');
+if (fs.existsSync(destAssetsDir)) {
+  fs.rmSync(destAssetsDir, { recursive: true, force: true });
+}
+
 if (!fs.existsSync(destDir)) {
   fs.mkdirSync(destDir, { recursive: true });
 }
