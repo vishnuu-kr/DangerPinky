@@ -5,6 +5,21 @@ class SoundSynthesizer {
   private isMuted: boolean = false;
   private masterVolume: number = 0.7;
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedMute = localStorage.getItem('dangerpinky_sound_muted');
+        if (savedMute !== null) {
+          this.isMuted = JSON.parse(savedMute);
+        }
+        const savedVol = localStorage.getItem('dangerpinky_sound_volume');
+        if (savedVol !== null) {
+          this.masterVolume = JSON.parse(savedVol);
+        }
+      } catch {}
+    }
+  }
+
   private initContext() {
     if (!this.ctx && typeof window !== 'undefined') {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -19,10 +34,20 @@ class SoundSynthesizer {
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('dangerpinky_sound_muted', JSON.stringify(muted));
+      } catch {}
+    }
   }
 
   public setVolume(vol: number) {
     this.masterVolume = Math.max(0, Math.min(1, vol));
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('dangerpinky_sound_volume', JSON.stringify(this.masterVolume));
+      } catch {}
+    }
   }
 
   public getMuted(): boolean {
@@ -225,34 +250,63 @@ class SoundSynthesizer {
 
     try {
       const t = this.ctx.currentTime;
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+
+      // Layer 1: Quick initial finger-rustle attack (high freq, short)
+      const rushBufferSize = Math.floor(this.ctx.sampleRate * 0.04);
+      const rushBuffer = this.ctx.createBuffer(1, rushBufferSize, this.ctx.sampleRate);
+      const rushData = rushBuffer.getChannelData(0);
+      for (let i = 0; i < rushBufferSize; i++) {
+        rushData[i] = (Math.random() * 2 - 1) * (1 - i / rushBufferSize);
+      }
+      const rushNoise = this.ctx.createBufferSource();
+      rushNoise.buffer = rushBuffer;
+
+      const rushFilter = this.ctx.createBiquadFilter();
+      rushFilter.type = 'highpass';
+      rushFilter.frequency.setValueAtTime(2200, t);
+
+      const rushGain = this.ctx.createGain();
+      const rushVol = 0.07 * this.masterVolume;
+      rushGain.gain.setValueAtTime(0.001, t);
+      rushGain.gain.linearRampToValueAtTime(rushVol, t + 0.008);
+      rushGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+
+      rushNoise.connect(rushFilter);
+      rushFilter.connect(rushGain);
+      rushGain.connect(this.ctx.destination);
+
+      rushNoise.start(t);
+      rushNoise.stop(t + 0.04);
+
+      // Layer 2: Main paper swish (bandpass, longer, slightly pitched down)
+      const swishBufferSize = Math.floor(this.ctx.sampleRate * 0.18);
+      const swishBuffer = this.ctx.createBuffer(1, swishBufferSize, this.ctx.sampleRate);
+      const swishData = swishBuffer.getChannelData(0);
+      for (let i = 0; i < swishBufferSize; i++) {
+        swishData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / swishBufferSize, 1.4);
       }
 
-      const noise = this.ctx.createBufferSource();
-      noise.buffer = buffer;
+      const swishNoise = this.ctx.createBufferSource();
+      swishNoise.buffer = swishBuffer;
 
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(950, t);
-      filter.frequency.exponentialRampToValueAtTime(320, t + 0.11);
-      filter.Q.setValueAtTime(1.8, t);
+      const swishFilter = this.ctx.createBiquadFilter();
+      swishFilter.type = 'bandpass';
+      swishFilter.frequency.setValueAtTime(800, t + 0.01);
+      swishFilter.frequency.exponentialRampToValueAtTime(280, t + 0.18);
+      swishFilter.Q.setValueAtTime(2.2, t + 0.01);
 
-      const gain = this.ctx.createGain();
-      const baseVol = 0.09 * this.masterVolume;
-      gain.gain.setValueAtTime(0.005, t);
-      gain.gain.linearRampToValueAtTime(baseVol, t + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      const swishGain = this.ctx.createGain();
+      const swishVol = 0.11 * this.masterVolume;
+      swishGain.gain.setValueAtTime(0.003, t + 0.01);
+      swishGain.gain.linearRampToValueAtTime(swishVol, t + 0.035);
+      swishGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
 
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      swishNoise.connect(swishFilter);
+      swishFilter.connect(swishGain);
+      swishGain.connect(this.ctx.destination);
 
-      noise.start(t);
-      noise.stop(t + 0.12);
+      swishNoise.start(t + 0.01);
+      swishNoise.stop(t + 0.19);
     } catch {
       // Graceful fallback if Web Audio is restricted
     }

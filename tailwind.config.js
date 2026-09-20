@@ -46,6 +46,7 @@ export default {
         'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
         'float-y': 'float-y 3s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
+        'fadeIn': 'fadeIn 0.2s ease-out forwards',
       },
       keyframes: {
         wiggle: {
@@ -68,6 +69,10 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-200% center' },
           '100%': { backgroundPosition: '200% center' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateX(20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
         },
       },
       fontSize: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Play, ChevronDown, CheckCircle2, Circle, BookOpen, Scroll, Sun, Moon, ChevronLeft, ChevronRight, ArrowLeft, Share2, HelpCircle } from 'lucide-react';
+import { Menu, X, Play, ChevronDown, CheckCircle2, Circle, BookOpen, Scroll, Sun, Moon, ChevronLeft, ChevronRight, ArrowLeft, Share2, HelpCircle, Volume2, VolumeX } from 'lucide-react';
 import { CHAPTERS, HERO_DATA, PROLOGUE_DATA, FINAL_REFLECTION } from '../../data/journalChapters';
 
 interface ChapterNavProps {
@@ -11,6 +11,8 @@ interface ChapterNavProps {
   onToggleViewMode?: () => void;
   paperTone?: 'dark' | 'cream';
   onTogglePaperTone?: () => void;
+  isSoundMuted?: boolean;
+  onToggleSound?: () => void;
   onPrevPage?: () => void;
   onNextPage?: () => void;
   currentPage?: number;
@@ -37,6 +39,8 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
   onToggleViewMode,
   paperTone = 'dark',
   onTogglePaperTone,
+  isSoundMuted = false,
+  onToggleSound,
   onPrevPage,
   onNextPage,
   currentPage,
@@ -177,13 +181,14 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
               <button
                 key={phase.id}
                 onClick={() => handleNavClick(phase.target)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-150 cursor-pointer ${
+                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   isActive
-                    ? 'bg-slate-800 text-pink-300 font-bold border border-pink-500/40 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent'
+                    ? 'bg-pink-500/15 text-pink-300 font-bold border border-pink-500/40 shadow-[0_0_12px_rgba(236,72,153,0.2)]'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80 border border-transparent'
                 }`}
               >
-                {phase.label}
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />}
+                <span>{phase.label}</span>
               </button>
             );
           })}
@@ -254,6 +259,25 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             </button>
           )}
 
+          {/* Sound Toggle (Paper Turn Audio) */}
+          {onToggleSound && (
+            <button
+              onClick={onToggleSound}
+              className={`p-1.5 rounded-lg bg-slate-900 border text-xs font-mono transition-colors cursor-pointer ${
+                isSoundMuted
+                  ? 'border-slate-800 text-slate-500 hover:text-slate-300'
+                  : 'border-pink-500/40 text-pink-400 hover:text-pink-300 hover:border-pink-500/60 shadow-[0_0_8px_rgba(236,72,153,0.2)]'
+              }`}
+              title={isSoundMuted ? 'Turn Sound On (Paper Page Audio)' : 'Mute Sound (Paper Page Audio)'}
+            >
+              {isSoundMuted ? (
+                <VolumeX className="w-3.5 h-3.5" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
+
           {/* Share Action */}
           {onShare && (
             <button
@@ -311,7 +335,11 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
       {/* Reading progress bar at bottom of header */}
       <div
         className="reading-progress-bar"
-        style={{ width: `${readingProgress}%` }}
+        style={{
+          width: `${readingProgress}%`,
+          background: 'linear-gradient(90deg, #be185d 0%, #ec4899 50%, #ffba00 100%)',
+          boxShadow: readingProgress > 5 ? '0 0 6px rgba(236, 72, 153, 0.6)' : 'none',
+        }}
       />
 
       {/* Mobile Drawer */}
@@ -357,6 +385,20 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
 
           {/* Mobile Utilities */}
           <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+            {onToggleSound && (
+              <button
+                type="button"
+                onClick={onToggleSound}
+                className={`py-2 px-3 rounded-lg border font-mono text-xs flex items-center justify-center gap-1.5 cursor-pointer ${
+                  isSoundMuted
+                    ? 'bg-slate-900 border-slate-800 text-slate-400'
+                    : 'bg-pink-500/10 border-pink-500/30 text-pink-300'
+                }`}
+              >
+                {isSoundMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-pink-400" />}
+                <span>{isSoundMuted ? 'Muted' : 'Audio On'}</span>
+              </button>
+            )}
             {onShare && (
               <button
                 type="button"
@@ -364,7 +406,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
                 className="flex-1 py-2 px-3 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-300 font-mono text-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Share2 className="w-3.5 h-3.5 text-pink-400" />
-                <span>Share Devlog</span>
+                <span>Share</span>
               </button>
             )}
             {onOpenShortcuts && (
@@ -374,7 +416,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
                 className="flex-1 py-2 px-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-mono text-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Shortcuts (?)</span>
+                <span>Shortcuts</span>
               </button>
             )}
           </div>
