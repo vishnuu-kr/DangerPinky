@@ -956,33 +956,16 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               </>
             }
             rightContent={
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {/* Before/After Frame: "LOOK HOW BAD THIS WAS" */}
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <span className="ink-stamp ink-stamp-red text-[9.5px]">VISUAL AUDIT</span>
                     <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
                       // v0.1 MONOCHROME JITTER VS v1.0 CANDY ENGINE
                     </span>
                   </div>
                   <ComparisonSlider />
-
-                  {/* Prototype Audit Slip */}
-                  <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 font-mono text-[10.5px] space-y-1.5 mt-2.5 shadow-lg">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-1 text-[10px]">
-                      <span className="text-emerald-400 font-bold uppercase">PROTOTYPE AUDIT // 09:30 PM</span>
-                      <span className="ink-stamp ink-stamp-amber text-[7px] py-0 px-1">BARE BONES</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-300 font-sans">
-                      <div>• Canvas: 300×300 raw 2D context</div>
-                      <div>• Food: Raw unstyled text labels</div>
-                      <div>• Jitter: Unfiltered Landmark 20</div>
-                      <div>• Danger: 0% (No file recycling)</div>
-                    </div>
-                    <p className="text-[10px] font-handwriting text-slate-400 text-center pt-0.5">
-                      &ldquo;It worked. But who cares about a snake that just eats fake dots?&rdquo;
-                    </p>
-                  </div>
                 </div>
               </div>
             }

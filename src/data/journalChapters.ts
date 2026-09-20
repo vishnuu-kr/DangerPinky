@@ -295,11 +295,11 @@ export const BEFORE_AFTER_COMPARISON = {
     timestamp: '09:30 PM',
     title: 'v0.1 — The "Pinky Snake" Disaster',
     specs: [
-      'Black canvas, lime-green squares, raw jitter with no smoothing',
-      'Raw un-smoothed Landmark 20 coordinates jumping ±15px every frame',
-      'Plain text file names floating on canvas with no graphics',
-      'Zero direction buffering — immediate 180° suicide turns possible',
-      'Total silence — no sound engine whatsoever'
+      'Black canvas, lime-green blocks, raw jitter',
+      'Raw Landmark 20 jumping ±15px every frame',
+      'Plain text file names floating on canvas',
+      'Zero direction buffering (180° suicide turns)',
+      'Total silence — no sound engine'
     ],
     visualSrc: './screenshots/gameplay.png'
   },
@@ -308,11 +308,11 @@ export const BEFORE_AFTER_COMPARISON = {
     timestamp: '10:45 AM',
     title: 'v1.0 — DangerPinky, Actually Done',
     specs: [
-      'Candy-pink snake with rounded vertices, drop shadows, and eye pupil tracking',
-      'EMA smoothing (alpha=0.35), deadzone filter, hand-scale normalized vectors',
-      'Glossy 3D radial candy fruits (Apples, Oranges, Grapes, Cherries, Watermelons)',
-      'Deterministic 60 FPS loop with 1-tick direction buffering',
-      'Zero-asset procedural Web Audio oscillator sound engine'
+      'Candy-pink snake with rounded vertices & eyes',
+      'EMA smoothing (alpha=0.35) & deadzone filter',
+      'Glossy 3D radial candy fruits & particle bursts',
+      'Deterministic 60 FPS loop with 1-tick buffering',
+      'Zero-asset procedural Web Audio synthesizer'
     ],
     visualSrc: './screenshots/gameplay.png'
   }

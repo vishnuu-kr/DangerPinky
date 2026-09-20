@@ -35,23 +35,23 @@ export const ComparisonSlider: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-900/85 border border-pink-500/30 rounded-2xl p-3 sm:p-4 backdrop-blur-xl shadow-xl my-1">
+    <div className="bg-slate-900/85 border border-pink-500/30 rounded-2xl p-2.5 sm:p-3 backdrop-blur-xl shadow-xl">
       {/* Title & Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-800">
         <div>
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-[10px] font-mono font-bold text-pink-300 mb-1">
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-[9.5px] font-mono font-bold text-pink-300 mb-0.5">
             <span>INTERACTIVE VISUAL AUDIT</span>
           </div>
-          <h3 className="text-sm sm:text-base font-game font-bold text-white leading-snug">
+          <h3 className="text-xs sm:text-sm font-game font-bold text-white leading-snug">
             Early Prototype (v0.1) vs Final Release (v1.0)
           </h3>
-          <p className="text-[11px] text-slate-400 font-sans mt-0.5">
+          <p className="text-[10px] text-slate-400 font-sans">
             Drag the slider horizontally to compare visual fidelity.
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-2.5 text-[10.5px] font-mono shrink-0">
+        <div className="flex items-center gap-2 text-[10px] font-mono shrink-0">
           <span className="flex items-center gap-1 text-slate-400">
             <span className="w-2 h-2 rounded-full bg-slate-600" />
             09:30 PM (v0.1)
@@ -66,7 +66,7 @@ export const ComparisonSlider: React.FC = () => {
       {/* Interactive Visual Comparison Box */}
       <div
         ref={containerRef}
-        className="relative aspect-[16/10] max-h-[220px] w-full rounded-xl overflow-hidden border border-slate-800 select-none cursor-ew-resize bg-black"
+        className="relative aspect-[16/9] max-h-[175px] w-full rounded-xl overflow-hidden border border-slate-800 select-none cursor-ew-resize bg-black"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -76,11 +76,22 @@ export const ComparisonSlider: React.FC = () => {
         onTouchEnd={handleMouseUp}
         onClick={(e) => updatePosition(e.clientX)}
       >
+        {/* Unclipped Permanent Badges (Fixed overlay so slider never slices them) */}
+        <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none px-2 py-0.5 rounded-full bg-slate-950/85 text-slate-300 border border-slate-700 font-mono text-[9.5px] shadow-lg backdrop-blur-md flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+          <span>EARLY PROTOTYPE (09:30 PM)</span>
+        </div>
+
+        <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none px-2.5 py-0.5 rounded-full bg-pink-950/90 text-pink-300 border border-pink-500/40 font-game font-bold text-[9.5px] shadow-lg backdrop-blur-md flex items-center gap-1">
+          <Sparkles className="w-2.5 h-2.5 text-pink-400" />
+          <span>FINAL POLISH (10:45 AM)</span>
+        </div>
+
         {/* RIGHT LAYER: AFTER (Final Candy Game) - Full Width Background */}
         <div className="absolute inset-0 bg-[#09110b] flex flex-col items-center justify-center p-6 text-center">
           {/* Simulated Candy Game Board */}
           <div className="w-full max-w-md bg-[#3f7223] rounded-2xl border-4 border-[#335919] p-4 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center justify-between text-xs font-game font-bold text-white mb-2">
+            <div className="flex items-center justify-between text-xs font-game font-bold text-white mb-2 pt-2">
               <span className="text-pink-300">SCORE: 1,420 🎯</span>
               <span className="text-amber-300">HIGH: 2,850 👑</span>
             </div>
@@ -111,11 +122,6 @@ export const ComparisonSlider: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Right Tag */}
-          <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-pink-500/90 text-white font-game font-bold text-xs shadow-lg backdrop-blur-md">
-            FINAL POLISH (10:45 AM)
-          </div>
         </div>
 
         {/* LEFT LAYER: BEFORE (Raw Prototype v0.1) - Clipped by Slider */}
@@ -125,7 +131,7 @@ export const ComparisonSlider: React.FC = () => {
         >
           {/* Simulated Raw Terminal Canvas */}
           <div className="w-full max-w-md bg-black border-2 border-green-500/60 p-4 font-mono text-left shadow-2xl">
-            <div className="text-green-500 text-xs mb-2 flex items-center justify-between">
+            <div className="text-green-500 text-xs mb-2 flex items-center justify-between pt-2">
               <span>CANVAS_TEST_0.1 [FPS: 28.4]</span>
               <span className="text-red-400">JITTER: ±14px</span>
             </div>
@@ -138,48 +144,43 @@ export const ComparisonSlider: React.FC = () => {
                 <div className="w-4 h-4 bg-green-700" />
               </div>
 
-              {/* Raw text file items */}
-              <div className="text-[11px] text-green-400">
-                [FILE] resume_draft_2.docx (RAW TEXT STRING)
+              {/* Raw text file items - fits comfortably within left half */}
+              <div className="text-[10.5px] font-mono text-green-400">
+                [FILE] draft_2.docx
               </div>
 
-              <div className="text-[10px] text-yellow-500">
-                &gt; RAW CAM X: 341.22 | Y: 189.04 (UNSMOOTHED)
+              <div className="text-[9.5px] font-mono text-yellow-500">
+                &gt; RAW CAM: (341, 189)
               </div>
             </div>
-          </div>
-
-          {/* Left Tag */}
-          <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-800/90 text-slate-300 border border-slate-700 font-mono text-xs shadow-lg backdrop-blur-md">
-            EARLY PROTOTYPE (09:30 PM)
           </div>
         </div>
 
         {/* Center Draggable Divider Line */}
         <div
-          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] pointer-events-none"
+          className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] pointer-events-none z-30"
           style={{ left: `${sliderPos}%` }}
         >
           {/* Center Handle Knob */}
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-pink-500 border-2 border-white shadow-xl flex items-center justify-center text-white font-bold text-xs select-none">
+          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-pink-500 border-2 border-white shadow-xl flex items-center justify-center text-white font-bold text-[10px] select-none">
             ↔
           </div>
         </div>
       </div>
 
       {/* Technical Spec Comparison Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
         {/* Before Specs */}
         <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-2.5">
           <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-slate-400 mb-1.5">
             <Terminal className="w-3.5 h-3.5 text-slate-500" />
             <span>v0.1 RAW PROTOTYPE ({BEFORE_AFTER_COMPARISON.before.timestamp})</span>
           </div>
-          <ul className="space-y-1 text-[11px] font-sans text-slate-400">
+          <ul className="space-y-1 text-[10.5px] font-sans text-slate-400">
             {BEFORE_AFTER_COMPARISON.before.specs.map((spec, i) => (
-              <li key={i} className="flex items-start gap-1.5">
+              <li key={i} className="flex items-start gap-1.5 leading-tight">
                 <X className="w-3 h-3 text-rose-400 shrink-0 mt-0.5" />
-                <span className="line-clamp-1">{spec}</span>
+                <span className="text-slate-300">{spec}</span>
               </li>
             ))}
           </ul>
@@ -191,11 +192,11 @@ export const ComparisonSlider: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-pink-400" />
             <span>v1.0 FINAL RELEASE ({BEFORE_AFTER_COMPARISON.after.timestamp})</span>
           </div>
-          <ul className="space-y-1 text-[11px] font-sans text-slate-300">
+          <ul className="space-y-1 text-[10.5px] font-sans text-slate-300">
             {BEFORE_AFTER_COMPARISON.after.specs.map((spec, i) => (
-              <li key={i} className="flex items-start gap-1.5">
+              <li key={i} className="flex items-start gap-1.5 leading-tight">
                 <Check className="w-3 h-3 text-emerald-400 shrink-0 mt-0.5" />
-                <span className="text-slate-200 line-clamp-1">{spec}</span>
+                <span className="text-slate-200">{spec}</span>
               </li>
             ))}
           </ul>
