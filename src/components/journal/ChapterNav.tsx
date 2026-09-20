@@ -98,13 +98,13 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
   ];
 
   const macroPhases = [
-    { id: 'prologue', label: '00 Prologue', target: 'prologue', match: ['prologue'] },
-    { id: 'nothing', label: '01 Nothing', target: 'chapter-01', match: ['chapter-01', 'chapter-02'] },
-    { id: 'coffee', label: '02 Coffee', target: 'chapter-03', match: ['chapter-03', 'chapter-04'] },
-    { id: 'build', label: '03 Build', target: 'chapter-05', match: ['chapter-05', 'chapter-06', 'chapter-07'] },
-    { id: 'chaos', label: '04 Chaos', target: 'chapter-08', match: ['chapter-08', 'chapter-09', 'chapter-10', 'chapter-11'] },
-    { id: 'finish', label: '05 Finish', target: 'chapter-12', match: ['chapter-12', 'chapter-13', 'chapter-14'] },
-    { id: 'aftermath', label: '06 Aftermath', target: 'closing', match: ['chapter-15', 'chapter-16', 'closing'] },
+    { id: 'prologue', num: '00', name: 'Prologue', label: '00 Prologue', target: 'prologue', match: ['hero', 'prologue'] },
+    { id: 'nothing', num: '01', name: 'Nothing', label: '01 Nothing', target: 'chapter-01', match: ['chapter-01', 'chapter-02'] },
+    { id: 'coffee', num: '02', name: 'Coffee', label: '02 Coffee', target: 'chapter-03', match: ['chapter-03', 'chapter-04'] },
+    { id: 'build', num: '03', name: 'Build', target: 'chapter-05', match: ['chapter-05', 'chapter-06', 'chapter-07'] },
+    { id: 'chaos', num: '04', name: 'Chaos', target: 'chapter-08', match: ['chapter-08', 'chapter-09', 'chapter-10', 'chapter-11'] },
+    { id: 'finish', num: '05', name: 'Finish', target: 'chapter-12', match: ['chapter-12', 'chapter-13', 'chapter-14'] },
+    { id: 'aftermath', num: '06', name: 'Aftermath', target: 'closing', match: ['chapter-15', 'chapter-16', 'closing'] },
   ];
 
   const handleNavClick = (id: string) => {
@@ -132,10 +132,10 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
       }`}
       style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4" style={{ height: scrolled ? '52px' : '60px', transition: 'height 0.3s ease' }}>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4" style={{ height: scrolled ? '52px' : '60px', transition: 'height 0.3s ease' }}>
 
         {/* Left: Back to Game & Brand */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {onBackToLanding && (
             <button
               onClick={onBackToLanding}
@@ -160,12 +160,12 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             <div className="text-left">
               <div className="font-mono font-bold text-xs tracking-wider text-white group-hover:text-pink-300 transition-colors flex items-center gap-2">
                 <span>VISHNU K R</span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                <span className="hidden sm:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
                   FIELD NOTES
                 </span>
               </div>
               {!scrolled && (
-                <div className="text-[10px] font-mono text-slate-500 hidden sm:block transition-all">
+                <div className="text-[10px] font-mono text-slate-500 hidden 2xl:block transition-all">
                   TinkerHub UP 3.0 · 18-Hour Sprint
                 </div>
               )}
@@ -173,22 +173,25 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
           </button>
         </div>
 
-        {/* Center: Clean 7 Macro Phases */}
-        <nav className="hidden md:flex items-center gap-1 overflow-x-auto py-1 px-1 no-scrollbar">
+        {/* Center: Clean 7 Macro Phases (Adaptive Accordion Pills) */}
+        <nav className="hidden md:flex items-center gap-1 shrink-0 py-1 px-1">
           {macroPhases.map((phase) => {
             const isActive = phase.id === activePhase.id;
             return (
               <button
                 key={phase.id}
+                type="button"
                 onClick={() => handleNavClick(phase.target)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                title={`${phase.num} ${phase.name}`}
+                className={`shrink-0 whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   isActive
                     ? 'bg-pink-500/15 text-pink-300 font-bold border border-pink-500/40 shadow-[0_0_12px_rgba(236,72,153,0.2)]'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80 border border-transparent'
                 }`}
               >
-                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />}
-                <span>{phase.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse shrink-0" />}
+                <span className="font-semibold">{phase.num}</span>
+                <span className={isActive ? 'inline' : 'hidden xl:inline'}>{phase.name}</span>
               </button>
             );
           })}
@@ -233,12 +236,12 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
               {viewMode === 'spread' ? (
                 <>
                   <BookOpen className="w-3.5 h-3.5 text-pink-400" />
-                  <span className="hidden lg:inline text-[11px]">SPREAD</span>
+                  <span className="hidden xl:inline text-[11px]">SPREAD</span>
                 </>
               ) : (
                 <>
                   <Scroll className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden lg:inline text-[11px]">SCROLL</span>
+                  <span className="hidden xl:inline text-[11px]">SCROLL</span>
                 </>
               )}
             </button>
@@ -263,7 +266,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
           {onToggleSound && (
             <button
               onClick={onToggleSound}
-              className={`p-1.5 rounded-lg bg-slate-900 border text-xs font-mono transition-colors cursor-pointer ${
+              className={`hidden sm:flex p-1.5 rounded-lg bg-slate-900 border text-xs font-mono transition-colors cursor-pointer ${
                 isSoundMuted
                   ? 'border-slate-800 text-slate-500 hover:text-slate-300'
                   : 'border-pink-500/40 text-pink-400 hover:text-pink-300 hover:border-pink-500/60 shadow-[0_0_8px_rgba(236,72,153,0.2)]'
@@ -283,7 +286,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             <button
               type="button"
               onClick={onShare}
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-pink-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
+              className="hidden sm:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-pink-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
               title="Share Devlog (or Copy Link)"
             >
               <Share2 className="w-3.5 h-3.5 text-pink-400" />
@@ -295,7 +298,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             <button
               type="button"
               onClick={onOpenShortcuts}
-              className="hidden sm:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
+              className="hidden lg:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
               title="Keyboard Shortcuts Manual (?)"
             >
               <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
