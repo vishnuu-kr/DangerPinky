@@ -431,11 +431,13 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
       />
 
       <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 relative">
-        {/* Hanging Silk Ribbon Bookmark physically anchored to the book container */}
-        <RibbonBookmark
-          currentSectionId={activeSection}
-          onSelectSection={handleSelectSection}
-        />
+        {/* Hanging Silk Ribbon Bookmark physically anchored to the book container (interior spreads only) */}
+        {spreadIndex > 0 && activeSection !== 'hero' && (
+          <RibbonBookmark
+            currentSectionId={activeSection}
+            onSelectSection={handleSelectSection}
+          />
+        )}
 
         <div
           className={`relative ${viewMode === 'spread' ? 'book-stage' : ''}`}

@@ -44,19 +44,12 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
 
-        {/* ─── HARDCOVER BOOK CASING WITH BRASS CORNERS & SILK RIBBON ─── */}
+        {/* ─── HARDCOVER BOOK CASING WITH BRASS CORNERS ─── */}
         <div className="book-casing relative">
           <div className="book-corner-tl" />
           <div className="book-corner-tr" />
           <div className="book-corner-bl" />
           <div className="book-corner-br" />
-
-          {/* Silk Bookmark Ribbon */}
-          <div
-            onClick={() => onOpenBook ? onOpenBook() : handleScrollToChapter('prologue')}
-            className="book-ribbon"
-            title="Open logbook pages"
-          />
 
           {/* ─── THE PHYSICAL DOSSIER SHEET ─── */}
           <div className="dossier-sheet rounded-xl p-6 sm:p-10 md:p-12 relative overflow-hidden border border-slate-700/50 shadow-2xl bg-[#090e1a]/95">
