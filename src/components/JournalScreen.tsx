@@ -430,7 +430,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 relative">
         {/* Hanging Silk Ribbon Bookmark physically anchored to the book container */}
         <RibbonBookmark
           currentSectionId={activeSection}
@@ -1006,7 +1006,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="the moment: what if the snake ate a FILE?"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[4].narrative} highlightIndex={6} maxParagraphs={4} />
+                  <EditorialProse narratives={CHAPTERS[4].narrative} highlightIndex={2} maxParagraphs={3} />
                 </div>
 
                 {/* Formula Scratchpad on Desk */}
@@ -1596,7 +1596,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   marginNote="wearing every hat solo: CV, physics, audio, security, social media"
                 />
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[9].narrative} highlightIndex={4} maxParagraphs={3} />
+                  <EditorialProse narratives={CHAPTERS[9].narrative} highlightIndex={1} maxParagraphs={2} />
                 </div>
 
                 {/* Vishnu's Hackathon ID Card */}

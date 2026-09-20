@@ -84,7 +84,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
           >
             {/* ─── LEFT PAGE (VERSO) ─── */}
             <div
-              className={`p-5 sm:p-7 lg:p-8 lg:pr-12 xl:pr-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full ${leftTextureClass}`}
+              className={`p-4 sm:p-6 lg:p-7 lg:pr-12 xl:pr-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full ${leftTextureClass}`}
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">
@@ -93,7 +93,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Left Page Content */}
-              <div className={`flex-1 min-h-0 space-y-3 pb-1 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
+              <div className="flex-1 min-h-0 space-y-2.5 pb-1">
                 {leftContent}
               </div>
 
@@ -114,7 +114,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
             {/* ─── RIGHT PAGE (RECTO) ─── */}
             <div
-              className={`p-5 sm:p-7 lg:p-8 lg:pl-12 xl:pl-14 flex flex-col justify-between relative h-full min-h-full ${rightTextureClass}`}
+              className={`p-4 sm:p-6 lg:p-7 lg:pl-12 xl:pl-14 flex flex-col justify-between relative h-full min-h-full ${rightTextureClass}`}
             >
               {/* Running Header */}
               <div className="book-running-head text-slate-400 shrink-0">
@@ -123,7 +123,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
               </div>
 
               {/* Natural Right Page Content */}
-              <div className={`flex-1 min-h-0 space-y-3 pb-1 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
+              <div className="flex-1 min-h-0 space-y-2.5 pb-1">
                 {rightContent}
               </div>
 
