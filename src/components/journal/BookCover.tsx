@@ -80,7 +80,7 @@ export const BookCover: React.FC<BookCoverProps> = ({ onOpenBook, onPlayGame, on
                 <span>OFFICIAL MAKER SPECIFICATION</span>
                 <span className="text-emerald-400 font-bold">11 → 12 SEPT 2026</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
                 <div>
                   <span className="text-slate-500 block text-[9px]">BUILDER:</span>
                   <span className="text-white font-bold text-xs">Vishnu K R</span>
@@ -92,6 +92,10 @@ export const BookCover: React.FC<BookCoverProps> = ({ onOpenBook, onPlayGame, on
                 <div>
                   <span className="text-slate-500 block text-[9px]">COLLEGE:</span>
                   <span className="text-slate-300 text-xs truncate block">SNMIMT</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[9px]">LOCATION:</span>
+                  <span className="text-amber-300 text-xs truncate block" title="Maliyankara, Ernakulam, Sep 2026">Maliyankara, Ernakulam</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[9px]">ARTIFACT:</span>

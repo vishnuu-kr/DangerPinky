@@ -516,7 +516,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <div className="relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 shadow-md text-xs font-mono space-y-1.5 mt-2">
                   <div className="masking-tape-strip -top-2 left-6" />
                   <div className="flex items-center justify-between border-b border-slate-800 pb-1 text-[9.5px]">
-                    <span className="text-pink-400 font-bold">SNMIMT CAMPUS PASS // PRESS & MEDIA</span>
+                    <span className="text-pink-400 font-bold">SNMIMT CAMPUS PASS // MALIYANKARA, ERNAKULAM, SEP 2026</span>
                     <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">ORGANIZER</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-slate-300">
@@ -1603,7 +1603,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <span className="text-[9px] font-mono text-slate-500">UP 3.0 // 18H</span>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-1 font-mono text-xs mb-1.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 font-mono text-xs mb-1.5">
                     <div>
                       <span className="text-slate-500 text-[8.5px] block">BUILDER:</span>
                       <span className="text-emerald-300 font-bold text-[11px]">Vishnu K R</span>
@@ -1611,6 +1611,10 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div>
                       <span className="text-slate-500 text-[8.5px] block">COLLEGE:</span>
                       <span className="text-slate-300 text-[11px] truncate block">SNMIMT</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 text-[8.5px] block">LOCATION:</span>
+                      <span className="text-amber-300 text-[10px] truncate block" title="Maliyankara, Ernakulam, Sep 2026">Maliyankara, Ernakulam</span>
                     </div>
                     <div>
                       <span className="text-slate-500 text-[8.5px] block">ROLE:</span>
