@@ -65,7 +65,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
             </div>
 
             {/* Fold-out Content Area */}
-            <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
+            <div className={`flex-1 min-h-0 space-y-4 pb-2 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
               {fullWidthContent}
             </div>
 

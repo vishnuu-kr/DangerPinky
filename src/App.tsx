@@ -345,7 +345,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09110b] text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 font-sans selection:bg-pink-500 selection:text-white overflow-x-hidden w-full max-w-full">
+    <div className={`min-h-screen ${screen === 'JOURNAL' ? 'bg-[#070b14] p-0' : 'bg-[#09110b] p-2 sm:p-4'} text-slate-100 flex flex-col items-center justify-between font-sans selection:bg-pink-500 selection:text-white overflow-x-hidden w-full max-w-full`}>
       {/* Background ambient lighting */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(255,59,148,0.14),rgba(0,0,0,0))] pointer-events-none" />
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_50%)] pointer-events-none" />

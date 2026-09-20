@@ -15,12 +15,16 @@ interface PlayEmbedSectionProps {
   onStartDemo?: () => void;
   onStartWithCamera?: () => void;
   onSelectRealFiles?: () => void;
+  hideTopNotice?: boolean;
+  iframeHeight?: string;
 }
 
 export const PlayEmbedSection: React.FC<PlayEmbedSectionProps> = ({
   onStartDemo,
   onStartWithCamera,
-  onSelectRealFiles
+  onSelectRealFiles,
+  hideTopNotice = false,
+  iframeHeight = 'h-[265px] sm:h-[285px]'
 }) => {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [reloadKey, setReloadKey] = useState<number>(0);
@@ -45,15 +49,17 @@ export const PlayEmbedSection: React.FC<PlayEmbedSectionProps> = ({
   return (
     <div className="my-1">
       {/* Explicit Safety Notice */}
-      <div className="mb-2.5 p-2.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <span className="ink-stamp ink-stamp-green text-[9px] py-0.5 px-1.5">SANDBOXED RUNTIME</span>
-          <span className="text-slate-300 text-[11px]">
-            Web edition uses memory-only mock files. Your real storage cannot be modified.
-          </span>
+      {!hideTopNotice && (
+        <div className="mb-2.5 p-2.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="ink-stamp ink-stamp-green text-[9px] py-0.5 px-1.5">SANDBOXED RUNTIME</span>
+            <span className="text-slate-300 text-[11px]">
+              Web edition uses memory-only mock files. Your real storage cannot be modified.
+            </span>
+          </div>
+          <span className="text-emerald-400 font-bold text-[10.5px] shrink-0">100% RECOVERABLE / ZERO RISK</span>
         </div>
-        <span className="text-emerald-400 font-bold text-[10.5px] shrink-0">100% RECOVERABLE / ZERO RISK</span>
-      </div>
+      )}
 
       {/* Embedded Arena Container */}
       <div
@@ -122,7 +128,7 @@ export const PlayEmbedSection: React.FC<PlayEmbedSectionProps> = ({
         {/* Responsive Iframe Frame */}
         <div
           className={`relative w-full rounded-xl overflow-hidden border border-slate-800 bg-black flex-1 ${
-            isFullscreen ? 'h-[calc(100vh-65px)]' : 'h-[265px] sm:h-[285px]'
+            isFullscreen ? 'h-[calc(100vh-65px)]' : iframeHeight
           }`}
         >
           <iframe

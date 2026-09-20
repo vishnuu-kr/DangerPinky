@@ -397,7 +397,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   const currentSpreadInfo = getSpreadLabel(spreadIndex);
 
   return (
-    <div className="min-h-screen bg-[#070b14] desk-grid text-slate-100 font-sans selection:bg-pink-500 selection:text-white pb-24 relative">
+    <div className="w-full min-h-screen bg-[#070b14] desk-grid text-slate-100 font-sans selection:bg-pink-500 selection:text-white pb-24 relative">
 
       <LightboxModal
         item={activeLightboxItem}
@@ -430,13 +430,13 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
-      {/* Hanging Silk Ribbon Bookmark */}
-      <RibbonBookmark
-        currentSectionId={activeSection}
-        onSelectSection={handleSelectSection}
-      />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        {/* Hanging Silk Ribbon Bookmark physically anchored to the book container */}
+        <RibbonBookmark
+          currentSectionId={activeSection}
+          onSelectSection={handleSelectSection}
+        />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div
           className={`relative ${viewMode === 'spread' ? 'book-stage' : ''}`}
           onTouchStart={handleTouchStart}
@@ -508,6 +508,23 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <div className="book-drop-cap">
                   <EditorialProse narratives={PROLOGUE_DATA.narrative} pullquoteIndex={2} maxParagraphs={3} />
+                </div>
+
+                {/* Vishnu's Outreach Lead Campus Press Pass */}
+                <div className="relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 shadow-md text-xs font-mono space-y-1.5 mt-2">
+                  <div className="masking-tape-strip -top-2 left-6" />
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-1 text-[9.5px]">
+                    <span className="text-pink-400 font-bold">SNMIMT CAMPUS PASS // PRESS & MEDIA</span>
+                    <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">ORGANIZER</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-slate-300">
+                    <span>Holder: <strong className="text-white">Vishnu K R</strong></span>
+                    <span>Role: <strong className="text-pink-300">Outreach Lead</strong></span>
+                    <span className="text-emerald-400 font-semibold">ALL-ACCESS</span>
+                  </div>
+                  <p className="text-[9.5px] text-slate-400 font-sans italic">
+                    Authorized to wander between all 12 teams with smartphone camera, capture setup reels, and document the 18-hour sprint.
+                  </p>
                 </div>
               </>
             }
@@ -1748,6 +1765,42 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   caption="Empty black tea cups, spicy banana chips, and the unplugged webcam"
                   rotate="ccw"
                 />
+
+                {/* 03:45 AM Field Incident Triage Checklist */}
+                <div className="dispatch-tape-slip rotate-0.5 border-rose-500/30 text-xs font-mono shadow-xl space-y-2">
+                  <div className="flex items-center justify-between border-b border-rose-500/20 pb-1.5 text-[10px]">
+                    <span className="text-rose-400 font-bold flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      <span>TRIAGE CHECKLIST // 03:45 AM EMERGENCY</span>
+                    </span>
+                    <span className="ink-stamp ink-stamp-red text-[7px] py-0 px-1">RESOLVED</span>
+                  </div>
+                  <div className="space-y-1 text-[10px] text-slate-300">
+                    <div className="flex justify-between items-center">
+                      <span>• Banana chips consumed:</span>
+                      <span className="text-amber-400 font-bold">3 packets</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>• Black tea refills:</span>
+                      <span className="text-amber-400 font-bold">5 paper cups</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>• Frantic pinky waving:</span>
+                      <span className="text-rose-400 font-bold">15 continuous mins</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>• MediaPipe code rewrites:</span>
+                      <span className="text-slate-400 font-bold">2 full rewrites</span>
+                    </div>
+                    <div className="flex justify-between items-center text-emerald-400 font-bold pt-1 border-t border-slate-800">
+                      <span>• Actual Root Cause:</span>
+                      <span>Elbow unplugged USB port</span>
+                    </div>
+                  </div>
+                  <p className="text-[9.5px] text-slate-400 font-sans italic pt-0.5 border-t border-slate-800/60">
+                    &ldquo;Never debug computer vision neural nets before checking if the webcam cable is physically plugged in.&rdquo;
+                  </p>
+                </div>
               </div>
             }
           />
@@ -2089,8 +2142,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
             rightRunningHead="CH. 14 // PLAYABLE WORKBENCH"
             paperTone={paperTone}
             layoutVariant="technical"
-            fullWidthContent={
-              <div className="space-y-6">
+            leftContent={
+              <>
                 <ChapterHeader
                   chapter={CHAPTERS[13]}
                   accentClass="text-emerald-400"
@@ -2098,10 +2151,43 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 />
 
                 <div className="book-drop-cap">
-                  <EditorialProse narratives={CHAPTERS[13].narrative} />
+                  <EditorialProse narratives={CHAPTERS[13].narrative} maxParagraphs={3} />
                 </div>
 
+                {/* Sandboxed Runtime Safety & Architecture Card */}
+                <div className="p-3 rounded-xl bg-slate-950/90 border border-emerald-500/30 shadow-xl space-y-2 mt-2 font-mono text-xs">
+                  <div className="flex items-center justify-between border-b border-emerald-500/20 pb-1.5 text-[10px]">
+                    <span className="flex items-center gap-1.5 text-emerald-300 font-bold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>SANDBOX RUNTIME // IN-BROWSER</span>
+                    </span>
+                    <span className="ink-stamp ink-stamp-green text-[7px] py-0 px-1">100% SAFE</span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-300 font-sans leading-snug">
+                    Web edition uses memory-only simulated files. Your real storage cannot be modified.
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5 text-[9.5px]">
+                    <div className="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+                      <span className="text-pink-400 font-bold block">CAMERA STEERING</span>
+                      <span className="text-slate-300">Landmark 20 Pinky Tip Flick</span>
+                    </div>
+                    <div className="p-1.5 rounded bg-slate-900/80 border border-slate-800">
+                      <span className="text-cyan-400 font-bold block">KEYBOARD FALLBACK</span>
+                      <span className="text-slate-300">WASD / Arrow Keys</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-emerald-500/[0.04] border border-emerald-500/20 text-emerald-300 font-handwriting text-sm text-center mt-2">
+                  ↳ &ldquo;The code compiles. The camera tracks. Go ahead — steer with your little finger.&rdquo;
+                </div>
+              </>
+            }
+            rightContent={
+              <div className="space-y-2">
                 <PlayEmbedSection
+                  hideTopNotice={true}
+                  iframeHeight="h-[340px] sm:h-[365px]"
                   onStartDemo={onStartDemo}
                   onStartWithCamera={onStartWithCamera}
                   onSelectRealFiles={onSelectRealFiles}
