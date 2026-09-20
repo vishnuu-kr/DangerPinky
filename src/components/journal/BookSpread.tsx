@@ -65,7 +65,7 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
             </div>
 
             {/* Fold-out Content Area */}
-            <div className={`flex-1 min-h-0 space-y-4 pb-2 ${isSpreadMode ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden custom-page-scrollbar'}`}>
+            <div className="flex-1 min-h-0 space-y-4 pb-2 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
               {fullWidthContent}
             </div>
 
@@ -92,8 +92,8 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
                 <span className="text-pink-400 font-mono text-[10px] tracking-[0.15em]">UP 3.0 · SNMIMT</span>
               </div>
 
-              {/* Natural Left Page Content */}
-              <div className="flex-1 min-h-0 space-y-2.5 pb-1">
+              {/* Natural Left Page Content with Smooth Archival Scroll */}
+              <div className="flex-1 min-h-0 space-y-2.5 pb-1 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
                 {leftContent}
               </div>
 
@@ -122,8 +122,8 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
                 <span>{rightRunningHead}</span>
               </div>
 
-              {/* Natural Right Page Content */}
-              <div className="flex-1 min-h-0 space-y-2.5 pb-1">
+              {/* Natural Right Page Content with Smooth Archival Scroll */}
+              <div className="flex-1 min-h-0 space-y-2.5 pb-1 overflow-y-auto overflow-x-hidden custom-page-scrollbar">
                 {rightContent}
               </div>
 

@@ -790,25 +790,30 @@
       0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
-  /* Desk Book Stage in Spread Mode - Responsive Physical Hardcover */
+  /* Desk Book Stage in Spread Mode - Uniform Fixed 700px Height Across All Spreads */
   .book-spread-fixed {
     display: flex;
     flex-direction: column;
-    min-height: auto;
+    min-height: 660px;
     height: auto;
   }
   @media (min-width: 1024px) {
     .book-spread-fixed {
-      min-height: 660px;
-      height: auto;
+      height: 700px !important;
+      min-height: 700px !important;
+      max-height: 700px !important;
+      overflow: hidden;
     }
     .book-spread-fixed .book-spread-grid {
-      min-height: 660px;
-      height: 100%;
+      height: 700px !important;
+      min-height: 700px !important;
+      max-height: 700px !important;
     }
     .book-cover-fixed {
-      min-height: 660px;
-      height: auto;
+      height: 700px !important;
+      min-height: 700px !important;
+      max-height: 700px !important;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1026,7 +1031,8 @@
   }
   @media (min-width: 1024px) {
     .book-stage {
-      min-height: 660px;
+      min-height: 700px;
+      height: 700px;
     }
   }
 
