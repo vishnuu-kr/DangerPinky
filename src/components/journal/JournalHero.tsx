@@ -1,9 +1,11 @@
+import React, { useState } from 'react';
 import {
   Play,
   ArrowDown,
   Github,
   ArrowLeft,
   FolderArchive,
+  X,
 } from 'lucide-react';
 import { HERO_DATA, PERSISTENT_LINKS } from '../../data/journalChapters';
 
@@ -20,6 +22,7 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
   onBackToLanding,
   onOpenBook
 }) => {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const handleScrollToChapter = (id: string) => {
     if (onOpenBook) {
       onOpenBook();
@@ -135,6 +138,16 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
                 </button>
 
                 <button
+                  type="button"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="px-4 py-2.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-200 hover:text-white font-mono text-xs font-bold border border-pink-500/40 flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                  title="Watch the official live demo video recorded during the hackathon"
+                >
+                  <Play className="w-3.5 h-3.5 fill-pink-400 text-pink-400" />
+                  <span>WATCH VIDEO DEMO</span>
+                </button>
+
+                <button
                   onClick={() => {
                     if (onStartDemo) {
                       onStartDemo();
@@ -196,11 +209,12 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
                 </div>
               </div>
 
-              {/* Photographed Screen Artifact */}
+              {/* Photographed Screen Artifact with Play Video Action */}
               <div
-                onClick={() => handleScrollToChapter('chapter-13')}
+                onClick={() => setIsVideoModalOpen(true)}
                 className="group relative w-full max-w-sm rounded-lg bg-white p-2.5 pb-5 shadow-2xl border border-slate-200/20 transform rotate-1 hover:rotate-0 transition-transform duration-300 cursor-pointer"
                 style={{ boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)' }}
+                title="Click to play live demonstration video (Google Drive)"
               >
                 {/* Masking tape on top right */}
                 <div className="absolute -top-3 right-6 w-12 h-6 masking-tape-strip" />
@@ -211,12 +225,22 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
                     alt="DangerPinky screen in action"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+                  {/* Play Video Button Overlay */}
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/15 transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-pink-600/90 group-hover:bg-pink-500 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform">
+                      <Play className="w-5 h-5 fill-white ml-0.5" />
+                    </div>
+                  </div>
                   <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 font-mono text-[9px] text-pink-300 border border-pink-500/40">
                     LIVE WEBCAM HUD
                   </div>
+                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-slate-950/80 font-mono text-[9px] text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>WATCH DEMO</span>
+                  </div>
                 </div>
                 <div className="font-handwriting text-slate-800 text-sm leading-tight text-center">
-                  Artifact #01: Devouring real files via Landmark 20
+                  Artifact #01: Devouring real files via Landmark 20 · Click to play video
                 </div>
               </div>
             </div>
@@ -224,6 +248,37 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Embedded Google Drive Video Player Modal */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+          <div className="relative w-full max-w-4xl bg-slate-950 border border-pink-500/40 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-3 border-b border-slate-800 bg-slate-900/90 text-white font-mono text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
+                <span className="font-bold">DangerPinky — Official Hackathon Demo Video</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsVideoModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title="Close video (Esc)"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="aspect-video w-full bg-black">
+              <iframe
+                src="https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/preview"
+                title="DangerPinky Live Demo Video"
+                className="w-full h-full border-0"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   </section>
 );

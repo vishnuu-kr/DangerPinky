@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Heart,
   Github,
@@ -6,7 +6,8 @@ import {
   Camera,
   ArrowRight,
   Film,
-  FileArchive
+  FileArchive,
+  X
 } from 'lucide-react';
 import { FINAL_REFLECTION, PERSISTENT_LINKS } from '../../data/journalChapters';
 import { BookSpread } from './BookSpread';
@@ -20,6 +21,7 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
   viewMode = 'spread',
   paperTone = 'dark',
 }) => {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const drawerArtifacts = [
     {
       id: 'game',
@@ -153,52 +155,120 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
             </p>
           </div>
 
+          {/* Official TinkerHub UP 3.0 Wrap Poster Artifact */}
+          <div className="relative p-2 bg-white rounded-sm shadow-xl transform -rotate-0.5 hover:rotate-0 transition-transform duration-300">
+            <div
+              className="absolute -top-2 left-6 w-10 h-3.5 opacity-80 z-10"
+              style={{
+                background: 'rgba(254, 240, 138, 0.7)',
+                borderLeft: '1.5px dashed rgba(0,0,0,0.15)',
+                borderRight: '1.5px dashed rgba(0,0,0,0.15)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                transform: 'rotate(-2deg)'
+              }}
+            />
+            <div className="w-full bg-slate-950 rounded-sm overflow-hidden flex items-center justify-center aspect-[21/9] max-h-[110px]">
+              <img
+                src="./images/useless_3_thankyou.png"
+                alt="TinkerHub Useless Projects 3.0 Official Thank You Poster"
+                className="w-full h-full object-cover object-center"
+                loading="lazy"
+              />
+            </div>
+            <div className="mt-1 px-1 flex items-center justify-between text-slate-700">
+              <span className="font-handwriting text-xs text-slate-800">
+                Official Wrap: TinkerHub SNMIMT Useless Projects 3.0
+              </span>
+              <span className="font-mono text-[8px] text-slate-400">SNMIMT CAMPUS</span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-2">
-            {drawerArtifacts.map((art) => (
-              <a
-                key={art.id}
-                href={art.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-pink-500/40 transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
-                style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.35)' }}
-              >
-                {/* Top tape accent */}
-                <div className="absolute -top-1.5 right-3 w-7 h-3 masking-tape-strip opacity-70" />
+            {drawerArtifacts.map((art) => {
+              const isVideoItem = art.id === 'video';
+              return (
+                <a
+                  key={art.id}
+                  href={art.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    if (isVideoItem) {
+                      e.preventDefault();
+                      setIsVideoModalOpen(true);
+                    }
+                  }}
+                  className="group relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-pink-500/40 transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
+                  style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.35)' }}
+                >
+                  {/* Top tape accent */}
+                  <div className="absolute -top-1.5 right-3 w-7 h-3 masking-tape-strip opacity-70" />
 
-                <div>
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <div className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 scale-90 -ml-0.5">
-                      {art.icon}
+                  <div>
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <div className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 scale-90 -ml-0.5">
+                        {art.icon}
+                      </div>
+                      <span className={`text-[8.5px] font-mono font-bold px-1.5 py-0.2 rounded border ${art.tagColor}`}>
+                        {art.tag}
+                      </span>
                     </div>
-                    <span className={`text-[8.5px] font-mono font-bold px-1.5 py-0.2 rounded border ${art.tagColor}`}>
-                      {art.tag}
-                    </span>
+
+                    <div className="text-[8px] font-mono text-slate-500 uppercase tracking-wider mb-0.5">
+                      {art.type}
+                    </div>
+                    <h4 className="font-sans font-bold text-xs text-white group-hover:text-pink-300 transition-colors mb-0.5 line-clamp-1">
+                      {art.title}
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-sans leading-snug line-clamp-2">
+                      {art.note}
+                    </p>
                   </div>
 
-                  <div className="text-[8px] font-mono text-slate-500 uppercase tracking-wider mb-0.5">
-                    {art.type}
+                  <div className="mt-1.5 pt-1 border-t border-slate-900/80 flex items-center justify-between text-[9.5px] font-mono text-slate-500 group-hover:text-pink-400 transition-colors">
+                    <span>{isVideoItem ? 'WATCH VIDEO' : 'OPEN ARTIFACT'}</span>
+                    <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" />
                   </div>
-                  <h4 className="font-sans font-bold text-xs text-white group-hover:text-pink-300 transition-colors mb-0.5 line-clamp-1">
-                    {art.title}
-                  </h4>
-                  <p className="text-[10px] text-slate-400 font-sans leading-snug line-clamp-2">
-                    {art.note}
-                  </p>
-                </div>
-
-                <div className="mt-1.5 pt-1 border-t border-slate-900/80 flex items-center justify-between text-[9.5px] font-mono text-slate-500 group-hover:text-pink-400 transition-colors">
-                  <span>OPEN ARTIFACT</span>
-                  <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </a>
-            ))}
+                </a>
+              );
+            })}
           </div>
 
           <div className="py-1.5 px-3 rounded-lg bg-slate-950/60 border border-slate-800/80 text-center flex items-center justify-between text-[10px] font-mono text-slate-500 mt-auto shrink-0">
             <span className="ink-stamp ink-stamp-red text-[8.5px]">END OF LOGBOOK</span>
             <span>ARCHIVED: KOCHI, KERALA // OCTOBER 2024</span>
           </div>
+
+          {/* Embedded Google Drive Video Player Modal */}
+          {isVideoModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+              <div className="relative w-full max-w-4xl bg-slate-950 border border-pink-500/40 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                <div className="flex items-center justify-between p-3 border-b border-slate-800 bg-slate-900/90 text-white font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-pink-400 animate-pulse" />
+                    <span className="font-bold">DangerPinky — Official Hackathon Demo Video</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsVideoModalOpen(false)}
+                    className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    title="Close video (Esc)"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="aspect-video w-full bg-black">
+                  <iframe
+                    src="https://drive.google.com/file/d/1aIiCRxT6f9T7WfaB7Iu2qHBtmiiLmvXs/preview"
+                    title="DangerPinky Live Demo Video"
+                    className="w-full h-full border-0"
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       }
     />

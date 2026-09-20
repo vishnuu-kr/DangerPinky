@@ -28,7 +28,7 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   const lowerTag = tag.toLowerCase();
   let resolvedImage = imgSrc;
   if (!resolvedImage) {
-    if (lowerTag.includes('gameplay') || lowerTag.includes('hud') || lowerTag.includes('landmark')) {
+    if (lowerTag.includes('gameplay') || lowerTag.includes('hud') || lowerTag.includes('landmark') || lowerTag.includes('prototype') || lowerTag.includes('v0.1') || lowerTag.includes('lime')) {
       resolvedImage = './screenshots/gameplay.png';
     } else if (lowerTag.includes('gameover') || lowerTag.includes('game over') || lowerTag.includes('recycle bin')) {
       resolvedImage = './screenshots/gameover.png';
@@ -36,6 +36,14 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
       resolvedImage = './screenshots/settings.png';
     } else if (lowerTag.includes('banner') || lowerTag.includes('poster')) {
       resolvedImage = './images/danger_pinky_banner.png';
+    } else if (lowerTag.includes('teams') || lowerTag.includes('opening') || lowerTag.includes('event') || lowerTag.includes('floor') || lowerTag.includes('hall') || lowerTag.includes('setting up')) {
+      resolvedImage = './images/tinkerhub_event_group.jpg';
+    } else if (lowerTag.includes('closing') || lowerTag.includes('letter') || lowerTag.includes('coordinator')) {
+      resolvedImage = './images/useless_3_closing.png';
+    } else if (lowerTag.includes('thank') || lowerTag.includes('wrap') || lowerTag.includes('reflection') || lowerTag.includes('morning sun')) {
+      resolvedImage = './images/useless_3_thankyou.png';
+    } else if (lowerTag.includes('ui') || lowerTag.includes('dashboard') || lowerTag.includes('landing')) {
+      resolvedImage = './screenshots/landing.png';
     }
   }
 
@@ -95,8 +103,9 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
       </div>
     );
 
-    return evidenceUrl ? (
-      <a href={evidenceUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer">
+    const targetUrl = evidenceUrl || resolvedImage;
+    return targetUrl ? (
+      <a href={targetUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer" title="Click to view full image">
         {photoContent}
       </a>
     ) : (
