@@ -1154,13 +1154,13 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   </div>
                 </div>
 
-                {/* Authentic 01:34 AM Hallway Team Selfie */}
+                {/* Authentic Wide Computer Lab Photo */}
                 <div className="mt-2">
                   <ScrapbookPlaceholder
                     compact
-                    tag="[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]"
-                    imgSrc="./images/hackathon/hallway_team_0134am.jpg"
-                    caption="01:34 AM corridor break: Telling everyone to document while I was building DangerPinky"
+                    tag="[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]"
+                    imgSrc="./images/hackathon/computer_lab_wide.jpg"
+                    caption="SNMIMT Computer Lab: 50 builders coding across the aisles during UP 3.0"
                     rotate="cw"
                   />
                 </div>

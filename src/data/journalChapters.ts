@@ -782,9 +782,9 @@ if (head.x === food.x && head.y === food.y) {
       "JOB 02: Apparent Game Builder. MediaPipe hand tracking, HTML5 Canvas 60 FPS loop, Electron native IPC, procedural Web Audio synthesizer, Vitest test suites.",
       "I was literally writing code with one hand and holding my phone with the other. And the funniest part? I was telling everyone else to document their build while completely forgetting to document my own. I was so busy capturing everyone else's 2 AM struggles that I barely took photos of my own screen."
     ],
-    scrapbookTag: '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
+    scrapbookTag: '[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]',
     scrapbookTags: [
-      '[ADD PHOTO: 01:34 AM Hallway Team Selfie — Outreach lead with participants]',
+      '[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]',
       '[ADD PHOTO: Event atmosphere — Live TinkerHub stories while coding]',
       '[ADD SCREENSHOT: TinkerHub social media posts going up during the build]'
     ]
