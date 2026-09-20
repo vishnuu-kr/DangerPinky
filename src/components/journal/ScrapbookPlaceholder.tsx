@@ -9,6 +9,7 @@ interface ScrapbookPlaceholderProps {
   isVerified?: boolean;
   rotate?: 'cw' | 'ccw' | 'none';
   imgSrc?: string;
+  videoSrc?: string;
   compact?: boolean;
   className?: string;
 }
@@ -19,29 +20,63 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   evidenceUrl,
   rotate = 'cw',
   imgSrc,
+  videoSrc,
   compact = false,
   className = '',
 }) => {
   const rotateClass = rotate === 'cw' ? 'rotate-1' : rotate === 'ccw' ? '-rotate-1' : '';
 
-  // Determine if this should show a real screenshot
   const lowerTag = tag.toLowerCase();
+
+  // Determine if this should show a real video
+  let resolvedVideo = videoSrc;
+  if (!resolvedVideo) {
+    if (lowerTag.includes('cheer') || (lowerTag.includes('outreach') && lowerTag.includes('video'))) {
+      resolvedVideo = './videos/vishnu_outreach_cheer.mp4';
+    } else if (lowerTag.includes('desk video') || (lowerTag.includes('vishnu') && lowerTag.includes('3 am') && lowerTag.includes('video'))) {
+      resolvedVideo = './videos/vishnu_night_desk.mp4';
+    } else if (lowerTag.includes('neon video') || (lowerTag.includes('smartboard') && lowerTag.includes('video'))) {
+      resolvedVideo = './videos/smartboard_neon_draw.mp4';
+    }
+  }
+
+  // Determine if this should show a real screenshot or authentic photo
   let resolvedImage = imgSrc;
-  if (!resolvedImage) {
+  if (!resolvedImage && !resolvedVideo) {
     if (lowerTag.includes('gameplay') || lowerTag.includes('hud') || lowerTag.includes('landmark') || lowerTag.includes('prototype') || lowerTag.includes('v0.1') || lowerTag.includes('lime')) {
       resolvedImage = './screenshots/gameplay.png';
     } else if (lowerTag.includes('gameover') || lowerTag.includes('game over') || lowerTag.includes('recycle bin')) {
       resolvedImage = './screenshots/gameover.png';
     } else if (lowerTag.includes('settings') || lowerTag.includes('sensitivity')) {
       resolvedImage = './screenshots/settings.png';
-    } else if (lowerTag.includes('banner') || lowerTag.includes('poster')) {
+    } else if (lowerTag.includes('banner') || lowerTag.includes('poster') || lowerTag.includes('cover')) {
       resolvedImage = './images/danger_pinky_banner.png';
-    } else if (lowerTag.includes('teams') || lowerTag.includes('opening') || lowerTag.includes('event') || lowerTag.includes('floor') || lowerTag.includes('hall') || lowerTag.includes('setting up')) {
-      resolvedImage = './images/tinkerhub_event_group.jpg';
+    } else if (lowerTag.includes('countdown') || lowerTag.includes('clock') || lowerTag.includes('timer')) {
+      resolvedImage = './images/hackathon/countdown_clock.jpg';
+    } else if (lowerTag.includes('stage') || lowerTag.includes('kickoff') || lowerTag.includes('opening')) {
+      resolvedImage = './images/hackathon/kickoff_stage.jpg';
+    } else if (lowerTag.includes('floor busy') || lowerTag.includes('busy with teams') || lowerTag.includes('computer lab') || lowerTag.includes('teams building')) {
+      resolvedImage = './images/hackathon/computer_lab_wide.jpg';
+    } else if (lowerTag.includes('cubicle') || lowerTag.includes('laptop') || lowerTag.includes('setting up')) {
+      resolvedImage = './images/hackathon/lab_coding_cubicle.jpg';
+    } else if (lowerTag.includes('dinner') || lowerTag.includes('food') || lowerTag.includes('corridor') || lowerTag.includes('late night coffee') || lowerTag.includes('coffee run') || lowerTag.includes('cups')) {
+      resolvedImage = './images/hackathon/dinner_break_corridor.jpg';
+    } else if (lowerTag.includes('outreach') || lowerTag.includes('story') || lowerTag.includes('instagram') || lowerTag.includes('cheer')) {
+      resolvedImage = './images/hackathon/vishnu_outreach_story.jpg';
+    } else if (lowerTag.includes('vishnu') || lowerTag.includes('solo') || lowerTag.includes('3 am') || lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('unplugged')) {
+      resolvedImage = './images/hackathon/vishnu_solo_night.jpg';
+    } else if (lowerTag.includes('smartboard') || lowerTag.includes('neon') || lowerTag.includes('morning sun') || lowerTag.includes('sunrise') || lowerTag.includes('window')) {
+      resolvedImage = './images/hackathon/smartboard_morning.jpg';
+    } else if (lowerTag.includes('courtyard') || lowerTag.includes('sun') || lowerTag.includes('final push') || lowerTag.includes('10 am')) {
+      resolvedImage = './images/hackathon/courtyard_morning.jpg';
+    } else if (lowerTag.includes('presentation') || lowerTag.includes('demos') || lowerTag.includes('alumni')) {
+      resolvedImage = './images/hackathon/alumni_hall_presentation.jpg';
     } else if (lowerTag.includes('closing') || lowerTag.includes('letter') || lowerTag.includes('coordinator')) {
       resolvedImage = './images/useless_3_closing.png';
-    } else if (lowerTag.includes('thank') || lowerTag.includes('wrap') || lowerTag.includes('reflection') || lowerTag.includes('morning sun')) {
+    } else if (lowerTag.includes('thank') || lowerTag.includes('wrap') || lowerTag.includes('reflection')) {
       resolvedImage = './images/useless_3_thankyou.png';
+    } else if (lowerTag.includes('group') || lowerTag.includes('teams') || lowerTag.includes('hall')) {
+      resolvedImage = './images/tinkerhub_event_group.jpg';
     } else if (lowerTag.includes('ui') || lowerTag.includes('dashboard') || lowerTag.includes('landing')) {
       resolvedImage = './screenshots/landing.png';
     }
@@ -55,6 +90,57 @@ export const ScrapbookPlaceholder: React.FC<ScrapbookPlaceholderProps> = ({
   const isWorkstation = lowerTag.includes('workstation') || lowerTag.includes('cables') || lowerTag.includes('3 am');
 
   const cleanLabel = tag.replace(/^\[ADD (PHOTO|SCREENSHOT|SKETCH|TERMINAL LOG|BUG SCREENSHOT):\s*/i, '').replace(/\]$/, '');
+
+  // 0. AUTHENTIC VIDEO CAM CLIP
+  if (resolvedVideo) {
+    return (
+      <div className={`inline-block w-full max-w-full p-0.5 transition-all duration-300 hover:scale-[1.015] hover:rotate-0 hover:shadow-2xl ${rotateClass} ${className}`}>
+        <div
+          className={`${compact ? 'p-2 pb-3' : 'p-2.5 pb-4'} bg-white relative rounded-sm shadow-xl`}
+          style={{
+            boxShadow: '0 10px 30px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.08)',
+          }}
+        >
+          {/* Subtle Masking Tape */}
+          <div
+            className="absolute -top-2.5 left-6 w-10 h-4 opacity-80 z-10 masking-tape-strip"
+            style={{
+              transform: rotate === 'cw' ? 'rotate(-4deg)' : 'rotate(3deg)',
+            }}
+          />
+
+          <div className={`w-full bg-slate-950 border border-slate-800/80 relative rounded overflow-hidden flex items-center justify-center ${
+            compact ? 'aspect-[16/9] max-h-[160px]' : 'aspect-[16/10] max-h-[210px]'
+          }`}>
+            <video
+              src={resolvedVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-rose-600/90 text-white font-mono text-[8px] font-bold tracking-wider flex items-center gap-1 shadow pointer-events-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span>LIVE CAM CLIP</span>
+            </div>
+          </div>
+
+          <div className={`${compact ? 'mt-1.5 px-1' : 'mt-2 px-1.5'} flex items-start justify-between gap-2`}>
+            {caption && (
+              <p className="font-handwriting text-slate-700 text-xs sm:text-[13px] leading-snug tracking-wide flex-1">
+                {caption}
+              </p>
+            )}
+            <span className="font-mono text-[8px] text-slate-400/80 shrink-0 mt-0.5 text-right">
+              12 SEPT 2026
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 1. REAL SCREENSHOT / PHOTOGRAPH
   if (resolvedImage) {

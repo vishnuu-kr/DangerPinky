@@ -1221,7 +1221,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag="[ADD PHOTO: Event atmosphere — Vishnu doing outreach while coding]"
-                  caption="Outreach phone in one hand, laptop in the other"
+                  videoSrc="./videos/vishnu_outreach_cheer.mp4"
+                  caption="Vishnu filming live TinkerHub stories: participants cheering at 09:03 PM"
                   rotate="cw"
                 />
               </div>
@@ -1689,7 +1690,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag={CHAPTERS[9].scrapbookTag || '[ADD PHOTO: Vishnu K R at testing workstation]'}
-                  caption="Vishnu at the laptop: live pinky HUD active"
+                  videoSrc="./videos/vishnu_night_desk.mp4"
+                  caption="Vishnu at 03:45 AM in the SNMIMT computer lab: 18 hours solo building DangerPinky"
                   rotate="cw"
                 />
               </div>
@@ -2274,7 +2276,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag="[PHOTO: Morning sun through the hackathon window]"
-                  caption="Sun rising over Ernakulam: laptops sleeping, DangerPinky compiled"
+                  videoSrc="./videos/smartboard_neon_draw.mp4"
+                  caption="06:34 AM Sunrise: neon 'Useless Project 3.0' drawn on smartboard"
                   rotate="cw"
                 />
               </div>
