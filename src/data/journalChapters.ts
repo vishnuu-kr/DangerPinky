@@ -366,7 +366,7 @@ export const TIMELINE_MILESTONES: TimelineMilestone[] = [
     time: '08:00 AM',
     title: 'Synthesizing Audio in 100 Lines of Code',
     attempt: 'Download 8-bit sound packs from free game audio repositories.',
-    reality: 'The college hostel Wi-Fi collapsed under the weight of 50 hackathon participants uploading videos. I had zero internet access to download MP3 files.',
+    reality: 'The college hostel Wi-Fi collapsed under the weight of 65 hackathon participants uploading videos. I had zero internet access to download MP3 files.',
     visualEvidence: 'Opening Chrome dev tools and typing "new AudioContext()" directly into the console to test oscillator frequencies.',
     lesson: 'Math is the lightest audio library on earth. A 50-line Web Audio oscillator utility creates infinite sound effects with zero network requests.'
   },
@@ -776,15 +776,15 @@ if (head.x === food.x && head.y === food.y) {
       'The split-screen reality: being the Outreach Lead responsible for documenting the entire event while simultaneously building DangerPinky.',
     narrative: [
       "So now I had the idea. DangerPinky. A snake that eats your files. Okay. Let's build this.",
-      "Except — I was still the Outreach Lead. I didn't get a pass on my responsibilities just because I now had a project. The makeathon was happening around me. 50 participants were building. The TinkerHub social channels needed constant updates.",
+      "Except — I was still the Outreach Lead. I didn't get a pass on my responsibilities just because I now had a project. The makeathon was happening around me. 65 participants were building. The TinkerHub social channels needed constant updates.",
       "So my night became this absurd split-screen existence. I had two jobs:",
       "JOB 01: Outreach Lead. Posting Instagram Stories, photographing teams at 2 AM, capturing reels, answering participant questions, telling everyone 'document your build!'",
       "JOB 02: Apparent Game Builder. MediaPipe hand tracking, HTML5 Canvas 60 FPS loop, Electron native IPC, procedural Web Audio synthesizer, Vitest test suites.",
       "I was literally writing code with one hand and holding my phone with the other. And the funniest part? I was telling everyone else to document their build while completely forgetting to document my own. I was so busy capturing everyone else's 2 AM struggles that I barely took photos of my own screen."
     ],
-    scrapbookTag: '[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]',
+    scrapbookTag: '[ADD PHOTO: SNMIMT Computer Lab — 65 participants hacking through the night]',
     scrapbookTags: [
-      '[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]',
+      '[ADD PHOTO: SNMIMT Computer Lab — 65 participants hacking through the night]',
       '[ADD PHOTO: Event atmosphere — Live TinkerHub stories while coding]',
       '[ADD SCREENSHOT: TinkerHub social media posts going up during the build]'
     ]
@@ -959,7 +959,7 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
       "That's what 03:45 AM at a makeathon feels like. The room smells like instant noodles and hot laptops. Half the hall is asleep face-down on tables. The other half is in this strange trance where you spend fifteen minutes debugging hardware as a software bug and you just laugh at yourself and keep typing.",
       "The webcam stayed firmly plugged in after that."
     ],
-    scrapbookTag: '[ADD PHOTO: Empty tea cups, tangled USB cables, dim room at 3 AM]'
+    scrapbookTag: '[ADD PHOTO: Corridor dinner break — hackathon food and snacks]'
   },
 
   // -------------------------------------------------------------------------

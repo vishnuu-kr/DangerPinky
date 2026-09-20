@@ -191,7 +191,7 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
                 TinkerHub UP 3.0 Official Poster
               </h4>
               <p className="text-[10px] sm:text-[10.5px] text-slate-300 font-sans leading-relaxed mt-0.5">
-                The official celebration dispatch commemorating 12 builder squads, 40+ makers, and 18 hours of delightfully useless engineering.
+                The official celebration dispatch commemorating 12 builder squads, 65 makers, and 18 hours of delightfully useless engineering.
               </p>
               <div className="mt-1 flex items-center justify-between text-[9px] font-mono text-slate-500">
                 <span className="font-handwriting text-xs text-pink-300">↳ &ldquo;thank you for making it useless&rdquo;</span>

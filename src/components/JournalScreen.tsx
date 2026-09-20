@@ -600,7 +600,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[9.5px]">
                     <div className="p-1.5 rounded bg-slate-900/70 border border-slate-800">
                       <span className="text-slate-500 block text-[7.5px] uppercase">Registered</span>
-                      <span className="text-white font-bold text-[11px]">40+ Builders</span>
+                      <span className="text-white font-bold text-[11px]">65 Builders</span>
                     </div>
                     <div className="p-1.5 rounded bg-slate-900/70 border border-slate-800">
                       <span className="text-slate-500 block text-[7.5px] uppercase">Active Teams</span>
@@ -1125,7 +1125,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div className="p-1.5 rounded bg-amber-950/20 border border-amber-500/20">
                       <span className="text-[8.5px] font-mono font-bold text-amber-400 block mb-0.5">JOB 01 // OUTREACH</span>
                       <p className="text-slate-300 leading-tight">
-                        Documenting 50 builders, capturing 2 AM Instagram reels: &ldquo;Document your build!&rdquo;
+                        Documenting 65 participants, capturing 2 AM Instagram reels: &ldquo;Document your build!&rdquo;
                       </p>
                     </div>
                     <div className="p-1.5 rounded bg-pink-950/20 border border-pink-500/20">
@@ -1141,9 +1141,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <div className="mt-2">
                   <ScrapbookPlaceholder
                     compact
-                    tag="[ADD PHOTO: SNMIMT Computer Lab — 50 builders hacking through the night]"
+                    tag="[ADD PHOTO: SNMIMT Computer Lab — 65 participants hacking through the night]"
                     imgSrc="./images/hackathon/computer_lab_wide.jpg"
-                    caption="SNMIMT Computer Lab: 50 builders coding across the aisles during UP 3.0"
+                    caption="SNMIMT Computer Lab: 65 participants coding across the aisles during UP 3.0"
                     rotate="cw"
                   />
                 </div>
@@ -1684,9 +1684,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <ScrapbookPlaceholder
                   compact
-                  tag={CHAPTERS[9].scrapbookTag || '[ADD PHOTO: Vishnu K R at testing workstation]'}
+                  tag={CHAPTERS[9].scrapbookTag || '[ADD PHOTO: Solo builder at testing workstation]'}
                   videoSrc="./videos/vishnu_night_desk.mp4"
-                  caption="Vishnu at 03:45 AM in the SNMIMT computer lab: 18 hours solo building DangerPinky"
+                  caption="03:45 AM in the SNMIMT computer lab: 18 hours solo building DangerPinky"
                   rotate="cw"
                 />
               </div>
@@ -1712,7 +1712,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ChapterHeader
                   chapter={CHAPTERS[10]}
                   accentClass="text-rose-400"
-                  marginNote="brilliant debugging Vishnu 👍"
+                  marginNote="brilliant debugging: check cables first 👍"
                 />
                 <div className="book-drop-cap">
                   <EditorialProse narratives={CHAPTERS[10].narrative} pullquoteIndex={0} maxParagraphs={3} />
@@ -1758,9 +1758,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
                 <ScrapbookPlaceholder
                   compact
-                  tag={CHAPTERS[10].scrapbookTag || '[ADD PHOTO: Empty tea cups, tangled cables]'}
-                  imgSrc="./images/hackathon/vishnu_solo_night.jpg"
-                  caption="03:45 AM: Empty black tea cups, spicy banana chips, and the unplugged webcam panic"
+                  tag={CHAPTERS[10].scrapbookTag || '[ADD PHOTO: Corridor dinner break — hackathon food and snacks]'}
+                  imgSrc="./images/hackathon/dinner_break_corridor.jpg"
+                  caption="Midnight hackathon fuel: Corridor dinner break, hot black tea, and spicy banana chips"
                   rotate="ccw"
                 />
 
