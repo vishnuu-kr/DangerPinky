@@ -47,7 +47,17 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
         }`}
       >
         {/* Central spine crease between pages on desktop (only when dual page) */}
-        {!fullWidthContent && <div className="hidden lg:block book-spine-crease" />}
+        {!fullWidthContent && (
+          <div
+            className="hidden lg:block book-spine-crease"
+            style={{
+              boxShadow:
+                paperTone === 'cream'
+                  ? 'inset -4px 0 8px rgba(120,90,50,0.22), inset 4px 0 8px rgba(120,90,50,0.22)'
+                  : 'inset -4px 0 8px rgba(0,0,0,0.4), inset 4px 0 8px rgba(0,0,0,0.4)',
+            }}
+          />
+        )}
 
         {fullWidthContent ? (
           <div
@@ -56,9 +66,13 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
             } ${layoutVariant === 'technical' ? 'paper-grid' : ''} relative flex flex-col justify-between h-full min-h-full`}
           >
             {/* Running Header */}
-            <div className="book-running-head text-slate-400 mb-3 flex items-center justify-between border-b border-slate-800/60 pb-2 shrink-0">
+            <div className={`book-running-head mb-3 flex items-center justify-between border-b pb-2 shrink-0 ${
+              paperTone === 'cream' ? 'border-amber-900/15 text-stone-600' : 'border-slate-800/60 text-slate-400'
+            }`}>
               <span>{leftRunningHead}</span>
-              <span className="text-pink-400 font-mono tracking-widest text-[11px] font-bold">
+              <span className={`font-mono tracking-widest text-[11px] font-bold ${
+                paperTone === 'cream' ? 'text-pink-700' : 'text-pink-400'
+              }`}>
                 [ FOLD-OUT TECHNICAL SCHEMATIC ]
               </span>
               <span>{rightRunningHead}</span>
@@ -70,10 +84,16 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
             </div>
 
             {/* Folio Page Numbers */}
-            <div className="flex justify-between items-center mt-auto pt-2 border-t border-slate-800/40 text-xs font-mono text-slate-500 shrink-0">
-              <span>— PAGE {leftPageNumber} —</span>
+            <div className={`flex justify-between items-center mt-auto pt-2 border-t text-xs font-mono shrink-0 ${
+              paperTone === 'cream' ? 'border-amber-900/15 text-stone-500' : 'border-slate-800/40 text-slate-500'
+            }`}>
+              <span className={`px-2 py-0.5 border-t text-[9px] font-mono ${
+                paperTone === 'cream' ? 'border-amber-900/20 text-stone-600' : 'border-slate-700/60 text-slate-600'
+              }`}>— PAGE {leftPageNumber} —</span>
               <span className="ink-stamp ink-stamp-green text-[9px]">DOUBLE-PAGE FOLD-OUT</span>
-              <span>— PAGE {rightPageNumber} —</span>
+              <span className={`px-2 py-0.5 border-t text-[9px] font-mono ${
+                paperTone === 'cream' ? 'border-amber-900/20 text-stone-600' : 'border-slate-700/60 text-slate-600'
+              }`}>— PAGE {rightPageNumber} —</span>
             </div>
           </div>
         ) : (
@@ -84,12 +104,16 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
           >
             {/* ─── LEFT PAGE (VERSO) ─── */}
             <div
-              className={`p-4 sm:p-6 lg:p-7 lg:pr-12 xl:pr-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/60 relative h-full min-h-full ${leftTextureClass}`}
+              className={`p-4 sm:p-6 lg:p-7 lg:pr-12 xl:pr-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r relative h-full min-h-full ${
+                paperTone === 'cream' ? 'border-[#dfd3c3]' : 'border-slate-800/60'
+              } ${leftTextureClass}`}
             >
               {/* Running Header */}
-              <div className="book-running-head text-slate-400 shrink-0">
+              <div className={`book-running-head shrink-0 ${paperTone === 'cream' ? 'text-stone-600' : 'text-slate-400'}`}>
                 <span>{leftRunningHead}</span>
-                <span className="text-pink-400 font-mono text-[10px] tracking-[0.15em]">UP 3.0 · SNMIMT</span>
+                <span className={`font-mono text-[10px] tracking-[0.25em] ${
+                  paperTone === 'cream' ? 'text-pink-700 font-bold' : 'text-pink-400'
+                }`}>UP 3.0 · SNMIMT</span>
               </div>
 
               {/* Natural Left Page Content with Smooth Archival Scroll */}
@@ -99,26 +123,47 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
               {/* Folio Page Number */}
               <div className="book-page-folio shrink-0 mt-auto">
-                <span>— PAGE {leftPageNumber} —</span>
+                <span className={`px-2 py-0.5 border-t text-[9px] font-mono ${
+                  paperTone === 'cream' ? 'border-amber-900/20 text-stone-600' : 'border-slate-700/60 text-slate-600'
+                }`}>— PAGE {leftPageNumber} —</span>
               </div>
             </div>
 
             {/* Mobile Page Transition Ribbon */}
-            <div className="lg:hidden flex items-center justify-between py-2 px-5 bg-slate-950/70 border-y border-slate-800/80 text-[10px] font-mono text-slate-400 shrink-0">
+            <div className={`lg:hidden flex items-center justify-between py-2 px-5 border-y text-[10px] font-mono shrink-0 ${
+              paperTone === 'cream'
+                ? 'bg-[#f4efe4] border-amber-900/20 text-stone-700'
+                : 'bg-slate-950/70 border-slate-800/80 text-slate-400'
+            }`}>
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500" />
                 <span>PAGE {leftPageNumber} COMPLETE</span>
               </span>
-              <span className="text-pink-400 font-semibold tracking-wider">CONTINUE TO PAGE {rightPageNumber} ↓</span>
+              <span className={paperTone === 'cream' ? 'text-pink-700 font-bold tracking-wider' : 'text-pink-400 font-semibold tracking-wider'}>
+                CONTINUE TO PAGE {rightPageNumber} ↓
+              </span>
             </div>
 
             {/* ─── RIGHT PAGE (RECTO) ─── */}
             <div
               className={`p-4 sm:p-6 lg:p-7 lg:pl-12 xl:pl-14 flex flex-col justify-between relative h-full min-h-full ${rightTextureClass}`}
             >
+              {/* Page curl shadow */}
+              <div
+                className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none"
+                style={{
+                  background:
+                    paperTone === 'cream'
+                      ? 'radial-gradient(ellipse at bottom right, rgba(120,90,50,0.18) 0%, transparent 70%)'
+                      : 'radial-gradient(ellipse at bottom right, rgba(0,0,0,0.4) 0%, transparent 70%)',
+                }}
+              />
+
               {/* Running Header */}
-              <div className="book-running-head text-slate-400 shrink-0">
-                <span className="text-emerald-400 font-mono text-[10px] tracking-[0.15em]">VISHNU K R</span>
+              <div className={`book-running-head shrink-0 ${paperTone === 'cream' ? 'text-stone-600' : 'text-slate-400'}`}>
+                <span className={`font-mono text-[10px] tracking-[0.25em] ${
+                  paperTone === 'cream' ? 'text-emerald-700 font-bold' : 'text-emerald-400'
+                }`}>VISHNU K R</span>
                 <span>{rightRunningHead}</span>
               </div>
 
@@ -129,7 +174,9 @@ export const BookSpread: React.FC<BookSpreadProps> = ({
 
               {/* Folio Page Number */}
               <div className="book-page-folio shrink-0 mt-auto">
-                <span>— PAGE {rightPageNumber} —</span>
+                <span className={`px-2 py-0.5 border-t text-[9px] font-mono ${
+                  paperTone === 'cream' ? 'border-amber-900/20 text-stone-600' : 'border-slate-700/60 text-slate-600'
+                }`}>— PAGE {rightPageNumber} —</span>
               </div>
             </div>
 

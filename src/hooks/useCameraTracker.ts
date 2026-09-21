@@ -10,11 +10,12 @@ export interface UseCameraTrackerOptions {
   onFrame?: (frame: PinkyTrackingFrame | null) => void;
   onStatusChange?: (status: TrackingStatus) => void;
   sensitivity?: number;
+  fingerMode?: import('../types/game').FingerMode;
   enabled?: boolean;
 }
 
 export function useCameraTracker(options: UseCameraTrackerOptions) {
-  const { onDirection, onFrame, onStatusChange, sensitivity = 3, enabled = true } = options;
+  const { onDirection, onFrame, onStatusChange, sensitivity = 3, fingerMode = 'PINKY', enabled = true } = options;
 
   const [status, setStatus] = useState<TrackingStatus>('NOT_STARTED');
   const statusRef = useRef<TrackingStatus>('NOT_STARTED');
@@ -51,14 +52,20 @@ export function useCameraTracker(options: UseCameraTrackerOptions) {
 
   const streamRef = useRef<MediaStream | null>(null);
   const landmarkerRef = useRef<HandLandmarker | null>(null);
-  const detectorRef = useRef<PinkyDetector>(new PinkyDetector({ sensitivity }));
+  const detectorRef = useRef<PinkyDetector>(new PinkyDetector({ sensitivity, fingerMode }));
   const animFrameIdRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef<number>(-1);
 
-  // Keep sensitivity synced
+  // Keep sensitivity and fingerMode synced
   useEffect(() => {
     detectorRef.current.setSensitivity(sensitivity);
   }, [sensitivity]);
+
+  useEffect(() => {
+    if (fingerMode) {
+      detectorRef.current.setFingerMode(fingerMode);
+    }
+  }, [fingerMode]);
 
   const updateStatus = useCallback((newStatus: TrackingStatus) => {
     statusRef.current = newStatus;
@@ -86,15 +93,25 @@ export function useCameraTracker(options: UseCameraTrackerOptions) {
       setError(null);
       updateStatus('INITIALIZING');
 
-      // 1. Get Camera Stream
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 480 },
-          height: { ideal: 360 },
-          facingMode: 'user'
-        },
-        audio: false
-      });
+      // 1. Get Camera Stream with resilient fallback
+      let mediaStream: MediaStream;
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 480 },
+            height: { ideal: 360 },
+            facingMode: 'user'
+          },
+          audio: false
+        });
+      } catch (initialErr) {
+        console.warn('[useCameraTracker] Ideal camera constraints failed, attempting fallback to basic video:', initialErr);
+        // Fallback without resolution/facingMode to avoid hardware MFT GetPhotoState failures
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+      }
       streamRef.current = mediaStream;
       setStream(mediaStream);
 
@@ -117,8 +134,21 @@ export function useCameraTracker(options: UseCameraTrackerOptions) {
       updateStatus('SHOW_HAND');
 
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Camera access error';
-      console.error('[useCameraTracker] Camera start error:', err);
+      let msg = 'Camera access error';
+      if (typeof DOMException !== 'undefined' && err instanceof DOMException) {
+        if (err.name === 'NotReadableError' || err.name === 'TrackStartError' || err.message?.includes('hardware resources')) {
+          msg = 'Camera is currently in use by another application (Zoom, Teams, or background window). Please close other camera apps and retry.';
+        } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          msg = 'Camera permission was denied. Please allow camera access in your system settings.';
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          msg = 'No camera device was detected. Please connect a webcam.';
+        } else {
+          msg = `${err.name}: ${err.message}`;
+        }
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      console.error('[useCameraTracker] Camera start error:', msg, err);
       setError(msg);
       updateStatus('NOT_STARTED');
     }
@@ -313,13 +343,17 @@ export function useCameraTracker(options: UseCameraTrackerOptions) {
       ctx.stroke();
     }
 
-    // Highlight Pinky finger segments in vibrant pink
-    ctx.strokeStyle = '#ec4899';
-    ctx.lineWidth = 3;
-    const pinkyIndices = [17, 18, 19, 20];
+    const isIndex = detectorRef.current.getFingerMode() === 'INDEX';
+    const activeIndices = isIndex ? [5, 6, 7, 8] : [17, 18, 19, 20];
+    const activeColor = isIndex ? '#06b6d4' : '#ec4899';
+    const activeGlow = isIndex ? '#22d3ee' : '#f472b6';
+
+    // Highlight active control finger segments (Pinky vs Index)
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 3.5;
     ctx.beginPath();
-    for (let k = 0; k < pinkyIndices.length; k++) {
-      const p = rawLandmarks[pinkyIndices[k]];
+    for (let k = 0; k < activeIndices.length; k++) {
+      const p = rawLandmarks[activeIndices[k]];
       const x = (1 - p.x) * w;
       const y = p.y * h;
       if (k === 0) ctx.moveTo(x, y);
@@ -327,24 +361,72 @@ export function useCameraTracker(options: UseCameraTrackerOptions) {
     }
     ctx.stroke();
 
-    // Prominent Glowing Pinky TIP indicator (Landmark 20)
+    // Motion trail of recent positions
+    const recent = detectorRef.current.getRecentPositions();
+    if (recent.length > 1 && frame) {
+      for (let r = 0; r < recent.length - 1; r++) {
+        const pt = recent[r];
+        const nextPt = recent[r + 1];
+        const alpha = ((r + 1) / recent.length) * 0.4;
+        ctx.strokeStyle = isIndex ? `rgba(6, 182, 212, ${alpha})` : `rgba(236, 72, 153, ${alpha})`;
+        ctx.lineWidth = 2;
+        const trailX = (frame.smoothedTip.x + (pt.x - nextPt.x) * 0.12) * w;
+        const trailY = (frame.smoothedTip.y + (pt.y - nextPt.y) * 0.12) * h;
+        ctx.beginPath();
+        ctx.arc(trailX, trailY, 2.5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Prominent Glowing TIP indicator
     if (frame) {
       const tipX = frame.smoothedTip.x * w;
       const tipY = frame.smoothedTip.y * h;
 
       // Glow halo
-      ctx.shadowColor = '#ec4899';
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = '#f472b6';
+      ctx.shadowColor = activeColor;
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = activeGlow;
       ctx.beginPath();
-      ctx.arc(tipX, tipY, 7, 0, Math.PI * 2);
+      ctx.arc(tipX, tipY, 7.5, 0, Math.PI * 2);
       ctx.fill();
+
+      // Glowing tracking confidence boundary ring
+      const isNearEdge = frame.smoothedTip.x < 0.08 || frame.smoothedTip.x > 0.92 || frame.smoothedTip.y < 0.08 || frame.smoothedTip.y > 0.92;
+      const confidenceColor = isNearEdge ? '#f43f5e' : activeGlow;
+
+      ctx.save();
+      ctx.strokeStyle = confidenceColor;
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(tipX, tipY, 13, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
 
       // Inner white core
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(tipX, tipY, 3, 0, Math.PI * 2);
+      ctx.arc(tipX, tipY, 3.5, 0, Math.PI * 2);
       ctx.fill();
+
+      // Direction flick arrow overlay if moving
+      if (frame.detectedDirection) {
+        ctx.strokeStyle = '#ffffff';
+        ctx.fillStyle = activeGlow;
+        ctx.lineWidth = 2;
+        const arrowLen = 14;
+        let dx = 0, dy = 0;
+        if (frame.detectedDirection === 'UP') dy = -arrowLen;
+        else if (frame.detectedDirection === 'DOWN') dy = arrowLen;
+        else if (frame.detectedDirection === 'LEFT') dx = -arrowLen;
+        else if (frame.detectedDirection === 'RIGHT') dx = arrowLen;
+
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY);
+        ctx.lineTo(tipX + dx, tipY + dy);
+        ctx.stroke();
+      }
     }
 
     ctx.restore();

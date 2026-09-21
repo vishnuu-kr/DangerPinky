@@ -106,7 +106,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               {String(currentIndex + 1).padStart(2, '0')} / {String(totalCount).padStart(2, '0')}
             </span>
 
-            {onPrev && (
+            {totalCount > 1 && onPrev && (
               <button
                 onClick={onPrev}
                 className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer border border-slate-800"
@@ -116,7 +116,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
                 <ChevronLeft className="w-4 h-4" />
               </button>
             )}
-            {onNext && (
+            {totalCount > 1 && onNext && (
               <button
                 onClick={onNext}
                 className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer border border-slate-800"
@@ -148,7 +148,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
           />
 
           {/* Arrow overlays for touch/click navigation */}
-          {onPrev && (
+          {totalCount > 1 && onPrev && (
             <button
               onClick={onPrev}
               className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-950/70 text-white hover:bg-slate-950/90 transition-colors cursor-pointer border border-slate-700/40"
@@ -157,7 +157,7 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
               <ChevronLeft className="w-5 h-5" />
             </button>
           )}
-          {onNext && (
+          {totalCount > 1 && onNext && (
             <button
               onClick={onNext}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-slate-950/70 text-white hover:bg-slate-950/90 transition-colors cursor-pointer border border-slate-700/40"

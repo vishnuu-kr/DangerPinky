@@ -22,6 +22,14 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
   paperTone = 'dark',
 }) => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isVideoModalOpen) setIsVideoModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVideoModalOpen]);
   const drawerArtifacts = [
     {
       id: 'game',
@@ -135,6 +143,10 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
               <span>{FINAL_REFLECTION.footerCredit}</span>
               <span>{FINAL_REFLECTION.copyright}</span>
             </div>
+            {/* Closing handwritten sign-off */}
+            <div className="font-handwriting text-lg text-pink-300/80 text-center pt-2 transform -rotate-1">
+              — Vishnu K R, SNMIMT · Built in 18 hours, documented in love
+            </div>
           </div>
         </div>
       }
@@ -156,7 +168,7 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
           </div>
 
           {/* Official TinkerHub UP 3.0 Wrap Poster Artifact */}
-          <div className="relative p-2.5 bg-slate-950/90 rounded-lg border border-pink-500/30 shadow-xl flex items-center gap-3">
+          <div className="relative p-2.5 bg-slate-950/90 rounded-lg border border-pink-500/30 shadow-xl flex items-center gap-3 hover:scale-[1.01] transition-transform duration-150">
             <div
               className="absolute -top-2 left-6 w-10 h-3.5 opacity-80 z-10 masking-tape-strip"
               style={{ transform: 'rotate(-2deg)' }}
@@ -215,7 +227,7 @@ export const FinalReflection: React.FC<FinalReflectionProps> = ({
                       setIsVideoModalOpen(true);
                     }
                   }}
-                  className="group relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-pink-500/40 transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
+                  className="group relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-pink-500/40 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 flex flex-col justify-between"
                   style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.35)' }}
                 >
                   {/* Top tape accent */}

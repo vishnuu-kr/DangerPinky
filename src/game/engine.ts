@@ -21,12 +21,17 @@ export const DIRECTION_DELTAS: Record<Direction, Point> = {
 export interface StepResult {
   gameOver: boolean;
   gameWon?: boolean;
-  reason?: 'WALL_COLLISION' | 'SELF_COLLISION';
+  reason?: 'WALL_COLLISION' | 'SELF_COLLISION' | 'TIME_UP';
   eatenFile?: GameFile;
   eatenFruit?: FruitType;
   eatenPosition?: Point;
   collidedFood?: Collectible;
   newScore: number;
+  comboCount?: number;
+  specialType?: import('../types/game').SpecialItemType;
+  pointsAdded?: number;
+  tailTrimmed?: boolean;
+  wasSliced?: boolean;
 }
 
 export class SnakeEngine {
@@ -39,6 +44,8 @@ export class SnakeEngine {
   private filesEaten: GameFile[] = [];
   private directionQueue: Direction[] = [];
   private autoConsume: boolean = true;
+  private comboCount: number = 0;
+  private lastEatenCategory: import('../types/file').FileCategory | null = null;
 
   constructor(config: GameConfig, files: GameFile[] = [], autoConsume: boolean = true) {
     this.config = config;
@@ -69,8 +76,14 @@ export class SnakeEngine {
     this.score = 0;
     this.filesEaten = [];
     this.directionQueue = [];
+    this.comboCount = 0;
+    this.lastEatenCategory = null;
     this.snake = this.createInitialSnake();
     this.spawnFood();
+  }
+
+  public getComboCount(): number {
+    return this.comboCount;
   }
 
   public updateConfig(config: GameConfig) {
@@ -196,12 +209,26 @@ export class SnakeEngine {
     const file = this.getNextFile();
     const fruitType = FRUIT_TYPES[Math.floor(Math.random() * FRUIT_TYPES.length)];
 
+    // Special wildcard power-up items appear after initial progression (score >= 3)
+    let specialType: import('../types/game').SpecialItemType | undefined = undefined;
+    if (this.score >= 3) {
+      const roll = Math.random();
+      if (roll < 0.08) {
+        specialType = 'TRIM_TAIL';
+      } else if (roll < 0.16) {
+        specialType = 'SPEED_BURST';
+      } else if (roll < 0.24) {
+        specialType = 'DOUBLE_POINTS';
+      }
+    }
+
     this.food = {
       id: `${file.id}-${Date.now()}`,
       position: chosenPos,
       file,
       fruitType,
-      spawnTime: typeof performance !== 'undefined' ? performance.now() : Date.now()
+      spawnTime: typeof performance !== 'undefined' ? performance.now() : Date.now(),
+      specialType
     };
 
     return this.food;
@@ -254,8 +281,23 @@ export class SnakeEngine {
       ? this.snake.body
       : this.snake.body.slice(0, -1);
 
-    for (const segment of bodyToCheck) {
+    let selfCollisionIndex = -1;
+    for (let i = 0; i < bodyToCheck.length; i++) {
+      const segment = bodyToCheck[i];
       if (segment.x === nextX && segment.y === nextY) {
+        selfCollisionIndex = i;
+        break;
+      }
+    }
+
+    let wasSliced = false;
+    if (selfCollisionIndex !== -1) {
+      if (this.config.gameMode === 'ZEN') {
+        // In Zen mode: slice body at collision point instead of dying!
+        const keepCount = Math.max(3, selfCollisionIndex);
+        this.snake.body = this.snake.body.slice(0, keepCount);
+        wasSliced = true;
+      } else {
         this.snake.isAlive = false;
         return {
           gameOver: true,
@@ -278,17 +320,50 @@ export class SnakeEngine {
     let eatenFruit: FruitType | undefined;
     let eatenPosition: Point | undefined;
     let collidedFood: Collectible | undefined;
+    let comboCount: number | undefined;
+    let specialType: import('../types/game').SpecialItemType | undefined;
+    let pointsAdded: number | undefined;
+    let tailTrimmed: boolean | undefined;
 
     // Check if food was reached
     if (this.food && nextX === this.food.position.x && nextY === this.food.position.y) {
       collidedFood = this.food;
+      specialType = this.food.specialType;
+
       if (this.autoConsume) {
+        if (this.lastEatenCategory && this.food.file.category === this.lastEatenCategory) {
+          this.comboCount = Math.min(5, this.comboCount + 1);
+        } else {
+          this.comboCount = 1;
+          this.lastEatenCategory = this.food.file.category;
+        }
+        comboCount = this.comboCount;
+
+        pointsAdded = 1 + (this.comboCount > 1 ? this.comboCount - 1 : 0);
+        if (specialType === 'DOUBLE_POINTS') {
+          pointsAdded *= 2;
+        } else if (specialType === 'SPEED_BURST') {
+          pointsAdded += 5;
+        }
+
         eatenFile = this.food.file;
         eatenFruit = this.food.fruitType;
         eatenPosition = { ...this.food.position };
-        this.score += 1;
+        this.score += pointsAdded;
         this.filesEaten.push(eatenFile);
-        this.snake.growthPending += 1;
+
+        if (specialType === 'TRIM_TAIL') {
+          if (this.snake.body.length > 3) {
+            this.snake.body.pop();
+            if (this.snake.body.length > 3) {
+              this.snake.body.pop();
+            }
+            tailTrimmed = true;
+          }
+        } else {
+          this.snake.growthPending += 1;
+        }
+
         const nextFood = this.spawnFood();
         if (!nextFood) {
           // Board filled completely! Player won
@@ -299,7 +374,11 @@ export class SnakeEngine {
             eatenFile,
             eatenFruit,
             eatenPosition,
-            newScore: this.score
+            newScore: this.score,
+            comboCount,
+            specialType,
+            pointsAdded,
+            tailTrimmed
           };
         }
       } else {
@@ -321,20 +400,59 @@ export class SnakeEngine {
       eatenFruit,
       eatenPosition,
       collidedFood,
-      newScore: this.score
+      newScore: this.score,
+      comboCount,
+      specialType,
+      pointsAdded,
+      tailTrimmed,
+      wasSliced
     };
   }
 
   public commitFoodConsumption(food: Collectible): {
     score: number;
+    newScore: number;
     eatenFile: GameFile;
     eatenFruit: FruitType;
     eatenPosition: Point;
     gameWon?: boolean;
+    comboCount: number;
+    specialType?: import('../types/game').SpecialItemType;
+    pointsAdded: number;
+    tailTrimmed?: boolean;
   } {
-    this.score += 1;
+    const specialType = food.specialType;
+    let tailTrimmed = false;
+
+    if (this.lastEatenCategory && food.file.category === this.lastEatenCategory) {
+      this.comboCount = Math.min(5, this.comboCount + 1);
+    } else {
+      this.comboCount = 1;
+      this.lastEatenCategory = food.file.category;
+    }
+
+    let pointsAdded = 1 + (this.comboCount > 1 ? this.comboCount - 1 : 0);
+    if (specialType === 'DOUBLE_POINTS') {
+      pointsAdded *= 2;
+    } else if (specialType === 'SPEED_BURST') {
+      pointsAdded += 5;
+    }
+
+    this.score += pointsAdded;
     this.filesEaten.push(food.file);
-    this.snake.growthPending += 1;
+
+    if (specialType === 'TRIM_TAIL') {
+      if (this.snake.body.length > 3) {
+        this.snake.body.pop();
+        if (this.snake.body.length > 3) {
+          this.snake.body.pop();
+        }
+        tailTrimmed = true;
+      }
+    } else {
+      this.snake.growthPending += 1;
+    }
+
     const nextFood = this.spawnFood();
     const gameWon = !nextFood;
     if (gameWon) {
@@ -342,10 +460,15 @@ export class SnakeEngine {
     }
     return {
       score: this.score,
+      newScore: this.score,
       eatenFile: food.file,
       eatenFruit: food.fruitType,
       eatenPosition: food.position,
-      gameWon
+      gameWon,
+      comboCount: this.comboCount,
+      specialType,
+      pointsAdded,
+      tailTrimmed
     };
   }
 
@@ -360,7 +483,7 @@ export class SnakeEngine {
       return baseSpeed;
     }
     // Dynamic: start at baseSpeed and speed up slightly per food eaten
-    const speed = baseSpeed - (this.score * this.config.speedDecrementPerFood);
+    const speed = baseSpeed - (this.filesEaten.length * this.config.speedDecrementPerFood);
     return Math.max(this.config.minSpeedMs, speed);
   }
 

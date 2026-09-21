@@ -7,16 +7,37 @@ import { validatePathContainment } from './securityValidator';
 import { scanNativeDirectory } from './scanner';
 import { ActiveSession, StoredSessionFile, FolderSelectionResult, NativeFileOperationResult } from './types';
 
-// Enable camera/media device access in Electron
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
+// Enforce single-instance lock to avoid multiple instances fighting for webcam & cache
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  console.log('[Main] Another instance of DangerPinky is already running. Focusing existing window.');
+  app.quit();
+  process.exit(0);
+}
+
+// Enable camera/media device access and prevent cache collisions in Electron
 app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 app.commandLine.appendSwitch('unsafely-treat-insecure-origin-as-secure', 'file://');
 app.commandLine.appendSwitch('allow-file-access-from-files');
 app.commandLine.appendSwitch('enable-features', 'MediaStream');
+app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
+app.commandLine.appendSwitch('disable-http-cache');
 
 let mainWindow: BrowserWindow | null = null;
 let activeSession: ActiveSession | null = null;
 let localServer: http.Server | null = null;
 let localServerPort: number = 0;
+
+if (gotSingleInstanceLock) {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
 
 function startEmbeddedServer(): Promise<number> {
   return new Promise((resolve) => {
@@ -89,8 +110,25 @@ function createWindow() {
     }
   });
 
-  // Log renderer errors to main console
-  mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+  // Log renderer errors to main console (compatible with modern Electron 30+ and legacy)
+  mainWindow.webContents.on('console-message', (event: any, ...args: any[]) => {
+    let level: number = 0;
+    let message: string = '';
+    let line: number = 0;
+    let sourceId: string = '';
+
+    if (event && typeof event === 'object' && 'message' in event) {
+      level = event.level ?? 0;
+      message = event.message ?? '';
+      line = event.line ?? 0;
+      sourceId = event.sourceId ?? '';
+    } else {
+      level = typeof args[0] === 'number' ? args[0] : 0;
+      message = args[1] ?? '';
+      line = args[2] ?? 0;
+      sourceId = args[3] ?? '';
+    }
+
     const levelStr = level === 3 ? 'ERROR' : level === 2 ? 'WARN' : 'INFO';
     console.log(`[Renderer ${levelStr}] ${message} (${sourceId}:${line})`);
   });
@@ -325,7 +363,6 @@ app.on('window-all-closed', () => {
     localServer.close();
     localServer = null;
   }
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
+  process.exit(0);
 });

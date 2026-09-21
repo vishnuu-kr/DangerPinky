@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { FloatingNotification, GameStatus } from '../types/game';
+import React, { useEffect, useRef } from 'react';
+import { FloatingNotification, GameStatus, Direction, GameMode, BoardTheme } from '../types/game';
+import { BOARD_THEMES } from '../game/constants';
 
 interface GameCanvasProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -7,6 +8,12 @@ interface GameCanvasProps {
   floatingNotes: FloatingNotification[];
   countdown: number;
   status: GameStatus;
+  boardTheme?: BoardTheme;
+  isScreenShaking?: boolean;
+  isNearMiss?: boolean;
+  timeRemaining?: number;
+  gameMode?: GameMode;
+  onSwipeDirection?: (dir: Direction) => void;
 }
 
 export const GameCanvas: React.FC<GameCanvasProps> = ({
@@ -14,8 +21,39 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   containerRef,
   floatingNotes,
   countdown,
-  status
+  status,
+  boardTheme = 'MEADOW',
+  isScreenShaking = false,
+  isNearMiss = false,
+  timeRemaining,
+  gameMode,
+  onSwipeDirection
 }) => {
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || !onSwipeDirection) return;
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    const minSwipe = 28;
+    if (Math.hypot(dx, dy) >= minSwipe) {
+      if (Math.abs(dx) > Math.abs(dy)) {
+        onSwipeDirection(dx > 0 ? 'RIGHT' : 'LEFT');
+      } else {
+        onSwipeDirection(dy > 0 ? 'DOWN' : 'UP');
+      }
+    }
+    touchStartRef.current = null;
+  };
+
   // Setup canvas size with DPI scaling on mount and window resize
   useEffect(() => {
     const updateCanvasSize = () => {
@@ -38,15 +76,38 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     return () => window.removeEventListener('resize', updateCanvasSize);
   }, [canvasRef, containerRef]);
 
+  const currentTheme = BOARD_THEMES[boardTheme] || BOARD_THEMES.MEADOW;
+
   return (
     <div
       ref={containerRef}
-      className="relative aspect-square w-full mx-auto rounded-b-2xl overflow-hidden bg-[#a2d149] flex items-center justify-center select-none"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        backgroundColor: currentTheme.tileA,
+        boxShadow: `0 0 28px ${currentTheme.glowColor}`
+      }}
+      className={`relative aspect-square w-full mx-auto rounded-b-2xl overflow-hidden flex items-center justify-center select-none transition-all duration-75 ${
+        isScreenShaking ? 'translate-x-1 -translate-y-1 rotate-[0.5deg] scale-[1.015]' : ''
+      }`}
     >
       <canvas
         ref={canvasRef}
         className="w-full h-full block cursor-none"
       />
+
+      {/* Near Miss Danger Vignette */}
+      {isNearMiss && status === 'PLAYING' && (
+        <div className="absolute inset-0 pointer-events-none border-4 border-rose-500/80 shadow-[inset_0_0_40px_rgba(244,63,94,0.6)] animate-pulse z-10" />
+      )}
+
+      {/* Time Attack 60s Remaining Badge */}
+      {gameMode === 'TIME_ATTACK' && status === 'PLAYING' && timeRemaining !== undefined && (
+        <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 border border-amber-500/50 text-xs font-mono font-black text-amber-300 shadow-lg backdrop-blur-sm animate-pulse">
+          <span>⏱️</span>
+          <span>{timeRemaining}s</span>
+        </div>
+      )}
 
       {/* Floating "+1 filename" Eaten Notifications (Subtle Simulated Deletion Pill) */}
       {floatingNotes.map((note) => {

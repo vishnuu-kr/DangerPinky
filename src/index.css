@@ -190,6 +190,17 @@
     background-position: center center, 0 0, 16px 16px;
   }
 
+  /* Physical Desk Surface Texture - Warm Vintage Archival Desk */
+  .desk-grid-cream {
+    background-color: #161310;
+    background-image:
+      radial-gradient(ellipse 75% 65% at 50% 35%, rgba(217, 119, 6, 0.05), transparent 75%),
+      radial-gradient(rgba(245, 235, 220, 0.09) 1px, transparent 1px),
+      radial-gradient(rgba(217, 119, 6, 0.07) 1.5px, transparent 1.5px);
+    background-size: 100% 100%, 32px 32px, 64px 64px;
+    background-position: center center, 0 0, 16px 16px;
+  }
+
   /* Physical Sticky Notes */
   .sticky-note {
     position: relative;
@@ -198,12 +209,12 @@
     font-size: 1.25rem;
     line-height: 1.3;
     border-radius: 2px 2px 8px 2px;
-    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.65), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
+    box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.5), 0 12px 28px -6px rgba(0, 0, 0, 0.65), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .sticky-note:hover {
-    transform: rotate(0deg) scale(1.02);
-    box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.8);
+    transform: rotate(0deg) scale(1.03);
+    box-shadow: 5px 6px 16px rgba(0, 0, 0, 0.6), 0 16px 36px -6px rgba(0, 0, 0, 0.8);
   }
   .sticky-note-yellow {
     background: #fef08a;
@@ -314,6 +325,8 @@
     box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.65);
     position: relative;
     padding: 14px 16px;
+    max-width: 100%;
+    overflow: hidden;
   }
   .paper-cream .dispatch-tape-slip {
     background: rgba(246, 241, 230, 0.95);
@@ -406,6 +419,7 @@
     background: linear-gradient(90deg, #ff207f, #ff4fa0, #ffba00);
     transition: width 0.15s ease;
     border-radius: 9999px;
+    z-index: 50;
   }
 
   /* ─────────────────────────────────────────────
@@ -975,31 +989,338 @@
     background-color: #faf7ee;
     color: #1c1917;
   }
-  .paper-cream .text-white {
+
+  /* Headings & Titles (excluding protected dark modules) */
+  .paper-cream h1:not(.terminal-window *),
+  .paper-cream h2:not(.terminal-window *),
+  .paper-cream h3:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *),
+  .paper-cream h4:not(.terminal-window *),
+  .paper-cream .text-white:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
     color: #0f172a !important;
   }
-  .paper-cream .text-slate-300,
-  .paper-cream .text-slate-400 {
+
+  /* Editorial & Body Prose on Cream Parchment */
+  .paper-cream .reader-prose,
+  .paper-cream .reader-prose p {
+    color: #1e293b !important;
+  }
+  .paper-cream .reader-prose p.font-semibold {
+    color: #831843 !important;
+    background-color: rgba(244, 114, 182, 0.12) !important;
+    border-left-color: #be185d !important;
+  }
+  .paper-cream .reader-prose .pullquote {
+    color: #831843 !important;
+    border-left-color: #be185d !important;
+    background-color: rgba(244, 114, 182, 0.08) !important;
+  }
+  .paper-cream .book-drop-cap p:first-of-type {
+    color: #0f172a !important;
+  }
+  .paper-cream .book-drop-cap p:first-of-type::first-letter {
+    color: #be185d !important;
+  }
+
+  /* General Text Utility Overrides for Cream Parchment */
+  .paper-cream .text-slate-100:not(.terminal-window *),
+  .paper-cream .text-slate-200:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #1e293b !important;
+  }
+  .paper-cream .text-slate-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *),
+  .paper-cream .text-slate-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
     color: #334155 !important;
   }
-  .paper-cream .text-slate-500 {
+  .paper-cream .text-slate-500:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #475569 !important;
+  }
+  .paper-cream .text-slate-600:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #334155 !important;
+  }
+
+  /* High-Contrast Ink Accents on Cream Paper */
+  .paper-cream .text-pink-200,
+  .paper-cream .text-pink-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #9d174d !important;
+  }
+  .paper-cream .text-pink-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #be185d !important;
+  }
+  .paper-cream .text-amber-100,
+  .paper-cream .text-amber-200,
+  .paper-cream .text-amber-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #92400e !important;
+  }
+  .paper-cream .text-amber-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #b45309 !important;
+  }
+  .paper-cream .text-emerald-200,
+  .paper-cream .text-emerald-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *),
+  .paper-cream .text-emerald-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #047857 !important;
+  }
+  .paper-cream .text-cyan-100,
+  .paper-cream .text-cyan-200,
+  .paper-cream .text-cyan-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *),
+  .paper-cream .text-cyan-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #0369a1 !important;
+  }
+  .paper-cream .text-rose-200,
+  .paper-cream .text-rose-300:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *),
+  .paper-cream .text-rose-400:not(.terminal-window *):not(.comparison-slider-module .aspect-\[16\/9\] *) {
+    color: #be123c !important;
+  }
+
+  /* Margin Notes & Handwriting */
+  .paper-cream .margin-note {
+    color: #9d174d !important;
+    border-left-color: rgba(190, 24, 93, 0.4) !important;
+  }
+  .paper-cream .font-handwriting {
+    color: #78350f !important;
+  }
+  .paper-cream .font-handwriting.text-pink-300,
+  .paper-cream .font-handwriting.text-pink-400 {
+    color: #9d174d !important;
+  }
+  .paper-cream .font-handwriting.text-white {
+    color: #1c1917 !important;
+  }
+  .paper-cream .font-handwriting.text-amber-200,
+  .paper-cream .font-handwriting.text-amber-300 {
+    color: #92400e !important;
+  }
+  .paper-cream .font-handwriting.text-cyan-100,
+  .paper-cream .font-handwriting.text-cyan-200 {
+    color: #0369a1 !important;
+  }
+
+  /* Inlay Cards & Sub-Panels on Cream Paper */
+  .paper-cream .bg-slate-950:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-950\/90:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-950\/85:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-950\/80:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-950\/70:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-950\/60:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/90:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/85:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/80:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/70:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/60:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/50:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .bg-slate-900\/40:not(.terminal-window *):not(.comparison-slider-module *) {
+    background-color: #f6f0e4 !important;
+    border-color: rgba(180, 150, 120, 0.35) !important;
+  }
+
+  /* Borders across Cream Paper */
+  .paper-cream .border-slate-800:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .border-slate-800\/90:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .border-slate-800\/80:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .border-slate-800\/60:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .border-slate-700:not(.terminal-window *):not(.comparison-slider-module *),
+  .paper-cream .border-slate-700\/60:not(.terminal-window *):not(.comparison-slider-module *) {
+    border-color: rgba(180, 150, 120, 0.4) !important;
+  }
+  .paper-cream .border-slate-800\/40,
+  .paper-cream .border-slate-800\/20 {
+    border-color: rgba(180, 150, 120, 0.25) !important;
+  }
+
+  /* Dispatch Tape Slips & Filed Notes */
+  .paper-cream .dispatch-tape-slip {
+    background: #f7f3e8 !important;
+    border-color: rgba(180, 150, 120, 0.45) !important;
+    color: #1e293b !important;
+    box-shadow: 0 4px 12px rgba(100, 70, 40, 0.08) !important;
+  }
+  .paper-cream .dispatch-tape-slip p,
+  .paper-cream .dispatch-tape-slip span {
+    color: #1e293b !important;
+  }
+  .paper-cream .dispatch-tape-slip strong.text-amber-300,
+  .paper-cream .dispatch-tape-slip .text-amber-400,
+  .paper-cream .dispatch-tape-slip .text-amber-200 {
+    color: #92400e !important;
+  }
+  .paper-cream .dispatch-tape-slip strong.text-pink-400,
+  .paper-cream .dispatch-tape-slip .text-pink-400 {
+    color: #9d174d !important;
+  }
+  .paper-cream .dispatch-tape-slip .text-emerald-400 {
+    color: #047857 !important;
+  }
+  .paper-cream .dispatch-tape-slip .text-slate-400,
+  .paper-cream .dispatch-tape-slip .text-slate-500 {
+    color: #475569 !important;
+  }
+  .paper-cream .dispatch-tape-slip .border-slate-800,
+  .paper-cream .dispatch-tape-slip .border-slate-800\/80 {
+    border-color: rgba(180, 150, 120, 0.3) !important;
+  }
+
+  /* Thermal Terminal Receipts on Cream Paper */
+  .paper-cream .thermal-receipt {
+    background: #fffdf8 !important;
+    border-color: rgba(180, 150, 120, 0.4) !important;
+    color: #1e293b !important;
+    box-shadow: 0 4px 12px rgba(100, 70, 40, 0.08) !important;
+  }
+  .paper-cream .thermal-receipt span {
+    color: #1e293b !important;
+  }
+  .paper-cream .thermal-receipt .text-emerald-400 {
+    color: #047857 !important;
+  }
+  .paper-cream .thermal-receipt .text-pink-300,
+  .paper-cream .thermal-receipt .text-pink-400 {
+    color: #9d174d !important;
+  }
+  .paper-cream .thermal-receipt .text-slate-500 {
     color: #64748b !important;
   }
-  .paper-cream .bg-slate-950\/80,
-  .paper-cream .bg-slate-950\/90,
-  .paper-cream .bg-slate-900\/60,
-  .paper-cream .bg-slate-900\/80 {
-    background-color: rgba(241, 238, 227, 0.85) !important;
-    border-color: rgba(180, 160, 140, 0.3) !important;
+
+  /* Napkin Field Schematic on Cream Paper */
+  .paper-cream .field-schematic {
+    background: #fcf9f1 !important;
+    border-color: rgba(180, 150, 120, 0.45) !important;
+    color: #1e293b !important;
+    background-image:
+      linear-gradient(rgba(180, 150, 120, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180, 150, 120, 0.12) 1px, transparent 1px) !important;
   }
-  .paper-cream .border-slate-800 {
-    border-color: rgba(180, 160, 140, 0.4) !important;
+  .paper-cream .field-schematic p,
+  .paper-cream .field-schematic span {
+    color: #1e293b !important;
   }
+  .paper-cream .field-schematic .text-pink-400,
+  .paper-cream .field-schematic .text-pink-300 {
+    color: #9d174d !important;
+  }
+  .paper-cream .field-schematic .text-emerald-300 {
+    color: #047857 !important;
+  }
+  .paper-cream .field-schematic .text-rose-300 {
+    color: #be123c !important;
+  }
+  .paper-cream .field-schematic .text-amber-400 {
+    color: #b45309 !important;
+  }
+
+  /* Proof of Work Badges on Cream Paper */
+  .paper-cream .proof-badge-block {
+    background-color: #fff8e8 !important;
+    border-color: rgba(217, 119, 6, 0.5) !important;
+    color: #92400e !important;
+    box-shadow: 0 1px 3px rgba(180, 120, 40, 0.12) !important;
+  }
+  .paper-cream .proof-badge-block .text-amber-400 {
+    color: #b45309 !important;
+  }
+  .paper-cream .proof-badge-block .text-slate-500 {
+    color: #78716c !important;
+    border-left-color: #e7e5e4 !important;
+  }
+
+  /* Running Heads & Page Number Folios */
+  .paper-cream .book-running-head {
+    color: #475569 !important;
+  }
+  .paper-cream .book-running-head span {
+    color: #475569 !important;
+  }
+  .paper-cream .book-running-head .text-pink-400 {
+    color: #9d174d !important;
+  }
+
+  /* Protected Terminal Window: Remains an Authentic Dark Terminal */
   .paper-cream .terminal-window {
-    background-color: #1e293b !important;
+    background-color: #0b1120 !important;
+    border-color: rgba(180, 150, 120, 0.5) !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
   }
-  .paper-cream .terminal-window * {
-    color: inherit;
+  .paper-cream .terminal-window .terminal-header {
+    background-color: #080d19 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+  }
+  .paper-cream .terminal-window .terminal-header span {
+    color: #94a3b8 !important;
+  }
+  .paper-cream .terminal-window .text-slate-500 {
+    color: #64748b !important;
+  }
+  .paper-cream .terminal-window .text-pink-400 {
+    color: #f472b6 !important;
+  }
+  .paper-cream .terminal-window .text-emerald-400 {
+    color: #34d399 !important;
+  }
+  .paper-cream .terminal-window .text-amber-400 {
+    color: #fbbf24 !important;
+  }
+  .paper-cream .terminal-window .text-rose-500 {
+    color: #f43f5e !important;
+  }
+  .paper-cream .terminal-window pre,
+  .paper-cream .terminal-window code {
+    color: #34d399 !important;
+  }
+  .paper-cream .terminal-window button {
+    color: #f472b6 !important;
+  }
+
+  /* Comparison Slider Module in Cream Mode */
+  .paper-cream .comparison-slider-module {
+    background-color: #f7f2e7 !important;
+    border-color: rgba(219, 39, 119, 0.35) !important;
+    box-shadow: 0 8px 24px rgba(100, 70, 40, 0.1) !important;
+  }
+  .paper-cream .comparison-slider-module h3 {
+    color: #0f172a !important;
+  }
+  .paper-cream .comparison-slider-module p {
+    color: #475569 !important;
+  }
+  .paper-cream .comparison-slider-module .spec-card-before {
+    background-color: #fff1f2 !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+  }
+  .paper-cream .comparison-slider-module .spec-card-before span {
+    color: #881337 !important;
+  }
+  .paper-cream .comparison-slider-module .spec-card-after {
+    background-color: #f0fdf4 !important;
+    border-color: rgba(34, 197, 94, 0.3) !important;
+  }
+  .paper-cream .comparison-slider-module .spec-card-after span {
+    color: #14532d !important;
+  }
+  .paper-cream .comparison-slider-module .slider-percent-badge {
+    background-color: #fce7f3 !important;
+    border-color: #f472b6 !important;
+    color: #9d174d !important;
+  }
+
+  /* Technical Deep Dive Drawer in Cream Mode */
+  .paper-cream .technical-deep-dive-box {
+    background-color: #f7f2e7 !important;
+    border-color: rgba(219, 39, 119, 0.35) !important;
+    box-shadow: 0 4px 14px rgba(100, 70, 40, 0.08) !important;
+  }
+  .paper-cream .technical-deep-dive-box .deep-dive-title {
+    color: #831843 !important;
+  }
+  .paper-cream .technical-deep-dive-box .deep-dive-prose {
+    color: #1e293b !important;
+  }
+  .paper-cream .technical-deep-dive-box pre.bg-slate-950 {
+    background-color: #101726 !important;
+    border-color: rgba(219, 39, 119, 0.25) !important;
+  }
+  .paper-cream .technical-deep-dive-box pre.bg-slate-950 code,
+  .paper-cream .technical-deep-dive-box pre.bg-slate-950 {
+    color: #f472b6 !important;
   }
 
   /* Physical Paper Textures (Notebook / Engineering Graph / Field Dots) */
@@ -1051,11 +1372,13 @@
   .book-spread-flip-next {
     animation: spreadArriveNext 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
     transform-origin: left center;
+    will-change: transform, opacity;
   }
 
   .book-spread-flip-prev {
     animation: spreadArrivePrev 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
     transform-origin: right center;
+    will-change: transform, opacity;
   }
 
   @keyframes spreadArriveNext {
@@ -1117,6 +1440,7 @@
     pointer-events: none;
     z-index: 40;
     border-radius: 0 12px 12px 0;
+    will-change: transform, opacity;
     animation: flipLeafNext 560ms cubic-bezier(0.33, 0, 0.18, 1) forwards;
     background: linear-gradient(
       to right,
@@ -1179,6 +1503,7 @@
     pointer-events: none;
     z-index: 40;
     border-radius: 12px 0 0 12px;
+    will-change: transform, opacity;
     animation: flipLeafPrev 560ms cubic-bezier(0.33, 0, 0.18, 1) forwards;
     background: linear-gradient(
       to left,
@@ -1364,6 +1689,54 @@
     .sticky-note:hover {
       transform: none !important;
     }
+  }
+
+  /* Play button periodic glow animation */
+  @keyframes journal-play-glow {
+    0%, 100% { box-shadow: 0 0 0 rgba(236, 72, 153, 0); }
+    50% { box-shadow: 0 0 16px rgba(236, 72, 153, 0.6); }
+  }
+  .journal-play-glow {
+    animation: journal-play-glow 8s ease-in-out infinite;
+  }
+
+  /* Technical Deep Dive drawer styles */
+  .technical-deep-dive-enter {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  .technical-deep-dive-open {
+    max-height: 600px;
+    opacity: 1;
+  }
+
+  /* Proof-of-work badge block (inline, visible in chapter spreads) */
+  .proof-badge-block {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 4px 10px 4px 8px;
+    border: 1.5px solid rgba(245, 158, 11, 0.5);
+    border-radius: 3px;
+    background: rgba(245, 158, 11, 0.06);
+    color: #fbbf24;
+  }
+  .proof-badge-block::before {
+    content: '◆';
+    font-size: 8px;
+    color: #f59e0b;
+  }
+
+  /* Custom text selection */
+  .journal-selection ::selection {
+    background: rgba(236, 72, 153, 0.3);
+    color: #ffffff;
   }
 
 } /* end @layer components */

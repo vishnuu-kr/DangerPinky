@@ -48,7 +48,7 @@ export const BrowserNoticeModal: React.FC<BrowserNoticeModalProps> = ({
             This web version cannot move files to your Recycle Bin directly.
           </p>
           <p className="text-xs text-amber-100/80 leading-relaxed mb-3">
-            Web browsers enforce strict sandboxes preventing direct OS Trash / Recycle Bin manipulation. For genuine file consumption and OS Recycle Bin integration, run the native <strong>FileSnake Desktop App</strong>.
+            Web browsers enforce strict sandboxes preventing direct OS Trash / Recycle Bin manipulation. For genuine file consumption and OS Recycle Bin integration, run the native <strong>DangerPinky Desktop App</strong>.
           </p>
           <div className="btn-candy-green px-3 py-1 rounded-full text-[11px] font-black font-game flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-white" />

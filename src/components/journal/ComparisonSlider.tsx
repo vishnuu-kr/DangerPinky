@@ -35,7 +35,7 @@ export const ComparisonSlider: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-900/85 border border-pink-500/30 rounded-2xl p-2.5 sm:p-3 backdrop-blur-xl shadow-xl">
+    <div className="comparison-slider-module bg-slate-900/85 border border-pink-500/30 rounded-2xl p-2.5 sm:p-3 backdrop-blur-xl shadow-xl">
       {/* Title & Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-800">
         <div>
@@ -66,7 +66,17 @@ export const ComparisonSlider: React.FC = () => {
       {/* Interactive Visual Comparison Box */}
       <div
         ref={containerRef}
-        className="relative aspect-[16/9] max-h-[175px] w-full rounded-xl overflow-hidden border border-slate-800 select-none cursor-ew-resize bg-black"
+        tabIndex={0}
+        role="slider"
+        aria-valuenow={Math.round(sliderPos)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Prototype vs Final Release Comparison"
+        className="relative aspect-[16/9] max-h-[175px] w-full rounded-xl overflow-hidden border border-slate-800 select-none cursor-ew-resize bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/50"
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowLeft') setSliderPos((p) => Math.max(0, p - 5));
+          if (e.key === 'ArrowRight') setSliderPos((p) => Math.min(100, p + 5));
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -162,16 +172,23 @@ export const ComparisonSlider: React.FC = () => {
           style={{ left: `${sliderPos}%` }}
         >
           {/* Center Handle Knob */}
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-pink-500 border-2 border-white shadow-xl flex items-center justify-center text-white font-bold text-[10px] select-none">
+          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-pink-500 border-4 border-white shadow-xl flex items-center justify-center text-white font-bold text-[11px] select-none cursor-ew-resize">
             ↔
           </div>
         </div>
       </div>
 
+      {/* Slider Position Percentage Indicator */}
+      <div className="flex justify-center my-1.5">
+        <span className="slider-percent-badge font-mono text-[9.5px] text-pink-300 bg-slate-950/90 border border-pink-500/40 px-2.5 py-0.5 rounded-full shadow">
+          {Math.round(sliderPos)}% PROTOTYPE / {100 - Math.round(sliderPos)}% CANDY
+        </span>
+      </div>
+
       {/* Technical Spec Comparison Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
         {/* Before Specs */}
-        <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-2.5">
+        <div className="spec-card-before bg-slate-950/70 border border-slate-800 rounded-xl p-2.5">
           <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-slate-400 mb-1.5">
             <Terminal className="w-3.5 h-3.5 text-slate-500" />
             <span>v0.1 RAW PROTOTYPE ({BEFORE_AFTER_COMPARISON.before.timestamp})</span>
@@ -187,7 +204,7 @@ export const ComparisonSlider: React.FC = () => {
         </div>
 
         {/* After Specs */}
-        <div className="bg-slate-950/70 border border-pink-500/30 rounded-xl p-2.5">
+        <div className="spec-card-after bg-slate-950/70 border border-pink-500/30 rounded-xl p-2.5">
           <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-pink-300 mb-1.5">
             <Sparkles className="w-3.5 h-3.5 text-pink-400" />
             <span>v1.0 FINAL RELEASE ({BEFORE_AFTER_COMPARISON.after.timestamp})</span>

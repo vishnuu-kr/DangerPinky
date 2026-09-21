@@ -23,6 +23,15 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
   onOpenBook
 }) => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isVideoModalOpen) setIsVideoModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVideoModalOpen]);
+
   const handleScrollToChapter = (id: string) => {
     if (onOpenBook) {
       onOpenBook();
@@ -40,7 +49,7 @@ export const JournalHero: React.FC<JournalHeroProps> = ({
       className="relative pt-6 pb-16 px-0 overflow-hidden"
     >
       {/* Subtle ambient light pool */}
-      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-pink-500/[0.03] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-12 left-[40%] -translate-x-1/2 w-[650px] h-[350px] bg-pink-500/[0.06] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
 

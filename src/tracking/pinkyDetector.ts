@@ -7,6 +7,7 @@ export interface PinkyDetectorConfig {
   lockoutDurationMs: number; // Cooldown after triggering direction, default 180ms
   smoothingAlpha: number; // EMA alpha, default 0.35 (responsive lightweight smoothing)
   dominantAxisRatio: number; // Dominant axis threshold ratio, default 1.15
+  fingerMode?: import('../types/game').FingerMode; // 'PINKY' | 'INDEX'
 }
 
 export class PinkyDetector {
@@ -26,6 +27,7 @@ export class PinkyDetector {
       lockoutDurationMs: 120,
       smoothingAlpha: 0.35,
       dominantAxisRatio: 1.05,
+      fingerMode: 'PINKY',
       ...config
     };
     this.tipFilter = new ExponentialSmoothingFilter(this.config.smoothingAlpha);
@@ -34,6 +36,19 @@ export class PinkyDetector {
 
   public setSensitivity(sensitivity: number) {
     this.config.sensitivity = Math.max(1, Math.min(5, sensitivity));
+  }
+
+  public setFingerMode(mode: import('../types/game').FingerMode) {
+    this.config.fingerMode = mode;
+    this.reset();
+  }
+
+  public getFingerMode(): import('../types/game').FingerMode {
+    return this.config.fingerMode || 'PINKY';
+  }
+
+  public getRecentPositions(): Array<{ x: number; y: number; time: number }> {
+    return [...this.pinkyPositions];
   }
 
   public getStatus(): TrackingStatus {
@@ -91,17 +106,17 @@ export class PinkyDetector {
     this.lastSeenTime = now;
     this.status = 'PINKY_TRACKED';
 
-    // Key anatomical landmarks:
-    // Landmark 0: Wrist
-    // Landmark 9: Middle MCP (palm center anchor)
-    // Landmark 17: Pinky MCP (knuckle base of pinky)
-    // Landmark 18: Pinky PIP
-    // Landmark 19: Pinky DIP
-    // Landmark 20: Pinky TIP (primary control point)
+    // Key anatomical landmarks based on fingerMode:
+    // For Pinky Mode: MCP Landmark 17, TIP Landmark 20
+    // For Index Mode: MCP Landmark 5, TIP Landmark 8
+    const isIndex = this.config.fingerMode === 'INDEX';
+    const mcpIdx = isIndex ? 5 : 17;
+    const tipIdx = isIndex ? 8 : 20;
+
     const rawWrist = rawLandmarks[0];
     const rawMiddleMcp = rawLandmarks[9];
-    const rawMcp = rawLandmarks[17];
-    const rawTip = rawLandmarks[20];
+    const rawMcp = rawLandmarks[mcpIdx];
+    const rawTip = rawLandmarks[tipIdx];
 
     // Hand scale reference (wrist to middle knuckle)
     // Makes calculations invariant to user distance from webcam

@@ -23,7 +23,9 @@ import {
   EVOLUTION_DATA,
   SCREENSHOTS_DATA,
   getAllSectionIds,
-  ScreenshotGalleryItem
+  ScreenshotGalleryItem,
+  JOURNEY_PILLARS,
+  CHAPTER_COLORS
 } from '../data/journalChapters';
 import { sound } from '../game/audio';
 
@@ -39,6 +41,7 @@ import { BookSpread } from './journal/BookSpread';
 import { RibbonBookmark } from './journal/RibbonBookmark';
 import { AudioSoundboard } from './journal/AudioSoundboard';
 import { KeyboardShortcutsModal } from './journal/KeyboardShortcutsModal';
+import { TechnicalDeepDive } from './journal/TechnicalDeepDive';
 
 interface JournalScreenProps {
   onStartDemo: () => void;
@@ -67,6 +70,16 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({ chapter, accentClass = 't
           <span>{chapter.timestamp}</span>
         </span>
       )}
+      {chapter.readingTime && (
+        <span className="text-[9px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800">
+          ~{chapter.readingTime} min read
+        </span>
+      )}
+      {chapter.estimatedCommits && (
+        <span className="font-mono text-[9px] text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800">
+          ~{chapter.estimatedCommits} commits
+        </span>
+      )}
     </div>
 
     <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1.5">
@@ -80,7 +93,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({ chapter, accentClass = 't
       </div>
 
       {marginNote && (
-        <div className="margin-note text-pink-300 text-sm shrink-0 transform md:-rotate-2 max-w-xs mt-1 md:mt-0 font-handwriting">
+        <div className="margin-note text-pink-300/80 text-sm shrink-0 transform -rotate-1 max-w-[160px] border-l-2 border-pink-500/20 pl-2 mt-1 md:mt-0 font-handwriting">
           ↳ {marginNote}
         </div>
       )}
@@ -105,8 +118,9 @@ const EditorialProse: React.FC<EditorialProseProps> = ({
   maxParagraphs
 }) => {
   const displayed = maxParagraphs ? narratives.slice(0, maxParagraphs) : narratives;
+  const canDropCap = pullquoteIndex !== 0 && highlightIndex !== 0;
   return (
-    <div className="reader-prose text-slate-200 text-xs sm:text-[12px] leading-relaxed max-w-3xl space-y-1.5 mb-2.5">
+    <div className="reader-prose text-slate-200 text-xs sm:text-[12px] lg:text-[12.5px] leading-relaxed max-w-2xl space-y-1.5 mb-2.5">
       {displayed.map((para, i) => {
         if (i === pullquoteIndex) {
           return (
@@ -122,7 +136,11 @@ const EditorialProse: React.FC<EditorialProseProps> = ({
             </p>
           );
         }
-        return <p key={i}>{para}</p>;
+        return (
+          <p key={i} className={i === 0 && canDropCap ? 'book-drop-cap' : ''}>
+            {para}
+          </p>
+        );
       })}
     </div>
   );
@@ -146,7 +164,7 @@ const TerminalWindow: React.FC<{
         <span className="text-[11px] font-mono text-slate-400 font-semibold ml-2">{title}</span>
       </div>
     </div>
-    <div className="p-4 sm:p-5 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">
+    <div className="p-4 sm:p-5 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto max-h-48 overflow-y-auto custom-page-scrollbar">
       {command && (
         <div className="text-emerald-400 mb-2 font-bold flex items-center gap-2">
           <span className="text-slate-500">$</span>
@@ -155,6 +173,26 @@ const TerminalWindow: React.FC<{
       )}
       {children}
     </div>
+  </div>
+);
+
+// ─── Proof of Work Badge ───────────────────────────────────────────────────
+interface ProofOfWorkBadgeProps {
+  label:
+    | 'FOUND THIS IN THE REPO'
+    | 'THIS WAS THE FIRST VERSION'
+    | 'I LEFT THIS BROKEN FOR WAY TOO LONG'
+    | 'THIS IS THE FIX'
+    | string;
+  timestamp?: string;
+  className?: string;
+}
+
+const ProofOfWorkBadge: React.FC<ProofOfWorkBadgeProps> = ({ label, timestamp, className = '' }) => (
+  <div className={`proof-badge-block inline-flex items-center gap-2 px-2.5 py-1 rounded bg-slate-950 border border-amber-500/40 text-[10px] font-mono text-amber-300 shadow-sm ${className}`}>
+    <span className="text-amber-400">◆</span>
+    <span className="font-bold tracking-wider uppercase">{label}</span>
+    {timestamp && <span className="text-slate-500 text-[9px] border-l border-slate-800 pl-2">@{timestamp}</span>}
   </div>
 );
 
@@ -172,7 +210,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   const [spreadIndex, setSpreadIndex] = useState<number>(0);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
-  const flipTimerRef = useRef<number | null>(null);
+  const flipTimerRef = useRef<any>(null);
 
   const [activeLightboxItem, setActiveLightboxItem] = useState<ScreenshotGalleryItem | null>(null);
   const [activeTechId, setActiveTechId] = useState<string>(TECH_STACK[0].id);
@@ -182,9 +220,33 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   const [activeBugIdx, setActiveBugIdx] = useState<number>(0);
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(() => sound.getMuted());
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [journeyMode, setJourneyMode] = useState<boolean>(false);
+  const [showFullV01Code, setShowFullV01Code] = useState<boolean>(false);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const toastTimerRef = useRef<number | null>(null);
+  const toastTimerRef = useRef<any>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const spreadContentRef = useRef<HTMLElement | null>(null);
+
+  const pillarIndices = sectionIds
+    .map((id, idx) => (JOURNEY_PILLARS.includes(id) ? idx : -1))
+    .filter((idx) => idx !== -1);
+
+  const handleToggleJourneyMode = () => {
+    const nextMode = !journeyMode;
+    setJourneyMode(nextMode);
+    if (nextMode) {
+      const currentOrNext = pillarIndices.find((idx) => idx >= spreadIndex) ?? pillarIndices[0];
+      if (currentOrNext !== undefined && currentOrNext !== spreadIndex) {
+        triggerPageFlip(currentOrNext > spreadIndex ? 'next' : 'prev');
+        setSpreadIndex(currentOrNext);
+        setActiveSection(sectionIds[currentOrNext]);
+      }
+      showToast('5-Min Journey Mode active (6 core pillars)');
+    } else {
+      showToast('Full 18-chapter logbook active');
+    }
+  };
 
   const handleToggleSound = () => {
     const nextMuted = !isSoundMuted;
@@ -209,12 +271,14 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
       url: shareUrl
     };
 
+    const isDev = Boolean((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV);
+
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
         return;
-      } catch {
-        // User cancelled or share dismissed
+      } catch (e) {
+        if (isDev) console.warn('Share/clipboard failed', e);
       }
     }
 
@@ -223,8 +287,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         await navigator.clipboard.writeText(shareUrl);
         showToast('Devlog link copied to clipboard!');
         return;
-      } catch {
-        // clipboard fallback
+      } catch (e) {
+        if (isDev) console.warn('Share/clipboard failed', e);
       }
     }
     showToast('Link: ' + shareUrl);
@@ -283,6 +347,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   };
 
   const goToNextSpread = () => {
+    if (journeyMode) {
+      const nextPillar = pillarIndices.find((idx) => idx > spreadIndex);
+      if (nextPillar !== undefined) {
+        triggerPageFlip('next');
+        setSpreadIndex(nextPillar);
+        setActiveSection(sectionIds[nextPillar]);
+        return;
+      }
+    }
     if (spreadIndex < sectionIds.length - 1) {
       const next = spreadIndex + 1;
       triggerPageFlip('next');
@@ -293,6 +366,16 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   };
 
   const goToPrevSpread = () => {
+    if (journeyMode) {
+      const prevPillars = pillarIndices.filter((idx) => idx < spreadIndex);
+      if (prevPillars.length > 0) {
+        const prevPillar = prevPillars[prevPillars.length - 1];
+        triggerPageFlip('prev');
+        setSpreadIndex(prevPillar);
+        setActiveSection(sectionIds[prevPillar]);
+        return;
+      }
+    }
     if (spreadIndex > 0) {
       const prev = spreadIndex - 1;
       triggerPageFlip('prev');
@@ -312,6 +395,13 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
       : '';
     return `block ${flipAnim}`;
   };
+
+  // Focus management when switching spreads in spread mode
+  useEffect(() => {
+    if (viewMode === 'spread') {
+      spreadContentRef.current?.focus();
+    }
+  }, [spreadIndex, viewMode]);
 
   // Keyboard navigation for page turns in book spread mode & shortcuts
   useEffect(() => {
@@ -340,7 +430,20 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [viewMode, spreadIndex]);
+  }, [viewMode, spreadIndex, journeyMode]);
+
+  // Scroll listener for reading progress in scroll mode
+  useEffect(() => {
+    if (viewMode !== 'scroll') return;
+    const handleScroll = () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      if (total > 0) {
+        setScrollProgress(Math.min(100, Math.max(0, (window.scrollY / total) * 100)));
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [viewMode]);
 
   useEffect(() => {
     if (viewMode !== 'scroll') return;
@@ -358,7 +461,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
     };
     observerRef.current = new IntersectionObserver(callback, {
       root: null,
-      rootMargin: '-15% 0px -40% 0px',
+      rootMargin: '-10% 0px -20% 0px',
       threshold: [0.1, 0.3, 0.6]
     });
     sectionIds.forEach((id) => {
@@ -397,7 +500,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
   const currentSpreadInfo = getSpreadLabel(spreadIndex);
 
   return (
-    <div className="w-full min-h-screen bg-[#070b14] desk-grid text-slate-100 font-sans selection:bg-pink-500 selection:text-white pb-24 relative">
+    <div className={`w-full min-h-screen ${paperTone === 'cream' ? 'bg-[#181512] desk-grid-cream' : 'bg-[#070b14] desk-grid'} text-slate-100 font-sans selection:bg-pink-500 selection:text-white pb-24 relative`}>
 
       <LightboxModal
         item={activeLightboxItem}
@@ -428,19 +531,25 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         canNext={spreadIndex < sectionIds.length - 1}
         onShare={handleShare}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        spreadProgress={(spreadIndex / (sectionIds.length - 1)) * 100}
+        journeyMode={journeyMode}
+        onToggleJourneyMode={handleToggleJourneyMode}
       />
 
       <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 relative">
         {/* Hanging Silk Ribbon Bookmark physically anchored to the book container (interior spreads only) */}
-        {spreadIndex > 0 && activeSection !== 'hero' && (
+        {spreadIndex > 0 && activeSection !== 'hero' && activeSection !== 'final' && (
           <RibbonBookmark
             currentSectionId={activeSection}
             onSelectSection={handleSelectSection}
           />
         )}
 
-        <div
-          className={`relative ${viewMode === 'spread' ? 'book-stage' : ''}`}
+        <main
+          id="journal-content"
+          ref={spreadContentRef}
+          tabIndex={-1}
+          className={`relative focus:outline-none ${viewMode === 'spread' ? 'book-stage' : ''}`}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -448,7 +557,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
           {/* 3D Physical Page Turn Leaf Overlay */}
           {viewMode === 'spread' && isFlipping && flipDirection && (
             <div
-              className={`hidden lg:block ${
+              className={`${
                 flipDirection === 'next' ? 'page-flip-leaf-next' : 'page-flip-leaf-prev'
               } ${
                 paperTone === 'cream'
@@ -468,6 +577,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
             onOpenBook={() => handleSelectSection('prologue')}
             onPlayGame={() => handleSelectSection('chapter-14')}
             onBackToLanding={onBackToLanding}
+            paperTone={paperTone}
           />
         </div>
 
@@ -515,6 +625,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 {/* Vishnu's Outreach Lead Campus Press Pass */}
                 <div className="relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 shadow-md text-xs font-mono space-y-1.5 mt-2">
                   <div className="masking-tape-strip -top-2 left-6" />
+                  <div className="masking-tape-strip -top-2 right-6" />
                   <div className="flex items-center justify-between border-b border-slate-800 pb-1 text-[9.5px]">
                     <span className="text-pink-400 font-bold">SNMIMT CAMPUS PASS // MALIYANKARA, ERNAKULAM, SEP 2026</span>
                     <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">ORGANIZER</span>
@@ -616,7 +727,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   </p>
                   <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[9px] font-mono text-slate-500">
                     <span>TinkerHub SNMIMT UP 3.0</span>
-                    <span className="text-pink-400 font-semibold">T-MINUS 18 HOURS</span>
+                    <span className="ink-stamp ink-stamp-pink text-[8px]">T-MINUS 18H</span>
                   </div>
                 </div>
               </div>
@@ -669,22 +780,24 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 <ScrapbookPlaceholder
                   compact
                   tag={CHAPTERS[0].scrapbookTags?.[0] || '[ADD PHOTO: Teams setting up]'}
+                  imgSrc="./images/hackathon/computer_lab_wide.jpg"
                   caption="Teams opening laptops, ideas flying. My repo was empty."
                   rotate="ccw"
                 />
 
-                {/* Discarded Project Audit Slip */}
-                <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-mono space-y-1.5">
+                {/* Scrapped Project ID Card */}
+                <div className="relative p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-mono space-y-1.5 shadow-md">
                   <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 text-[10px]">
-                    <span className="text-pink-400 font-bold">SCRAPPED PROJECT AUDIT</span>
-                    <span className="text-slate-500">18:30 IST</span>
-                  </div>
-                  <div className="text-[11px] text-slate-300 font-sans leading-relaxed">
-                    <strong>Conflict Post-Mortem:</strong> Another team pitched an audio-cursor idea 20 minutes in. Rather than build a duplicate on campus, I archived my repo and stepped away.
-                  </div>
-                  <div className="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t border-slate-800/60">
-                    <span>Outcome: Zero lines of code. 100% outreach duty.</span>
+                    <span className="text-pink-400 font-bold">PROJECT: [Audio Cursor]</span>
                     <span className="ink-stamp ink-stamp-red text-[8px] py-0.2 px-1">ABANDONED</span>
+                  </div>
+                  <div className="text-[10.5px] text-slate-300 font-mono space-y-0.5">
+                    <div><span className="text-slate-500">STATUS:</span> <span className="text-rose-400 font-semibold">ABANDONED (06:30 PM)</span></div>
+                    <div><span className="text-slate-500">REASON:</span> <span className="text-slate-300">Team collision — project already claimed</span></div>
+                  </div>
+                  <div className="flex justify-between items-center text-[9.5px] text-slate-500 pt-1 border-t border-slate-800/60">
+                    <span>Outcome: Zero lines of code</span>
+                    <span className="text-amber-400 font-mono">100% OUTREACH DUTY</span>
                   </div>
                 </div>
               </div>
@@ -729,7 +842,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div>
                       <span className="text-pink-400 font-bold">$</span> git status
                     </div>
-                    <div className="text-rose-400/90 pl-3">
+                    <div className="text-rose-500 pl-3">
                       fatal: not a git repository (or any of the parent directories): .git
                     </div>
                   </div>
@@ -779,6 +892,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div className="flex justify-between items-center text-emerald-400 font-bold pt-1 border-t border-slate-800">
                       <span><span className="text-amber-400">00:14</span> — &ldquo;What if snake follows pinky?&rdquo;</span>
                       <span className="ink-stamp ink-stamp-green text-[6.5px] py-0 px-0.5">BREAKTHROUGH</span>
+                    </div>
+                    <div className="text-emerald-400 font-handwriting text-xs mt-1">
+                      ↳ &ldquo;this was the exact moment the night changed&rdquo;
                     </div>
                   </div>
                 </div>
@@ -864,7 +980,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     </p>
                     <p>
                       <strong className="text-amber-300 font-mono text-[10.5px]">Friend:</strong>{' '}
-                      <span className="text-slate-400">&ldquo;That sounds completely useless. You&rsquo;re definitely gonna lose.&rdquo;</span>
+                      <span className="text-slate-300">&ldquo;That sounds completely useless. You&rsquo;re definitely gonna lose.&rdquo;</span>
                     </p>
                     <p>
                       <strong className="text-pink-400 font-mono text-[10.5px]">Vishnu:</strong>{' '}
@@ -874,6 +990,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   <div className="flex justify-between items-center text-[10px] text-slate-500 pt-1 border-t border-slate-800/80">
                     <span>Inciting Incident · Decisive Turn</span>
                     <span className="ink-stamp ink-stamp-pink text-[8px] py-0.2 px-1">PROJECT GREENLIT</span>
+                  </div>
+                  <div className="text-[9px] font-mono text-slate-500 pt-1 tracking-wider text-right">
+                    PROJECT GREENLIT // 00:14 IST
                   </div>
                 </div>
               </>
@@ -886,6 +1005,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   <div
                     className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full border-4 border-amber-900/25 pointer-events-none"
                     style={{ filter: 'blur(1px)' }}
+                  />
+                  <div
+                    className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full border-2 border-amber-900/15 pointer-events-none"
                   />
 
                   <div className="flex items-center gap-2 text-amber-400 font-mono text-xs uppercase tracking-wider mb-1.5">
@@ -939,24 +1061,33 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               <>
                 <ChapterHeader
                   chapter={CHAPTERS[3]}
-                  accentClass="text-emerald-400"
+                  accentClass="text-rose-400"
                 />
                 <div className="book-drop-cap">
                   <EditorialProse narratives={CHAPTERS[3].narrative} pullquoteIndex={3} maxParagraphs={3} />
                 </div>
 
+                <ProofOfWorkBadge label="THIS WAS THE FIRST VERSION" timestamp="09:30 PM" className="mb-2" />
+
                 {/* v0.1 Code Snippet in Terminal */}
                 {CHAPTERS[3].codeSnippets?.[0] && (
                   <TerminalWindow title="src/game/firstPrototype.ts (09:30 PM)" command="git diff HEAD~1">
-                    <pre className="text-emerald-400 font-mono text-xs leading-relaxed max-h-24 overflow-hidden">
+                    <pre className={`text-emerald-400 font-mono text-xs leading-relaxed ${showFullV01Code ? 'max-h-none overflow-visible' : 'max-h-24 overflow-hidden'}`}>
                       <code>{CHAPTERS[3].codeSnippets[0].code}</code>
                     </pre>
+                    <button
+                      type="button"
+                      onClick={() => setShowFullV01Code((v) => !v)}
+                      className="mt-1 text-[9.5px] font-mono text-pink-400 hover:text-pink-300 underline cursor-pointer"
+                    >
+                      {showFullV01Code ? '▲ Collapse' : '▼ Show more lines'}
+                    </button>
                   </TerminalWindow>
                 )}
               </>
             }
             rightContent={
-              <div className="space-y-2">
+              <div className="space-y-2 sm:min-h-[280px]">
                 {/* Before/After Frame: "LOOK HOW BAD THIS WAS" */}
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
@@ -997,7 +1128,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 </div>
 
                 {/* Formula Scratchpad on Desk */}
-                <div className="p-3 rounded-lg bg-pink-500/[0.04] border border-pink-500/30 font-handwriting text-lg text-pink-300">
+                <div className="p-3 rounded-lg bg-amber-500/[0.03] border border-amber-500/20 font-handwriting text-lg text-pink-300 shadow-sm">
                   Pinky Control + Snake + Local File + Windows Recycle Bin = DangerPinky 🔥
                 </div>
 
@@ -1011,7 +1142,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <span className="ink-stamp ink-stamp-green text-[7.5px] py-0.2 px-1">100% RECOVERABLE</span>
                   </div>
                   <p className="text-slate-300 font-sans text-[11px] leading-relaxed">
-                    Files are routed to the OS Recycle Bin via <code className="text-pink-300 font-mono">shell.trashItem</code> — never permanently deleted and 100% recoverable.
+                    Files are routed to the OS Recycle Bin via <code className="text-pink-300 font-mono bg-pink-500/10 px-1 rounded">shell.trashItem</code> — never permanently deleted and 100% recoverable.
                   </p>
                   <div className="p-1.5 rounded bg-slate-900/80 border border-slate-800 text-[10px] text-slate-400 font-mono flex items-center justify-between">
                     <span>✓ System files strictly blacklisted</span>
@@ -1049,7 +1180,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     const bt = CHAPTERS[4].breakthroughs?.[activeBreakthroughIdx];
                     if (!bt) return null;
                     return (
-                      <div className="space-y-1.5 font-sans card-switcher-content" key={activeBreakthroughIdx}>
+                      <div className="space-y-1.5 font-sans card-switcher-content transition-opacity duration-200" key={activeBreakthroughIdx}>
                         <div className="flex flex-wrap items-center justify-between gap-1">
                           <h4 className="font-bold text-xs sm:text-[13px] text-white">{bt.title}</h4>
                           {bt.formula && (
@@ -1067,6 +1198,23 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     );
                   })()}
                 </div>
+
+                {/* Technical Deep Dive Drawer: Relative Pinky Vector Invariance */}
+                <TechnicalDeepDive
+                  title="Relative Pinky Vector Invariance"
+                  badge="THIS IS THE FIX"
+                  formula="v_rel = (P20 - P17) / ||P9 - P0||"
+                  codeSnippet={`// Landmark 20 relative to pinky base (17), normalized by palm width
+const dx = (landmarks[20].x - landmarks[17].x) / palmWidth;
+const dy = (landmarks[20].y - landmarks[17].y) / palmWidth;
+// EMA smoothing with deadzone
+if (Math.hypot(dx, dy) > DEADZONE) {
+  smoothedX = ALPHA * dx + (1 - ALPHA) * smoothedX;
+  smoothedY = ALPHA * dy + (1 - ALPHA) * smoothedY;
+}`}
+                >
+                  Raw screen coordinates caused erratic turns whenever my hand shifted relative to the webcam. Normalizing landmark 20 against landmark 17 (pinky base) divided by palm span (landmarks 0 to 9) made the vector invariant to hand distance and posture. Applying EMA smoothing (alpha = 0.35) and deadzone 0.028 eliminated jitter completely.
+                </TechnicalDeepDive>
 
                 {/* Real Screenshot Artifact of the Dangerous Mode Settings Dialog */}
                 <ScrapbookPlaceholder
@@ -1122,7 +1270,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <span className="ink-stamp ink-stamp-cyan text-[7px] py-0 px-1">PARALLEL WORK</span>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] font-sans">
-                    <div className="p-1.5 rounded bg-amber-950/20 border border-amber-500/20">
+                    <div className="p-1.5 rounded bg-amber-950/20 border border-amber-500/20 border-r border-slate-800">
                       <span className="text-[8.5px] font-mono font-bold text-amber-400 block mb-0.5">JOB 01 // OUTREACH</span>
                       <p className="text-slate-300 leading-tight">
                         Documenting 65 participants, capturing 2 AM Instagram reels: &ldquo;Document your build!&rdquo;
@@ -1151,6 +1299,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
             }
             rightContent={
               <div className="space-y-3">
+                <ProofOfWorkBadge label="FOUND THIS IN THE REPO" timestamp="02:43 AM" className="mb-2" />
+
                 {/* Physical Relic: Thermal Terminal Receipt */}
                 <div className="thermal-receipt rotate-1">
                   <div className="flex items-center justify-between border-b border-white/10 pb-1.5 mb-2 text-[10px]">
@@ -1162,17 +1312,53 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   </div>
                   <div className="space-y-1 font-mono text-[10.5px] text-slate-300 py-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-amber-400">c48f21a</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                            navigator.clipboard.writeText('c48f21a');
+                          }
+                          showToast('Commit hash copied!');
+                        }}
+                        className="text-amber-400 hover:text-amber-300 underline font-mono cursor-pointer"
+                        title="Click to copy commit hash"
+                      >
+                        c48f21a
+                      </button>
                       <span className="text-slate-200">fix: landmark 20 offset &amp; deadzone</span>
                       <span className="text-slate-500 text-[9px]">02:18</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-amber-400">9b1a03e</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                            navigator.clipboard.writeText('9b1a03e');
+                          }
+                          showToast('Commit hash copied!');
+                        }}
+                        className="text-amber-400 hover:text-amber-300 underline font-mono cursor-pointer"
+                        title="Click to copy commit hash"
+                      >
+                        9b1a03e
+                      </button>
                       <span className="text-slate-200">feat: shell.trashItem native hook</span>
                       <span className="text-slate-500 text-[9px]">02:35</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-amber-400">3e18a99</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                            navigator.clipboard.writeText('3e18a99');
+                          }
+                          showToast('Commit hash copied!');
+                        }}
+                        className="text-amber-400 hover:text-amber-300 underline font-mono cursor-pointer"
+                        title="Click to copy commit hash"
+                      >
+                        3e18a99
+                      </button>
                       <span className="text-slate-200">wip: 1-tick mutex stop suicide turn</span>
                       <span className="text-slate-500 text-[9px]">02:43</span>
                     </div>
@@ -1182,6 +1368,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <span className="ink-stamp ink-stamp-green text-[7px] py-0 px-1">VERIFIED</span>
                   </div>
                 </div>
+
+                {/* Technical Deep Dive: Parallel Execution */}
+                <TechnicalDeepDive
+                  title="Parallel Execution: 60 FPS Canvas + Electron IPC"
+                  badge="FOUND THIS IN THE REPO"
+                  formula="Renderer (60FPS HTML5 Canvas) <--> ContextBridge IPC <--> Main (shell.trashItem)"
+                >
+                  Rendering the game at 60 FPS on HTML5 Canvas while handling asynchronous filesystem deletions requires decoupling. The game loop never blocks on disk operations. When the snake devours a file token, the renderer fires a one-way IPC message across Electron contextBridge. The main process verifies the security token and routes the path to the OS Recycle Bin without dropping a single frame.
+                </TechnicalDeepDive>
 
                 {/* Physical Relic: Instagram Story Dispatch Tape Slip */}
                 <div className="dispatch-tape-slip -rotate-1 border-amber-500/30">
@@ -1195,15 +1390,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   <div className="space-y-1.5 text-slate-300 font-mono text-[10.5px]">
                     <div className="flex items-center gap-2">
                       <span className="text-amber-400 text-[9.5px]">08:30 PM</span>
-                      <span>Story: &ldquo;UP 3.0 in full swing! 🔥&rdquo; (48 views)</span>
+                      <span className="text-slate-500">Story: &ldquo;UP 3.0 in full swing! 🔥&rdquo; (48 views)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-amber-400 text-[9.5px]">01:45 AM</span>
-                      <span>Reel: &ldquo;The 2 AM trenches — coffee &amp; code&rdquo;</span>
+                      <span className="text-slate-400">Reel: &ldquo;The 2 AM trenches — coffee &amp; code&rdquo;</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-amber-400 text-[9.5px]">03:30 AM</span>
-                      <span>Photos: Auditorium sleeping bags &amp; glowing monitors</span>
+                      <span className="text-slate-200">Photos: Auditorium sleeping bags &amp; glowing monitors</span>
                     </div>
                   </div>
                   <div className="pt-1.5 mt-2 border-t border-slate-800/80 flex justify-between items-center text-[9px] font-mono text-slate-500">
@@ -1365,6 +1560,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
             }
             rightContent={
               <div className="space-y-3">
+                <ProofOfWorkBadge label="I LEFT THIS BROKEN FOR WAY TOO LONG" timestamp="03:00 AM" className="mb-2" />
+
                 {/* Interactive Bug Dispatch Switcher */}
                 <div className="rounded-lg bg-slate-950/90 border border-rose-500/30 overflow-hidden shadow-xl">
                   <div className="px-3.5 py-1.5 bg-rose-950/30 border-b border-rose-500/20 flex flex-wrap items-center justify-between gap-2">
@@ -1395,7 +1592,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     const failure = CHAPTERS[7].failureStories?.[activeBugIdx];
                     if (!failure) return null;
                     return (
-                      <div className="p-2.5 space-y-1.5 text-xs font-sans card-switcher-content" key={activeBugIdx}>
+                      <div className="p-2.5 space-y-1.5 text-xs font-sans card-switcher-content transition-opacity duration-200" key={activeBugIdx}>
                         <h4 className="font-bold text-xs sm:text-[13px] text-white">{failure.title}</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-mono">
                           <div className="p-1.5 rounded bg-slate-900/60 border border-slate-800">
@@ -1488,8 +1685,10 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   </div>
                 </div>
 
+                <ProofOfWorkBadge label="THIS IS THE FIX" className="mt-2.5 mb-1" />
+
                 {/* Procedural Rendering Spec Slip */}
-                <div className="p-2.5 rounded-lg bg-slate-950/80 border border-pink-500/20 text-xs font-mono space-y-1.5 mt-2.5 shadow-lg">
+                <div className="p-2.5 rounded-lg bg-slate-950/80 border border-pink-500/20 text-xs font-mono space-y-1.5 shadow-lg">
                   <div className="flex items-center justify-between border-b border-slate-800/80 pb-1 text-[10px]">
                     <span className="text-pink-400 font-bold">PROCEDURAL RENDERING SPEC</span>
                     <span className="ink-stamp ink-stamp-pink text-[7px] py-0 px-1">0 KB SPRITES</span>
@@ -1514,12 +1713,12 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                       <Layers className="w-3.5 h-3.5 text-amber-400" />
                       <span className="font-sans font-bold text-xs text-white">Workbench Tools</span>
                     </div>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex overflow-x-auto flex-nowrap gap-1 pb-1 custom-page-scrollbar max-w-full">
                       {TECH_STACK.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => setActiveTechId(item.id)}
-                          className={`px-1.5 py-0.2 rounded font-mono text-[9.5px] transition-colors cursor-pointer ${
+                          className={`px-1.5 py-0.2 rounded font-mono text-[9.5px] transition-colors cursor-pointer shrink-0 ${
                             activeTechId === item.id
                               ? 'bg-amber-500 text-slate-950 font-bold'
                               : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
@@ -1566,6 +1765,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   caption="04:30 AM: Full loop working — Pinky -> Snake -> Recycle Bin"
                   rotate="cw"
                 />
+
+                {/* Technical Deep Dive: Session Token Filesystem Mutex */}
+                <TechnicalDeepDive
+                  title="Session Token Filesystem Mutex"
+                  badge="THIS IS THE FIX"
+                  formula="crypto.randomBytes(16) -> in_transit map -> shell.trashItem"
+                >
+                  To prevent duplicate trash operations if the pinky hovered continuously over a file boundary, each candidate path is assigned a single-use crypto session token stored in an in-memory Set. The token must be validated and consumed before invoking Electron&apos;s shell.trashItem, guaranteeing idempotent deletion.
+                </TechnicalDeepDive>
               </div>
             }
           />
@@ -1635,6 +1843,8 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                       </span>
                     ))}
                   </div>
+
+                  <div className="font-mono text-[9px] text-slate-500 pt-1 text-center">Sprint elapsed: 10h 14m @ 04:14 AM</div>
                 </div>
               </>
             }
@@ -1685,6 +1895,14 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     </div>
                   </div>
                 </div>
+
+                <TechnicalDeepDive
+                  title="Hardware vs Software Failure Breakdown"
+                  badge="FOUND THIS IN THE REPO"
+                  formula="P(bug) = P(code_error) * 0.20 + P(cable_unplugged) * 0.80"
+                >
+                  When testing computer vision algorithms at 3:45 AM, never assume the bug is in your mathematical formulation or MediaPipe WASM pipeline before verifying that your laptop elbow didn&apos;t physically yank the webcam cable out of the USB 3.0 port.
+                </TechnicalDeepDive>
 
                 <ScrapbookPlaceholder
                   compact
@@ -1797,6 +2015,10 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <div className="flex justify-between items-center text-emerald-400 font-bold pt-1 border-t border-slate-800">
                       <span>• Actual Root Cause:</span>
                       <span>Elbow unplugged USB port</span>
+                    </div>
+                    <div className="flex justify-between items-center text-pink-400 font-mono text-[9px] pt-1 border-t border-slate-800">
+                      <span>TOTAL GIT DISPATCH:</span>
+                      <span className="font-bold">42 commits / 68 files changed</span>
                     </div>
                   </div>
                   <p className="text-[9.5px] text-slate-400 font-sans italic pt-0.5 border-t border-slate-800/60">
@@ -2186,9 +2408,20 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     </div>
                     <div className="p-1.5 rounded bg-slate-900/80 border border-slate-800">
                       <span className="text-cyan-400 font-bold block">KEYBOARD FALLBACK</span>
-                      <span className="text-slate-300">WASD / Arrow Keys</span>
+                      <span className="text-slate-300">W/A/S/D · ↑ ↓ ← → · ESC</span>
                     </div>
                   </div>
+                </div>
+
+                {/* Game Over Screenshot Artifact */}
+                <div className="mt-2">
+                  <ScrapbookPlaceholder
+                    compact
+                    tag="[ADD SCREENSHOT: Game Over Modal — high score session]"
+                    imgSrc="./screenshots/gameover.png"
+                    caption="Game Over Modal — High score session & recycle audit"
+                    rotate="none"
+                  />
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-emerald-500/[0.04] border border-emerald-500/20 text-emerald-300 font-handwriting text-sm text-center mt-2">
@@ -2251,35 +2484,38 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
             }
             rightContent={
               <div className="space-y-2.5">
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {[
                     {
+                      lesson: 'LESSON 01',
                       stamp: 'TRUTH 01',
                       color: 'ink-stamp-green',
-                      title: 'Dropping an Idea Isn\'t Failing',
-                      desc: 'Stepping aside when another team builds something similar creates the space for a midnight breakthrough.',
+                      title: "Dropping an Idea Isn't Failing",
+                      desc: 'Stepping aside when another team builds something similar creates the space for a midnight breakthrough. Never fight for territory in an open makeathon.',
                     },
                     {
+                      lesson: 'LESSON 02',
                       stamp: 'TRUTH 02',
                       color: 'ink-stamp-red',
                       title: 'Useless Ideas Demand Exceptional Engineering',
-                      desc: 'When the premise is ridiculous, the execution cannot have flaws. A rock-solid 60 FPS gesture file eater is unforgettable.',
+                      desc: 'When the premise is ridiculous, the execution cannot have flaws. A rock-solid 60 FPS gesture file eater is unforgettable because the craft is serious.',
                     },
                     {
+                      lesson: 'LESSON 03',
                       stamp: 'TRUTH 03',
                       color: 'ink-stamp-amber',
                       title: 'Client-Side Vision + Recycle Bin Safety',
                       desc: 'MediaPipe WASM runs optical neural nets sub-20ms client-side. Routing deletes to OS Trash keeps stakes thrilling without tragedy.',
                     },
                   ].map((truth, idx) => (
-                    <div key={idx} className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-2">
-                      <span className={`ink-stamp ${truth.color} shrink-0 text-[8px] py-0.2 px-1`}>
-                        {truth.stamp}
-                      </span>
-                      <div>
-                        <h4 className="font-sans font-bold text-xs text-white mb-0.5">{truth.title}</h4>
-                        <p className="text-[10.5px] text-slate-300 font-sans leading-snug">{truth.desc}</p>
+                    <div key={idx} className="relative p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 shadow-md">
+                      <div className="masking-tape-strip -top-2 left-6" />
+                      <div className="flex items-center justify-between pb-1 mb-1 border-b border-slate-800/80">
+                        <span className="font-mono text-[9px] font-bold text-pink-400">{truth.lesson}</span>
+                        <span className={`ink-stamp ${truth.color} text-[8px] py-0.2 px-1`}>{truth.stamp}</span>
                       </div>
+                      <h4 className="font-sans font-bold text-xs text-white mb-0.5">{truth.title}</h4>
+                      <p className="text-[10.5px] text-slate-300 font-sans leading-snug">{truth.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -2359,8 +2595,15 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
               </>
             }
             rightContent={
-              <div className="space-y-2.5">
-                <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2.5 relative overflow-hidden">
+                {/* DRAFT Watermark across roadmap */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 select-none z-0">
+                  <span className="font-mono font-black text-[120px] text-slate-200 rotate-[-25deg] tracking-widest">
+                    DRAFT
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 relative z-10">
                   {[
                     {
                       title: 'WebRTC Multiplayer Duels',
@@ -2398,14 +2641,16 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   ))}
                 </div>
 
-                <ScrapbookPlaceholder
-                  tag="[SKETCH: Two-player split screen pinky battle]"
-                  caption="Napkin draft: WebRTC peer connection duel over shared directory"
-                  rotate="ccw"
-                />
+                <div className="relative z-10">
+                  <ScrapbookPlaceholder
+                    tag="[SKETCH: Two-player split screen pinky battle]"
+                    caption="Napkin draft: WebRTC peer connection duel over shared directory"
+                    rotate="ccw"
+                  />
+                </div>
 
-                {/* 36-Hour Hackathon Extension Spec Slip */}
-                <div className="dispatch-tape-slip rotate-0.5 border-cyan-500/30 text-xs font-mono shadow-xl space-y-1">
+                {/* 36-Hour Hackathon Extension Spec Slip with dashed border */}
+                <div className="dispatch-tape-slip rotate-0.5 border-dashed border-cyan-500/40 text-xs font-mono shadow-xl space-y-1 relative z-10">
                   <div className="flex items-center justify-between border-b border-cyan-500/20 pb-1 text-[10px]">
                     <span className="text-cyan-400 font-bold flex items-center gap-1.5">
                       <span>RFC-001 // WEBRTC PROTOCOL SPEC</span>
@@ -2442,15 +2687,19 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
         <div className={getSpreadClassName(18)}>
           <FinalReflection viewMode={viewMode} paperTone={paperTone} />
         </div>
-        </div>
+        </main>
 
         {/* ─── BOTTOM SPREAD PAGER FOOTER (Spread Mode Navigation) ─── */}
         {viewMode === 'spread' && (
-          <div className="mt-6 rounded-2xl bg-slate-950/95 border border-slate-800/60 shadow-2xl overflow-hidden backdrop-blur-xl">
-            {/* Reading Progress Indicator — thinner, sharper */}
-            <div className="h-[2px] bg-slate-900 w-full relative overflow-hidden">
+          <div className={`mt-6 rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-xl ${
+            paperTone === 'cream'
+              ? 'bg-[#1a1714]/95 border-amber-900/30 shadow-[0_16px_32px_rgba(0,0,0,0.5)]'
+              : 'bg-slate-950/95 border-slate-800/60 shadow-2xl'
+          }`}>
+            {/* Reading Progress Indicator — 3px height with rounded pill styling */}
+            <div className="h-[3px] bg-slate-900 w-full relative overflow-hidden rounded-full">
               <div
-                className="h-full transition-all duration-700 ease-out"
+                className="h-full rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${((spreadIndex + 1) / sectionIds.length) * 100}%`,
                   background: 'linear-gradient(90deg, #be185d 0%, #ec4899 50%, #ffba00 100%)',
@@ -2465,6 +2714,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 type="button"
                 onClick={goToPrevSpread}
                 disabled={spreadIndex === 0}
+                aria-label="Previous spread"
                 className={`px-5 sm:px-6 py-3 flex items-center gap-2 font-mono text-xs font-bold transition-all duration-150 cursor-pointer border-r border-slate-800/60 shrink-0 ${
                   spreadIndex === 0
                     ? 'opacity-20 cursor-not-allowed text-slate-600'
@@ -2478,9 +2728,14 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
 
               {/* Center: Chapter label + dot progress + keyboard hints */}
               <div className="flex-1 flex flex-col items-center justify-center gap-1.5 py-2.5 px-3 sm:px-4 min-w-0">
-                {/* Chapter indicator — the main improvement */}
+                {/* Chapter indicator + optional Journey indicator */}
                 <div className="flex items-center gap-2 min-w-0 max-w-full">
-                  <span className="font-mono text-[9.5px] font-bold text-pink-500 uppercase tracking-[0.18em] shrink-0">
+                  {journeyMode && (
+                    <span className="ink-stamp ink-stamp-amber text-[8px] py-0.5 px-1.5 tracking-wider shrink-0">
+                      JOURNEY: {Math.max(1, pillarIndices.indexOf(spreadIndex) + 1)} / {pillarIndices.length} PILLARS
+                    </span>
+                  )}
+                  <span className={`font-mono text-[9.5px] font-bold uppercase tracking-[0.18em] shrink-0 sm:max-w-none max-w-[100px] truncate ${CHAPTER_COLORS[activeSection] || 'text-pink-500'}`}>
                     {currentSpreadInfo.chapter}
                   </span>
                   {currentSpreadInfo.title && (
@@ -2493,13 +2748,19 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                   )}
                 </div>
 
-                {/* Dot progress indicator */}
-                <div className="flex items-center gap-1 flex-wrap justify-center">
+                {/* Mobile fraction counter */}
+                <div className="flex sm:hidden items-center gap-1 font-mono text-[10px] text-slate-400 font-semibold">
+                  <span>Spread {spreadIndex + 1} of {sectionIds.length}</span>
+                </div>
+
+                {/* Dot progress indicator (desktop only) */}
+                <div className="hidden sm:flex items-center gap-1 flex-wrap justify-center">
                   {sectionIds.map((_, idx) => (
                     <button
                       type="button"
                       key={idx}
                       onClick={() => handleSelectSection(sectionIds[idx])}
+                      aria-label={`Go to ${getSpreadLabel(idx).chapter}`}
                       className={`rounded-full transition-all duration-300 cursor-pointer ${
                         idx === spreadIndex
                           ? 'w-5 h-[5px] bg-pink-500 shadow-[0_0_6px_rgba(236,72,153,0.7)]'
@@ -2522,7 +2783,9 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                     <kbd className="px-1 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 text-[8px] font-mono">←</kbd>
                     <kbd className="px-1 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 text-[8px] font-mono">→</kbd>
                     <kbd className="px-1 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 text-[8px] font-mono">Space</kbd>
-                    <span className="text-slate-600 ml-0.5">to flip</span>
+                    <span className="text-slate-600 ml-0.5 mr-1">flip</span>
+                    <kbd className="px-1 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 text-[8px] font-mono">V</kbd>
+                    <span className="text-slate-600 ml-0.5">view</span>
                   </span>
                 </div>
               </div>
@@ -2532,6 +2795,7 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
                 type="button"
                 onClick={goToNextSpread}
                 disabled={spreadIndex >= sectionIds.length - 1}
+                aria-label="Next spread"
                 className={`px-5 sm:px-6 py-3 flex items-center gap-2 font-mono text-xs font-bold transition-all duration-150 cursor-pointer border-l border-slate-800/60 shrink-0 ${
                   spreadIndex >= sectionIds.length - 1
                     ? 'opacity-20 cursor-not-allowed text-slate-600'
@@ -2552,20 +2816,41 @@ export const JournalScreen: React.FC<JournalScreenProps> = ({
       {/* ─── QUIET BOTTOM-CORNER JUMP PILL (Scroll Mode only) ─── */}
       {viewMode === 'scroll' && (
         <div className="fixed bottom-5 right-5 z-30 flex items-center gap-2">
-          <button
-            onClick={() => handleSelectSection(HERO_DATA.id)}
-            className="p-2.5 rounded-full bg-slate-950/90 text-slate-400 hover:text-white border border-slate-800 hover:border-pink-500/50 shadow-xl transition-colors cursor-pointer"
-            title="Scroll to Top"
-          >
-            <ChevronUp className="w-4 h-4" />
-          </button>
+          <div className="relative flex items-center justify-center">
+            <svg className="w-10 h-10 -rotate-90 pointer-events-none absolute inset-0" viewBox="0 0 36 36">
+              <path
+                className="text-slate-800"
+                strokeWidth="2.5"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className="text-pink-500 transition-all duration-150"
+                strokeDasharray={`${scrollProgress}, 100`}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <button
+              onClick={() => handleSelectSection(HERO_DATA.id)}
+              className="w-10 h-10 rounded-full bg-slate-950/90 text-slate-400 hover:text-white border border-slate-800 hover:border-pink-500/50 shadow-xl transition-colors cursor-pointer flex items-center justify-center"
+              title="Scroll to Top"
+              aria-label="Scroll to Top"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+          </div>
 
           <button
             onClick={() => handleSelectSection('chapter-14')}
             className="px-3.5 py-2 rounded-full bg-pink-600/90 hover:bg-pink-500 text-white font-mono text-xs font-bold flex items-center gap-1.5 shadow-xl transition-all cursor-pointer"
           >
             <Play className="w-3 h-3 fill-white" />
-            <span>Play Game</span>
+            <span>PLAY ↗</span>
           </button>
         </div>
       )}

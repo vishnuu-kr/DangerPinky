@@ -6,8 +6,9 @@ import { sound } from '../game/audio';
 import { GameConfig, GameStatus, Direction, FloatingNotification, GameStats } from '../types/game';
 import { GameFile } from '../types/file';
 import { FRUIT_COLORS, FRUIT_EMOJIS } from '../game/constants';
-import { saveHighScore } from '../utils/storage';
+import { saveHighScore, saveLeaderboardEntry } from '../utils/storage';
 import { consumeNativeFile } from '../filesystem/nativeBridge';
+import { triggerHaptic, setHapticsEnabled } from '../utils/haptics';
 
 export interface UseGameLoopParams {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -32,16 +33,29 @@ export function useGameLoop({
 }: UseGameLoopParams) {
   const [status, setStatus] = useState<GameStatus>('IDLE');
   const [score, setScore] = useState<number>(0);
+  const [comboCount, setComboCount] = useState<number>(1);
   const [filesEaten, setFilesEaten] = useState<GameFile[]>([]);
   const [filesConsumedCount, setFilesConsumedCount] = useState<number>(0);
   const [floatingNotes, setFloatingNotes] = useState<FloatingNotification[]>([]);
   const [countdown, setCountdown] = useState<number>(3);
+  const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  const [isScreenShaking, setIsScreenShaking] = useState<boolean>(false);
+  const [isNearMiss, setIsNearMiss] = useState<boolean>(false);
+
+  const digestionStartTimeRef = useRef<number>(0);
+  const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const triggerScreenShake = useCallback(() => {
+    setIsScreenShaking(true);
+    setTimeout(() => setIsScreenShaking(false), 220);
+  }, []);
 
   // Synchronous status ref prevents stale closures across render cycles
   const statusRef = useRef<GameStatus>('IDLE');
   const setGameStatus = useCallback((newStatus: GameStatus) => {
     statusRef.current = newStatus;
     setStatus(newStatus);
+    sound.setPaused(newStatus === 'PAUSED');
   }, []);
 
   const engineRef = useRef<SnakeEngine | null>(null);
@@ -95,6 +109,7 @@ export function useGameLoop({
 
   // Synchronize engine config, files, and real-mode consumption without resetting active game
   useEffect(() => {
+    setHapticsEnabled(config.hapticsEnabled !== false);
     if (!engineRef.current) {
       engineRef.current = new SnakeEngine(config, files, !realFileMode);
     } else {
@@ -116,6 +131,7 @@ export function useGameLoop({
       const accepted = engineRef.current.setDirection(dir);
       if (accepted) {
         sound.playGestureTick();
+        triggerHaptic('turn');
       }
       return accepted;
     }
@@ -127,7 +143,19 @@ export function useGameLoop({
     (customFiles?: GameFile[], customRealMode?: boolean, customToken?: string) => {
       clearCountdownInterval();
 
-      const filesToUse = customFiles && customFiles.length > 0 ? customFiles : filesRef.current;
+      let filesToUse = customFiles && customFiles.length > 0 ? customFiles : filesRef.current;
+      const filter = configRef.current.fileFilter;
+      if (filter && filter !== 'ALL') {
+        const filtered = filesToUse.filter((f) => {
+          if (filter === 'MEDIA_ONLY') return f.category === 'image' || f.category === 'video' || f.category === 'audio';
+          if (filter === 'CODE_DOCS') return f.category === 'code' || f.category === 'document';
+          if (filter === 'JUNK_ONLY') return f.category === 'other' || ['tmp', 'log', 'bak', 'cache'].includes(f.extension?.toLowerCase() || '');
+          return true;
+        });
+        if (filtered.length > 0) {
+          filesToUse = filtered;
+        }
+      }
       const isReal = customRealMode !== undefined ? customRealMode : realFileModeRef.current;
       if (customRealMode !== undefined) {
         realFileModeRef.current = customRealMode;
@@ -149,6 +177,8 @@ export function useGameLoop({
 
       particlesRef.current.clear();
       setScore(0);
+      setComboCount(1);
+      setTimeRemaining(60);
       setFilesConsumedCount(0);
       filesConsumedCountRef.current = 0;
       operationInProgressRef.current = false;
@@ -156,6 +186,7 @@ export function useGameLoop({
       setFloatingNotes([]);
       setGameStatus('COUNTDOWN');
       setCountdown(3);
+      sound.stopBgm();
       sound.playCountdown(false);
 
       let count = 3;
@@ -171,6 +202,26 @@ export function useGameLoop({
           setGameStatus('PLAYING');
           startTimeRef.current = Date.now();
           lastTickTimeRef.current = performance.now();
+          sound.startBgm(engineRef.current?.getCurrentTickSpeed() || 140);
+
+          if (configRef.current.gameMode === 'TIME_ATTACK') {
+            if (timeAttackTimerRef.current) clearInterval(timeAttackTimerRef.current);
+            timeAttackTimerRef.current = setInterval(() => {
+              setTimeRemaining((prev) => {
+                if (prev <= 1) {
+                  if (timeAttackTimerRef.current) {
+                    clearInterval(timeAttackTimerRef.current);
+                    timeAttackTimerRef.current = null;
+                  }
+                  if (engineRef.current) {
+                    engineRef.current.triggerSelfCollision();
+                  }
+                  return 0;
+                }
+                return prev - 1;
+              });
+            }, 1000);
+          }
         }
       }, 850);
     },
@@ -179,6 +230,11 @@ export function useGameLoop({
 
   const pauseGame = useCallback(() => {
     if (statusRef.current === 'PLAYING') {
+      sound.stopBgm();
+      if (timeAttackTimerRef.current) {
+        clearInterval(timeAttackTimerRef.current);
+        timeAttackTimerRef.current = null;
+      }
       setGameStatus('PAUSED');
     }
   }, [setGameStatus]);
@@ -186,21 +242,45 @@ export function useGameLoop({
   const resumeGame = useCallback(() => {
     if (statusRef.current === 'PAUSED') {
       lastTickTimeRef.current = performance.now();
+      sound.startBgm(engineRef.current?.getCurrentTickSpeed() || 140);
       setGameStatus('PLAYING');
+
+      if (configRef.current.gameMode === 'TIME_ATTACK') {
+        if (timeAttackTimerRef.current) clearInterval(timeAttackTimerRef.current);
+        timeAttackTimerRef.current = setInterval(() => {
+          setTimeRemaining((prev) => {
+            if (prev <= 1) {
+              if (timeAttackTimerRef.current) {
+                clearInterval(timeAttackTimerRef.current);
+                timeAttackTimerRef.current = null;
+              }
+              if (engineRef.current) {
+                engineRef.current.triggerSelfCollision();
+              }
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
     }
   }, [setGameStatus]);
 
   const togglePause = useCallback(() => {
     if (statusRef.current === 'PLAYING') {
-      setGameStatus('PAUSED');
+      pauseGame();
     } else if (statusRef.current === 'PAUSED') {
-      lastTickTimeRef.current = performance.now();
-      setGameStatus('PLAYING');
+      resumeGame();
     }
-  }, [setGameStatus]);
+  }, [pauseGame, resumeGame]);
 
   const stopGame = useCallback(() => {
     clearCountdownInterval();
+    if (timeAttackTimerRef.current) {
+      clearInterval(timeAttackTimerRef.current);
+      timeAttackTimerRef.current = null;
+    }
+    sound.stopBgm();
     setGameStatus('IDLE');
   }, [clearCountdownInterval, setGameStatus]);
 
@@ -232,7 +312,14 @@ export function useGameLoop({
               const result = engine.step();
 
               if (result.gameOver) {
+                sound.stopBgm();
+                if (timeAttackTimerRef.current) {
+                  clearInterval(timeAttackTimerRef.current);
+                  timeAttackTimerRef.current = null;
+                }
+                triggerScreenShake();
                 sound.playGameOver();
+                triggerHaptic('crash');
                 setGameStatus('GAME_OVER');
 
                 const finalScore = engine.getScore();
@@ -244,6 +331,35 @@ export function useGameLoop({
                   sound.playHighScore();
                 }
 
+                const rating = finalScore >= 40 ? 'HARD DRIVE REAPER 👑' : finalScore >= 25 ? 'CHAOTIC JANITOR 🥇' : finalScore >= 12 ? 'RECKLESS CLEANER 🥈' : 'NOVICE BROOM 🥉';
+                const totalCleanedBytes = engine.getFilesEaten().reduce((acc, f) => acc + f.size, 0);
+
+                const snakeHead = engine.getSnakeState().body[0] || { x: 0, y: 0 };
+                const curFood = engine.getFood();
+                const distToFood = curFood
+                  ? Math.hypot(curFood.position.x - snakeHead.x, curFood.position.y - snakeHead.y)
+                  : 0;
+
+                const fatalCrashSnapshot = {
+                  headX: snakeHead.x,
+                  headY: snakeHead.y,
+                  collisionType: result.reason || 'COLLISION',
+                  nearestFoodDistance: Math.round(distToFood * 10) / 10
+                };
+
+                const leaderboardEntry: import('../types/game').LeaderboardEntry = {
+                  id: `run-${Date.now()}`,
+                  score: finalScore,
+                  date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                  mode: curConfig.gameMode,
+                  filesCount: engine.getFilesEaten().length,
+                  bytesCleaned: totalCleanedBytes,
+                  durationSeconds: Math.floor((Date.now() - startTimeRef.current) / 1000),
+                  isRealMode: !!realFileModeRef.current,
+                  hazardRating: rating
+                };
+                saveLeaderboardEntry(leaderboardEntry);
+
                 const stats: GameStats = {
                   score: finalScore,
                   highScore: Math.max(curHigh, finalScore),
@@ -251,7 +367,10 @@ export function useGameLoop({
                   startTime: startTimeRef.current,
                   durationSeconds: Math.floor((Date.now() - startTimeRef.current) / 1000),
                   isNewHighScore: isNewHigh,
-                  realFilesConsumedCount: filesConsumedCountRef.current
+                  realFilesConsumedCount: filesConsumedCountRef.current,
+                  gameMode: curConfig.gameMode,
+                  hazardRating: rating,
+                  fatalCrashSnapshot
                 };
                 onGameOverRef.current(stats);
               } else if (result.collidedFood) {
@@ -266,7 +385,31 @@ export function useGameLoop({
                     .then((opResult) => {
                       if (opResult.success) {
                         const commit = engine.commitFoodConsumption(food);
-                        sound.playEatSound(commit.eatenFile.category);
+                        digestionStartTimeRef.current = performance.now();
+
+                        const pan = Math.max(-0.85, Math.min(0.85, ((commit.eatenPosition.x / curConfig.gridSize) - 0.5) * 1.8));
+                        sound.playEatSound(commit.eatenFile.category, commit.comboCount, pan);
+                        sound.setComboLevel(commit.comboCount);
+
+                        if (commit.specialType) {
+                          sound.playPowerUpSound(commit.specialType);
+                          triggerHaptic('powerup');
+                          if (commit.specialType === 'SPEED_BURST') triggerScreenShake();
+                        } else if (commit.comboCount > 1) {
+                          triggerHaptic('combo');
+                        } else {
+                          triggerHaptic('eat');
+                        }
+
+                        if (commit.eatenFile.category === 'video' || commit.eatenFile.category === 'archive') {
+                          triggerScreenShake();
+                        }
+                        if (commit.comboCount > 1) {
+                          setComboCount(commit.comboCount);
+                        }
+                        if (curConfig.gameMode === 'TIME_ATTACK') {
+                          setTimeRemaining((t) => Math.min(99, t + 3));
+                        }
 
                         const fruitType = commit.eatenFruit;
                         const fruitColor = FRUIT_COLORS[fruitType] || '#ef4444';
@@ -276,11 +419,21 @@ export function useGameLoop({
                         const cellSize = logicalWidth / curConfig.gridSize;
                         const px = commit.eatenPosition.x * cellSize + cellSize / 2;
                         const py = commit.eatenPosition.y * cellSize + cellSize / 2;
-                        particles.emit(px, py, fruitColor, 16);
+
+                        const snakeHead = engine.getSnakeState().body[0];
+                        const headPx = snakeHead ? snakeHead.x * cellSize + cellSize / 2 : px;
+                        const headPy = snakeHead ? snakeHead.y * cellSize + cellSize / 2 : py;
+                        particles.emit(px, py, fruitColor, 12);
+                        particles.emitSuction(px, py, headPx, headPy, fruitColor, 12);
+
+                        let noteText = `+${commit.pointsAdded || 1} Moved to Trash: ${opResult.fileName || food.file.name}`;
+                        if (commit.comboCount > 1) {
+                          noteText = `🔥 ${commit.comboCount}x COMBO! ${noteText}`;
+                        }
 
                         const newNote: FloatingNotification = {
                           id: `note-${Date.now()}-${Math.random()}`,
-                          text: `+1 Moved to Trash: ${opResult.fileName || food.file.name}`,
+                          text: noteText,
                           subtext: 'Recoverable from OS Recycle Bin',
                           category: commit.eatenFile.category,
                           extension: commit.eatenFile.extension,
@@ -329,28 +482,59 @@ export function useGameLoop({
                 }
               } else if (result.eatenFile && result.eatenPosition) {
                 // Food was eaten!
-                sound.playEatSound(result.eatenFile.category);
+                digestionStartTimeRef.current = performance.now();
+
+                const pan = Math.max(-0.85, Math.min(0.85, ((result.eatenPosition.x / curConfig.gridSize) - 0.5) * 1.8));
+                sound.playEatSound(result.eatenFile.category, result.comboCount || 1, pan);
+                sound.setComboLevel(result.comboCount || 1);
+
+                if (result.specialType) {
+                  sound.playPowerUpSound(result.specialType);
+                  triggerHaptic('powerup');
+                  if (result.specialType === 'SPEED_BURST') triggerScreenShake();
+                } else if ((result.comboCount || 1) > 1) {
+                  triggerHaptic('combo');
+                } else {
+                  triggerHaptic('eat');
+                }
+
+                if (result.eatenFile.category === 'video' || result.eatenFile.category === 'archive') {
+                  triggerScreenShake();
+                }
+                if ((result.comboCount || 1) > 1) {
+                  setComboCount(result.comboCount || 1);
+                }
+                if (curConfig.gameMode === 'TIME_ATTACK') {
+                  setTimeRemaining((t) => Math.min(99, t + 3));
+                }
 
                 const fruitType = result.eatenFruit || 'apple';
                 const fruitColor = FRUIT_COLORS[fruitType] || '#ef4444';
                 const fruitEmoji = FRUIT_EMOJIS[fruitType] || '🍎';
 
-                // Burst a small casual cluster of fruit sparks (Section 17)
+                // Burst a small casual cluster of fruit sparks and vacuum implosion
                 const dpr = window.devicePixelRatio || 1;
                 const logicalWidth = canvas.width / dpr;
                 const cellSize = logicalWidth / curConfig.gridSize;
                 const px = result.eatenPosition.x * cellSize + cellSize / 2;
                 const py = result.eatenPosition.y * cellSize + cellSize / 2;
-                particles.emit(px, py, fruitColor, 12);
 
-                // Add subtle simulated consumption notification (Section 14 & 15)
+                const snakeHead = engine.getSnakeState().body[0];
+                const headPx = snakeHead ? snakeHead.x * cellSize + cellSize / 2 : px;
+                const headPy = snakeHead ? snakeHead.y * cellSize + cellSize / 2 : py;
+                particles.emit(px, py, fruitColor, 12);
+                particles.emitSuction(px, py, headPx, headPy, fruitColor, 12);
+
                 const funPhrases = [
                   `Deleted: ${result.eatenFile.name}`,
                   `${fruitEmoji} Deleted: ${result.eatenFile.name}`,
                   `Consumed: ${result.eatenFile.name}`,
                   `${fruitEmoji} Consumed: ${result.eatenFile.name}`
                 ];
-                const msg = funPhrases[Math.floor(Math.random() * funPhrases.length)];
+                let msg = funPhrases[Math.floor(Math.random() * funPhrases.length)];
+                if ((result.comboCount || 1) > 1) {
+                  msg = `🔥 ${result.comboCount}x COMBO! (+${result.pointsAdded || 1}) ${result.eatenFile.name}`;
+                }
 
                 const newNote: FloatingNotification = {
                   id: `note-${Date.now()}-${Math.random()}`,
@@ -383,6 +567,34 @@ export function useGameLoop({
           const logicalWidth = canvas.width / dpr;
           const logicalHeight = canvas.height / dpr;
 
+          const digestionElapsed = now - digestionStartTimeRef.current;
+          const digestionProgress = digestionElapsed < 550 ? digestionElapsed / 550 : -1;
+
+          // Check for near miss (1 tile away from lethal wall or self segment)
+          let isDangerNear = false;
+          if (curStatus === 'PLAYING') {
+            const snakeState = engine.getSnakeState();
+            const head = snakeState.body[0];
+            const delta = {
+              UP: { x: 0, y: -1 },
+              DOWN: { x: 0, y: 1 },
+              LEFT: { x: -1, y: 0 },
+              RIGHT: { x: 1, y: 0 }
+            }[snakeState.direction];
+            const nextX = head.x + delta.x;
+            const nextY = head.y + delta.y;
+            const hitWall = config.gameMode === 'CLASSIC' && (nextX < 0 || nextX >= config.gridSize || nextY < 0 || nextY >= config.gridSize);
+            const hitSelf = snakeState.body.slice(1).some(seg => seg.x === nextX && seg.y === nextY);
+            isDangerNear = hitWall || hitSelf;
+            setIsNearMiss(isDangerNear);
+            if (isDangerNear) {
+              sound.playHeartbeat();
+              triggerHaptic('near_miss');
+            }
+          } else {
+            setIsNearMiss(false);
+          }
+
           ctx.save();
           ctx.setTransform(1, 0, 0, 1, 0, 0);
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -398,7 +610,13 @@ export function useGameLoop({
             particles,
             gameMode: curConfig.gameMode,
             realFileMode: realFileModeRef.current,
-            time: now
+            time: now,
+            snakeSkin: curConfig.snakeSkin,
+            digestionProgress,
+            boardTheme: curConfig.boardTheme,
+            comboCount,
+            isSpeedSurging: curConfig.gameMode === 'TIME_ATTACK',
+            isNearMiss: isDangerNear
           });
 
           ctx.restore();
@@ -432,10 +650,14 @@ export function useGameLoop({
   return {
     status,
     score,
+    comboCount,
     filesEaten,
     filesConsumedCount,
     floatingNotes,
     countdown,
+    timeRemaining,
+    isScreenShaking,
+    isNearMiss,
     startGame,
     stopGame,
     pauseGame,

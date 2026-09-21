@@ -1,5 +1,6 @@
-import { SnakeState, Collectible, GameMode } from '../types/game';
+import { SnakeState, Collectible, GameMode, SnakeSkin, BoardTheme } from '../types/game';
 import { ParticleSystem } from './particles';
+import { SNAKE_SKIN_PALETTES, SPECIAL_ITEMS, BOARD_THEMES } from './constants';
 
 export interface RenderContext {
   ctx: CanvasRenderingContext2D;
@@ -12,58 +13,292 @@ export interface RenderContext {
   gameMode: GameMode;
   realFileMode?: boolean;
   time: number;
+  snakeSkin?: SnakeSkin;
+  digestionProgress?: number;
+  boardTheme?: BoardTheme;
+  comboCount?: number;
+  isSpeedSurging?: boolean;
+  isNearMiss?: boolean;
+}
+
+interface WeatherParticle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  alpha: number;
+  rot: number;
+  vRot: number;
+  char?: string;
 }
 
 export class GameRenderer {
+  private weatherParticles: WeatherParticle[] = [];
+  private lastWeatherTheme: BoardTheme | null = null;
+
   public render(params: RenderContext) {
-    const { ctx, width, height, gridSize, snake, food, particles, gameMode, realFileMode, time } = params;
+    const { ctx, width, height, gridSize, snake, food, particles, gameMode, realFileMode, time, snakeSkin, digestionProgress, boardTheme = 'MEADOW', comboCount, isSpeedSurging, isNearMiss } = params;
     const cellSize = width / gridSize;
 
     // 1. Clear background
     ctx.clearRect(0, 0, width, height);
 
-    // 2. Draw Google-Snake inspired checkered grid
-    this.drawGrid(ctx, gridSize, cellSize);
+    // 2. Draw Checkered grid with Theme
+    this.drawGrid(ctx, gridSize, cellSize, boardTheme);
 
-    // 3. Draw border frame
-    this.drawBorder(ctx, width, height, gameMode);
+    // 3. Draw ambient environmental weather particles (Meadow blossoms, Cyber code, Synth embers)
+    this.drawWeather(ctx, width, height, boardTheme, time);
 
-    // 4. Draw Collectible Fruit
+    // 4. Draw border frame
+    this.drawBorder(ctx, width, height, gameMode, boardTheme);
+
+    // 5. Draw predictive ghost direction indicator (zero-perceived-latency)
+    this.drawGhostDirection(ctx, snake, cellSize, gridSize, snakeSkin, gameMode);
+
+    // 6. Draw Collectible Fruit
     if (food) {
       this.drawFruit(ctx, food, cellSize, time, width, height, realFileMode);
     }
 
-    // 5. Draw Snake
-    this.drawSnake(ctx, snake, cellSize, time, food, realFileMode);
+    // 8. Draw Anatomical Snake with scales, belly plates, viper head & expressive faces
+    this.drawSnake(ctx, snake, cellSize, time, food, realFileMode, snakeSkin, digestionProgress, isNearMiss, comboCount);
 
-    // 6. Draw Particles
+    // 9. Draw arcade radial speed streaks if combo streak is high
+    if ((comboCount && comboCount >= 4) || isSpeedSurging) {
+      this.drawSpeedStreaks(ctx, width, height, time);
+    }
+
+    // 10. Draw Particles
     particles.render(ctx);
   }
 
-  private drawGrid(ctx: CanvasRenderingContext2D, gridSize: number, cellSize: number) {
-    // Google Snake inspired two-tone subtle green checkerboard
-    const colorA = '#a2d149'; // Clean lawn green
-    const colorB = '#aad751'; // Alternating soft green
+  private drawGrid(
+    ctx: CanvasRenderingContext2D,
+    gridSize: number,
+    cellSize: number,
+    boardTheme: BoardTheme = 'MEADOW'
+  ) {
+    const theme = BOARD_THEMES[boardTheme] || BOARD_THEMES.MEADOW;
 
     for (let x = 0; x < gridSize; x++) {
       for (let y = 0; y < gridSize; y++) {
-        ctx.fillStyle = (x + y) % 2 === 0 ? colorA : colorB;
+        ctx.fillStyle = (x + y) % 2 === 0 ? theme.tileA : theme.tileB;
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+        // Grid line outline
+        ctx.strokeStyle = theme.gridLine;
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
+
+    // Cyber CRT scanlines if Cyber Terminal theme
+    if (boardTheme === 'CYBER_NEON') {
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.022)';
+      for (let y = 0; y < gridSize * cellSize; y += 4) {
+        ctx.fillRect(0, y, gridSize * cellSize, 2);
+      }
+    }
+  }
+
+  private drawWeather(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    boardTheme: BoardTheme,
+    time: number
+  ) {
+    if (this.lastWeatherTheme !== boardTheme || this.weatherParticles.length === 0) {
+      this.lastWeatherTheme = boardTheme;
+      this.weatherParticles = [];
+      const count = 22;
+      for (let i = 0; i < count; i++) {
+        const isCherry = boardTheme === 'MEADOW';
+        this.weatherParticles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: isCherry ? 0.3 + Math.random() * 0.4 : (Math.random() - 0.5) * 0.3,
+          vy: boardTheme === 'SYNTH_DUSK' ? -(0.3 + Math.random() * 0.5) : (0.3 + Math.random() * 0.6),
+          size: isCherry ? 3 + Math.random() * 3.5 : 2 + Math.random() * 3,
+          alpha: 0.22 + Math.random() * 0.35,
+          rot: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.04,
+          char: Math.random() > 0.5 ? '1' : '0'
+        });
+      }
+    }
+
+    ctx.save();
+    for (const p of this.weatherParticles) {
+      if (boardTheme === 'MEADOW') {
+        p.x += p.vx + Math.sin(time * 0.002 + p.y * 0.05) * 0.35;
+        p.y += p.vy;
+      } else if (boardTheme === 'SYNTH_DUSK') {
+        p.y += p.vy;
+        p.x += Math.sin(time * 0.003 + p.y * 0.08) * 0.25;
+      } else {
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+      p.rot += p.vRot;
+
+      if (p.x < -10) p.x = width + 10;
+      else if (p.x > width + 10) p.x = -10;
+      if (p.y < -10) p.y = height + 10;
+      else if (p.y > height + 10) p.y = -10;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+
+      if (boardTheme === 'MEADOW') {
+        ctx.fillStyle = '#fbcfe8';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (boardTheme === 'CYBER_NEON') {
+        ctx.fillStyle = '#22d3ee';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(p.char || '1', 0, 0);
+      } else if (boardTheme === 'SYNTH_DUSK') {
+        ctx.fillStyle = '#f0abfc';
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      }
+      ctx.restore();
+    }
+    ctx.restore();
   }
 
   private drawBorder(
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
-    _gameMode: GameMode
+    _gameMode: GameMode,
+    boardTheme: BoardTheme = 'MEADOW'
   ) {
+    const theme = BOARD_THEMES[boardTheme] || BOARD_THEMES.MEADOW;
     ctx.save();
-    // Natural garden border frame
-    ctx.strokeStyle = '#4a752c';
+    ctx.strokeStyle = theme.outerBorder;
     ctx.lineWidth = 4;
     ctx.strokeRect(2, 2, width - 4, height - 4);
+    ctx.restore();
+  }
+
+  private drawGhostDirection(
+    ctx: CanvasRenderingContext2D,
+    snake: SnakeState,
+    cellSize: number,
+    gridSize: number,
+    snakeSkin?: SnakeSkin,
+    gameMode: GameMode = 'WRAP'
+  ) {
+    if (!snake.isAlive || snake.body.length === 0) return;
+    if (snake.nextDirection === snake.direction) return; // Only show when a turn flick is queued!
+
+    const head = snake.body[0];
+    let gx = head.x;
+    let gy = head.y;
+
+    if (snake.nextDirection === 'UP') gy -= 1;
+    else if (snake.nextDirection === 'DOWN') gy += 1;
+    else if (snake.nextDirection === 'LEFT') gx -= 1;
+    else if (snake.nextDirection === 'RIGHT') gx += 1;
+
+    // Handle wrap boundaries for ghost
+    if (gameMode === 'WRAP') {
+      if (gx < 0) gx = gridSize - 1;
+      else if (gx >= gridSize) gx = 0;
+      if (gy < 0) gy = gridSize - 1;
+      else if (gy >= gridSize) gy = 0;
+    } else {
+      if (gx < 0 || gx >= gridSize || gy < 0 || gy >= gridSize) return;
+    }
+
+    const cx = gx * cellSize + cellSize / 2;
+    const cy = gy * cellSize + cellSize / 2;
+    const r = cellSize * 0.42;
+
+    const palette = SNAKE_SKIN_PALETTES[snakeSkin || 'CANDY_PINK'] || SNAKE_SKIN_PALETTES.CANDY_PINK;
+
+    ctx.save();
+    ctx.strokeStyle = palette.highlight;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.fillStyle = palette.main;
+    ctx.globalAlpha = 0.38;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Direction arrow inside ghost head
+    ctx.globalAlpha = 0.75;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    const arrowSize = cellSize * 0.18;
+    if (snake.nextDirection === 'UP') {
+      ctx.moveTo(cx, cy - arrowSize);
+      ctx.lineTo(cx - arrowSize * 0.7, cy + arrowSize * 0.5);
+      ctx.lineTo(cx + arrowSize * 0.7, cy + arrowSize * 0.5);
+    } else if (snake.nextDirection === 'DOWN') {
+      ctx.moveTo(cx, cy + arrowSize);
+      ctx.lineTo(cx - arrowSize * 0.7, cy - arrowSize * 0.5);
+      ctx.lineTo(cx + arrowSize * 0.7, cy - arrowSize * 0.5);
+    } else if (snake.nextDirection === 'LEFT') {
+      ctx.moveTo(cx - arrowSize, cy);
+      ctx.lineTo(cx + arrowSize * 0.5, cy - arrowSize * 0.7);
+      ctx.lineTo(cx + arrowSize * 0.5, cy + arrowSize * 0.7);
+    } else if (snake.nextDirection === 'RIGHT') {
+      ctx.moveTo(cx + arrowSize, cy);
+      ctx.lineTo(cx - arrowSize * 0.5, cy - arrowSize * 0.7);
+      ctx.lineTo(cx - arrowSize * 0.5, cy + arrowSize * 0.7);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  private drawSpeedStreaks(ctx: CanvasRenderingContext2D, width: number, height: number, time: number) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 1.5;
+    const streakCount = 6;
+    for (let i = 0; i < streakCount; i++) {
+      const offset = ((time * 0.35 + i * 40) % 80) / 80;
+      const len = 25 + offset * 35;
+      // Top-left corner
+      ctx.beginPath();
+      ctx.moveTo(offset * 35, offset * 35);
+      ctx.lineTo(offset * 35 + len, offset * 35 + len);
+      ctx.stroke();
+
+      // Top-right corner
+      ctx.beginPath();
+      ctx.moveTo(width - offset * 35, offset * 35);
+      ctx.lineTo(width - offset * 35 - len, offset * 35 + len);
+      ctx.stroke();
+
+      // Bottom-left corner
+      ctx.beginPath();
+      ctx.moveTo(offset * 35, height - offset * 35);
+      ctx.lineTo(offset * 35 + len, height - offset * 35 - len);
+      ctx.stroke();
+
+      // Bottom-right corner
+      ctx.beginPath();
+      ctx.moveTo(width - offset * 35, height - offset * 35);
+      ctx.lineTo(width - offset * 35 - len, height - offset * 35 - len);
+      ctx.stroke();
+    }
     ctx.restore();
   }
 
@@ -90,47 +325,66 @@ export class GameRenderer {
       scale = 1 + Math.sin(time * 0.005) * 0.035;
     }
 
+    // Dynamic vertical sine-wave bobbing
+    const bobOffset = Math.sin(time * 0.005) * (cellSize * 0.07);
+    const fruitCy = cy + bobOffset;
+
     // Larger, juicy fruit radius (0.44 * cellSize instead of 0.36)
     const r = (cellSize * 0.44) * scale;
     const fruit = food.fruitType || 'apple';
 
     ctx.save();
 
-    // Soft colored ambient drop shadow under the fruit
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    // Soft colored ambient drop shadow under the fruit (ground level)
+    const shadowScale = 1 - (bobOffset / (cellSize * 0.07)) * 0.18;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
     ctx.beginPath();
-    ctx.ellipse(cx, cy + r * 0.88, r * 0.78, r * 0.26, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy + r * 0.88, r * 0.78 * shadowScale, r * 0.26 * shadowScale, 0, 0, Math.PI * 2);
     ctx.fill();
 
     switch (fruit) {
       case 'apple':
-        this.renderApple(ctx, cx, cy, r);
+        this.renderApple(ctx, cx, fruitCy, r);
         break;
       case 'orange':
-        this.renderOrange(ctx, cx, cy, r);
+        this.renderOrange(ctx, cx, fruitCy, r);
         break;
       case 'grape':
-        this.renderGrape(ctx, cx, cy, r);
+        this.renderGrape(ctx, cx, fruitCy, r);
         break;
       case 'strawberry':
-        this.renderStrawberry(ctx, cx, cy, r);
+        this.renderStrawberry(ctx, cx, fruitCy, r);
         break;
       case 'watermelon':
-        this.renderWatermelon(ctx, cx, cy, r);
+        this.renderWatermelon(ctx, cx, fruitCy, r);
         break;
       case 'cherry':
-        this.renderCherry(ctx, cx, cy, r);
+        this.renderCherry(ctx, cx, fruitCy, r);
         break;
       default:
-        this.renderApple(ctx, cx, cy, r);
+        this.renderApple(ctx, cx, fruitCy, r);
         break;
+    }
+
+    // Special wildcard power-up halo
+    if (food.specialType && SPECIAL_ITEMS[food.specialType]) {
+      const specialMeta = SPECIAL_ITEMS[food.specialType];
+      ctx.save();
+      ctx.strokeStyle = specialMeta.color;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = specialMeta.color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(cx, fruitCy, r * 1.32, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
     }
 
     ctx.restore();
 
     // Draw cartoon file badge above the fruit displaying actual file name
     if (food.file && food.file.name) {
-      this.drawFruitFileBadge(ctx, food.file.name, cx, cy, r, cellSize, boardWidth, boardHeight, realFileMode);
+      this.drawFruitFileBadge(ctx, food.file.name, cx, fruitCy, r, cellSize, boardWidth, boardHeight, realFileMode, food.specialType);
     }
   }
 
@@ -143,13 +397,16 @@ export class GameRenderer {
     cellSize: number,
     boardWidth: number,
     boardHeight: number,
-    realFileMode?: boolean
+    realFileMode?: boolean,
+    specialType?: import('../types/game').SpecialItemType
   ) {
     ctx.save();
 
-    // Clean truncate for crisp legibility
+    // Clean truncate for crisp legibility or show special badge
     let display = filename;
-    if (display.length > 15) {
+    if (specialType && SPECIAL_ITEMS[specialType]) {
+      display = `${SPECIAL_ITEMS[specialType].emoji} ${SPECIAL_ITEMS[specialType].name}`;
+    } else if (display.length > 15) {
       const ext = display.includes('.') ? '.' + display.split('.').pop() : '';
       display = display.slice(0, 11) + '…' + ext;
     }
@@ -477,347 +734,469 @@ export class GameRenderer {
     cellSize: number,
     time: number,
     food?: Collectible | null,
-    realFileMode?: boolean
+    realFileMode?: boolean,
+    snakeSkin?: SnakeSkin,
+    digestionProgress?: number,
+    isNearMiss?: boolean,
+    comboCount?: number
   ) {
     if (snake.body.length === 0) return;
 
     ctx.save();
 
-    // Danger Mode: Vibrant hot danger red (#FF002F / #FF0011)
-    // Demo Mode: Cute DangerPinky candy pink (#ff3b94)
+    const skinPalette = SNAKE_SKIN_PALETTES[snakeSkin || 'CANDY_PINK'] || SNAKE_SKIN_PALETTES.CANDY_PINK;
     const isDangerMode = !!realFileMode;
-    const snakeMain = isDangerMode ? '#ff002f' : '#ff3b94';
-    const snakeDark = isDangerMode ? '#b3001e' : '#d80064';
-    const snakeHighlight = isDangerMode ? '#ff4d6d' : '#ff7bb9';
-    const snakeHeadTop = isDangerMode ? '#ff6685' : '#ff90c6';
-    const snakeHeadBottom = isDangerMode ? '#990014' : '#c70057';
+    const snakeMain = isDangerMode ? '#ff002f' : skinPalette.main;
+    const snakeMouthInterior = isDangerMode ? '#450a0a' : skinPalette.headBottom;
+    const segDiameter = cellSize * 0.82;
+    const segRadius = segDiameter / 2;
 
-    // 1. Draw body segments (from tail to neck)
-    for (let i = snake.body.length - 1; i > 0; i--) {
-      const seg = snake.body[i];
-      const prevSeg = snake.body[i - 1];
+    // 1. Soft Drop Shadow Underneath Entire Snake
+    ctx.save();
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.lineWidth = segDiameter;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-      const segSize = cellSize * 0.86;
-      const cx = seg.x * cellSize + cellSize / 2;
-      const cy = seg.y * cellSize + cellSize / 2;
+    const shadowOffsetY = cellSize * 0.08;
 
-      // Soft drop shadow
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+    if (snake.body.length > 1) {
       ctx.beginPath();
-      ctx.ellipse(cx, cy + cellSize * 0.08, segSize * 0.5, segSize * 0.44, 0, 0, Math.PI * 2);
+      for (let i = snake.body.length - 1; i >= 0; i--) {
+        const seg = snake.body[i];
+        const sx = seg.x * cellSize + cellSize / 2;
+        const sy = seg.y * cellSize + cellSize / 2 + shadowOffsetY;
+        if (i === snake.body.length - 1) {
+          ctx.moveTo(sx, sy);
+        } else {
+          const prev = snake.body[i + 1];
+          const dist = Math.hypot(seg.x - prev.x, seg.y - prev.y);
+          if (dist > 1.5) {
+            ctx.moveTo(sx, sy);
+          } else {
+            ctx.lineTo(sx, sy);
+          }
+        }
+      }
+      ctx.stroke();
+    } else {
+      const head = snake.body[0];
+      ctx.beginPath();
+      ctx.arc(head.x * cellSize + cellSize / 2, head.y * cellSize + cellSize / 2 + shadowOffsetY, segRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 2. Smooth Continuous Capsule Body (Google Snake Style)
+    ctx.save();
+    ctx.strokeStyle = snakeMain;
+    ctx.fillStyle = snakeMain;
+    ctx.lineWidth = segDiameter;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (snake.body.length > 1) {
+      ctx.beginPath();
+      for (let i = snake.body.length - 1; i >= 0; i--) {
+        const seg = snake.body[i];
+        const cx = seg.x * cellSize + cellSize / 2;
+        const cy = seg.y * cellSize + cellSize / 2;
+        if (i === snake.body.length - 1) {
+          ctx.moveTo(cx, cy);
+        } else {
+          const prev = snake.body[i + 1];
+          const dist = Math.hypot(seg.x - prev.x, seg.y - prev.y);
+          if (dist > 1.5) {
+            ctx.moveTo(cx, cy);
+          } else {
+            ctx.lineTo(cx, cy);
+          }
+        }
+      }
+      ctx.stroke();
+
+      // Ensure rounded tail cap is clean
+      const tail = snake.body[snake.body.length - 1];
+      ctx.beginPath();
+      ctx.arc(tail.x * cellSize + cellSize / 2, tail.y * cellSize + cellSize / 2, segRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 2b. Glossy Highlight Stripe (Google Snake's signature shiny pill look)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+    ctx.lineWidth = segDiameter * 0.28;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const highlightOffset = segDiameter * 0.18;
+
+    if (snake.body.length > 1) {
+      ctx.beginPath();
+      for (let i = snake.body.length - 1; i >= 0; i--) {
+        const seg = snake.body[i];
+        // Offset highlight toward top-left for 3D gloss
+        const cx = seg.x * cellSize + cellSize / 2 - highlightOffset * 0.4;
+        const cy = seg.y * cellSize + cellSize / 2 - highlightOffset;
+        if (i === snake.body.length - 1) {
+          ctx.moveTo(cx, cy);
+        } else {
+          const prev = snake.body[i + 1];
+          const dist = Math.hypot(seg.x - prev.x, seg.y - prev.y);
+          if (dist > 1.5) {
+            ctx.moveTo(cx, cy);
+          } else {
+            ctx.lineTo(cx, cy);
+          }
+        }
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 3. Digestion Wave (Smooth Subtle Bulge)
+    if (digestionProgress !== undefined && digestionProgress >= 0 && digestionProgress <= 1 && snake.body.length > 1) {
+      const bulgeIndex = Math.min(snake.body.length - 1, Math.floor(digestionProgress * (snake.body.length - 1)));
+      const seg = snake.body[bulgeIndex];
+      ctx.save();
+      ctx.fillStyle = snakeMain;
+      ctx.beginPath();
+      ctx.arc(seg.x * cellSize + cellSize / 2, seg.y * cellSize + cellSize / 2, segRadius * 1.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 4. Draw Google Snake Head
+    const head = snake.body[0];
+    const hx = head.x * cellSize + cellSize / 2;
+    const hy = head.y * cellSize + cellSize / 2;
+
+    this.drawGoogleSnakeHead(
+      ctx,
+      hx,
+      hy,
+      segDiameter,
+      snake,
+      cellSize,
+      time,
+      food,
+      snakeMain,
+      snakeMouthInterior,
+      skinPalette,
+      comboCount
+    );
+
+    ctx.restore();
+
+    // 5. Overhead Micro-Emotions (Knockout stars or near-miss sweat drop)
+    if (!snake.isAlive) {
+      this.drawOrbitingStars(ctx, hx, hy, segDiameter, time);
+    } else if (isNearMiss) {
+      this.drawSweatDrop(ctx, hx, hy, segDiameter, time);
+    }
+  }
+
+  private drawGoogleSnakeHead(
+    ctx: CanvasRenderingContext2D,
+    hx: number,
+    hy: number,
+    segDiameter: number,
+    snake: SnakeState,
+    cellSize: number,
+    time: number,
+    food: Collectible | null | undefined,
+    snakeMain: string,
+    snakeMouthInterior: string,
+    skinPalette: import('./constants').SnakeSkinPalette,
+    comboCount?: number
+  ) {
+    ctx.save();
+    ctx.translate(hx, hy);
+
+    let angle = 0;
+    if (snake.direction === 'DOWN') angle = Math.PI / 2;
+    else if (snake.direction === 'LEFT') angle = Math.PI;
+    else if (snake.direction === 'UP') angle = -Math.PI / 2;
+    ctx.rotate(angle);
+
+    const r = segDiameter / 2;
+    const head = snake.body[0];
+
+    // ONLY chomp when food is directly 1 cell ahead on the EXACT SAME LINE in the direction of movement
+    const delta = {
+      UP: { x: 0, y: -1 },
+      DOWN: { x: 0, y: 1 },
+      LEFT: { x: -1, y: 0 },
+      RIGHT: { x: 1, y: 0 }
+    }[snake.direction];
+    const isFacingFood = !!(food && head.x + delta.x === food.position.x && head.y + delta.y === food.position.y);
+    const isChomping = snake.isAlive && isFacingFood;
+
+    // Animate mouth angle: oscillates between 5% and 35% of PI when chomping
+    const chompCycle = isChomping ? (Math.sin(time * 0.018) * 0.5 + 0.5) : 0;
+    const mouthOpenAngle = isChomping ? (0.08 + chompCycle * 0.27) : 0;
+
+    if (isChomping) {
+      // --- ANIMATED CHOMP (Google Snake Style: open/close rhythmically) ---
+
+      // 1. Dark Mouth Cavity
+      ctx.fillStyle = snakeMouthInterior;
+      ctx.beginPath();
+      ctx.arc(r * 0.1, 0, r * 0.95, -Math.PI * mouthOpenAngle, Math.PI * mouthOpenAngle);
+      ctx.lineTo(r * 0.05, 0);
+      ctx.closePath();
       ctx.fill();
 
-      // Main Segment Body
-      const bodyGrad = ctx.createRadialGradient(
-        cx - segSize * 0.2,
-        cy - segSize * 0.2,
-        segSize * 0.1,
-        cx,
-        cy,
-        segSize * 0.65
-      );
-      bodyGrad.addColorStop(0, snakeHighlight);
-      bodyGrad.addColorStop(0.55, snakeMain);
-      bodyGrad.addColorStop(1, snakeDark);
+      // 2. White Fangs (only show when mouth is open enough)
+      if (mouthOpenAngle > 0.15) {
+        const fangScale = (mouthOpenAngle - 0.15) / 0.2;
+        ctx.fillStyle = '#ffffff';
+        // Upper fang
+        ctx.beginPath();
+        ctx.moveTo(r * 0.45, -r * mouthOpenAngle * 1.5);
+        ctx.lineTo(r * 0.42, -r * mouthOpenAngle * 0.4);
+        ctx.lineTo(r * 0.7, -r * mouthOpenAngle * 0.9);
+        ctx.closePath();
+        ctx.globalAlpha = Math.min(1, fangScale * 2);
+        ctx.fill();
+        // Lower fang
+        ctx.beginPath();
+        ctx.moveTo(r * 0.45, r * mouthOpenAngle * 1.5);
+        ctx.lineTo(r * 0.42, r * mouthOpenAngle * 0.4);
+        ctx.lineTo(r * 0.7, r * mouthOpenAngle * 0.9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
 
-      ctx.fillStyle = bodyGrad;
+      // 3. Smooth Upper & Lower Jaws
+      ctx.fillStyle = snakeMain;
+      // Base back rounded hemisphere
       ctx.beginPath();
-      ctx.roundRect(
-        cx - segSize / 2,
-        cy - segSize / 2,
-        segSize,
-        segSize,
-        segSize * 0.45
-      );
+      ctx.arc(0, 0, r, Math.PI / 2, -Math.PI / 2);
+      ctx.arc(r * 0.2, 0, r, -Math.PI / 2, -Math.PI * mouthOpenAngle);
+      ctx.lineTo(r * 0.05, 0);
+      ctx.arc(r * 0.2, 0, r, Math.PI * mouthOpenAngle, Math.PI / 2);
+      ctx.closePath();
       ctx.fill();
 
-      // Specular Top Shine (Glossy Candy Finish)
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      // Rounded Jaw Caps
+      const jawY = r * mouthOpenAngle * 1.6;
       ctx.beginPath();
-      ctx.ellipse(
-        cx - segSize * 0.12,
-        cy - segSize * 0.18,
-        segSize * 0.26,
-        segSize * 0.12,
-        -Math.PI / 6,
+      ctx.arc(r * 0.75, -jawY, r * 0.18, 0, Math.PI * 2);
+      ctx.arc(r * 0.75, jawY, r * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nostrils on upper/lower jaw
+      ctx.fillStyle = skinPalette.eyeColor;
+      ctx.beginPath();
+      ctx.arc(r * 0.8, -jawY * 0.8, r * 0.07, 0, Math.PI * 2);
+      ctx.arc(r * 0.8, jawY * 0.8, r * 0.07, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // --- NORMAL SMOOTH ROUNDED SNOUT (Google Snake: media_1789963374300.png) ---
+
+      // Solid rounded pill head extending forward
+      ctx.fillStyle = snakeMain;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, Math.PI / 2, -Math.PI / 2); // back half
+      ctx.arc(r * 0.25, 0, r, -Math.PI / 2, Math.PI / 2); // front rounded snout
+      ctx.closePath();
+      ctx.fill();
+
+      // Two cute dark nostril dots on the rounded nose
+      ctx.fillStyle = skinPalette.eyeColor;
+      ctx.beginPath();
+      ctx.arc(r * 0.92, -r * 0.2, r * 0.08, 0, Math.PI * 2);
+      ctx.arc(r * 0.92, r * 0.2, r * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // --- PROTRUDING CARTOON EYES (Google Snake Signature) ---
+    this.drawGoogleSnakeEyes(
+      ctx,
+      r,
+      snake,
+      food,
+      hx,
+      hy,
+      angle,
+      cellSize,
+      snakeMain,
+      skinPalette,
+      comboCount
+    );
+
+    ctx.restore();
+  }
+
+  private drawGoogleSnakeEyes(
+    ctx: CanvasRenderingContext2D,
+    r: number,
+    snake: SnakeState,
+    food: Collectible | null | undefined,
+    hx: number,
+    hy: number,
+    headAngle: number,
+    cellSize: number,
+    snakeMain: string,
+    skinPalette: import('./constants').SnakeSkinPalette,
+    comboCount?: number
+  ) {
+    const eyeX = -r * 0.04;
+    const eyeY1 = -r * 0.85;
+    const eyeY2 = r * 0.85;
+    const eyeR = r * 0.44;
+    const pupilR = eyeR * 0.54;
+
+    // 1. Protruding Blue Eye Sockets / Rims
+    ctx.fillStyle = snakeMain;
+    ctx.beginPath();
+    ctx.arc(eyeX, eyeY1, eyeR * 1.14, 0, Math.PI * 2);
+    ctx.arc(eyeX, eyeY2, eyeR * 1.14, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Crisp Solid White Eye Spheres
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(eyeX, eyeY1, eyeR, 0, Math.PI * 2);
+    ctx.arc(eyeX, eyeY2, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // A. DEAD STATE: Knockout Cross Eyes (x_x)
+    if (!snake.isAlive) {
+      ctx.save();
+      ctx.strokeStyle = skinPalette.eyeColor;
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      for (const ey of [eyeY1, eyeY2]) {
+        const d = eyeR * 0.55;
+        ctx.beginPath();
+        ctx.moveTo(eyeX - d, ey - d);
+        ctx.lineTo(eyeX + d, ey + d);
+        ctx.moveTo(eyeX + d, ey - d);
+        ctx.lineTo(eyeX - d, ey + d);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
+
+    // B. GOLDEN VIP: Cool Retro Sunglasses 😎
+    if (skinPalette && skinPalette.name === 'Golden VIP') {
+      ctx.save();
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+
+      ctx.beginPath();
+      ctx.roundRect(eyeX - eyeR * 0.9, eyeY1 - eyeR * 0.9, eyeR * 1.8, eyeR * 1.8, 3);
+      ctx.roundRect(eyeX - eyeR * 0.9, eyeY2 - eyeR * 0.9, eyeR * 1.8, eyeR * 1.8, 3);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(eyeX, eyeY1 + eyeR * 0.8);
+      ctx.lineTo(eyeX, eyeY2 - eyeR * 0.8);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(eyeX - eyeR * 0.6, eyeY1 - eyeR * 0.6);
+      ctx.lineTo(eyeX + eyeR * 0.3, eyeY1 + eyeR * 0.6);
+      ctx.moveTo(eyeX - eyeR * 0.6, eyeY2 - eyeR * 0.6);
+      ctx.lineTo(eyeX + eyeR * 0.3, eyeY2 + eyeR * 0.6);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // C. LIVING EYE TRACKING & PUPILS
+    let pupilDx = pupilR * 0.35; // Default looking forward
+    let pupilDy = 0;
+
+    if (food) {
+      const foodWorldX = food.position.x * cellSize + cellSize / 2;
+      const foodWorldY = food.position.y * cellSize + cellSize / 2;
+      const worldDx = foodWorldX - hx;
+      const worldDy = foodWorldY - hy;
+      const foodAngle = Math.atan2(worldDy, worldDx) - headAngle;
+      const maxOffset = (eyeR - pupilR) * 0.85;
+      pupilDx = Math.cos(foodAngle) * maxOffset;
+      pupilDy = Math.sin(foodAngle) * maxOffset;
+    }
+
+    const currentPupilR = (comboCount && comboCount >= 3) ? pupilR * 1.12 : pupilR;
+    const pupilColor = (comboCount && comboCount >= 3) ? '#f59e0b' : skinPalette.eyeColor;
+
+    for (const ey of [eyeY1, eyeY2]) {
+      ctx.fillStyle = pupilColor;
+      ctx.beginPath();
+      ctx.arc(eyeX + pupilDx, ey + pupilDy, currentPupilR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Specular shine dot
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(
+        eyeX + pupilDx - currentPupilR * 0.3,
+        ey + pupilDy - currentPupilR * 0.3,
+        currentPupilR * 0.32,
         0,
         Math.PI * 2
       );
       ctx.fill();
-
-      // Connect segment with adjacent segment for continuous smooth snake body
-      const nextCx = prevSeg.x * cellSize + cellSize / 2;
-      const nextCy = prevSeg.y * cellSize + cellSize / 2;
-      const dist = Math.hypot(nextCx - cx, nextCy - cy);
-
-      // Only connect if adjacent (don't connect across wrap-around boundaries!)
-      if (dist < cellSize * 1.5) {
-        ctx.beginPath();
-        ctx.lineWidth = segSize * 0.94;
-        ctx.strokeStyle = snakeMain;
-        ctx.lineCap = 'round';
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(nextCx, nextCy);
-        ctx.stroke();
-
-        // Connect spine highlight
-        ctx.beginPath();
-        ctx.lineWidth = segSize * 0.22;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.lineCap = 'round';
-        ctx.moveTo(cx - segSize * 0.08, cy - segSize * 0.12);
-        ctx.lineTo(nextCx - segSize * 0.08, nextCy - segSize * 0.12);
-        ctx.stroke();
-      }
     }
+  }
 
-    // 2. Draw Head
-    const head = snake.body[0];
-    const headSize = cellSize * 0.94;
-    const hx = head.x * cellSize + cellSize / 2;
-    const hy = head.y * cellSize + cellSize / 2;
+  private drawSweatDrop(ctx: CanvasRenderingContext2D, hx: number, hy: number, headSize: number, time: number) {
+    ctx.save();
+    const bounce = Math.sin(time * 0.02) * 2;
+    const sx = hx - headSize * 0.48;
+    const sy = hy - headSize * 0.52 + bounce;
 
-    // Connect head to neck segment cleanly
-    if (snake.body.length > 1) {
-      const neck = snake.body[1];
-      const neckCx = neck.x * cellSize + cellSize / 2;
-      const neckCy = neck.y * cellSize + cellSize / 2;
-      const dist = Math.hypot(neckCx - hx, neckCy - hy);
-      if (dist < cellSize * 1.5) {
-        ctx.beginPath();
-        ctx.lineWidth = headSize * 0.92;
-        ctx.strokeStyle = snakeMain;
-        ctx.lineCap = 'round';
-        ctx.moveTo(hx, hy);
-        ctx.lineTo(neckCx, neckCy);
-        ctx.stroke();
-      }
-    }
-
-    // Animated Forked Tongue
-    this.drawSnakeTongue(ctx, hx, hy, headSize, snake.direction, time);
-
-    // Head Drop Shadow
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+    ctx.fillStyle = '#38bdf8';
     ctx.beginPath();
-    ctx.ellipse(hx, hy + cellSize * 0.09, headSize * 0.52, headSize * 0.46, 0, 0, Math.PI * 2);
+    ctx.moveTo(sx, sy - 7);
+    ctx.quadraticCurveTo(sx + 5, sy - 1, sx + 5, sy + 4);
+    ctx.arc(sx, sy + 4, 5, 0, Math.PI);
+    ctx.quadraticCurveTo(sx - 5, sy - 1, sx, sy - 7);
+    ctx.closePath();
     ctx.fill();
 
-    // Head Sphere with Candy Radial Gradient
-    const headGrad = ctx.createRadialGradient(
-      hx - headSize * 0.22,
-      hy - headSize * 0.22,
-      headSize * 0.1,
-      hx,
-      hy,
-      headSize * 0.68
-    );
-    headGrad.addColorStop(0, snakeHeadTop);
-    headGrad.addColorStop(0.5, snakeMain);
-    headGrad.addColorStop(1, snakeHeadBottom);
-
-    ctx.fillStyle = headGrad;
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(hx, hy, headSize / 2, 0, Math.PI * 2);
+    ctx.arc(sx - 1.5, sy + 2, 1.4, 0, Math.PI * 2);
     ctx.fill();
-
-    // Head Specular Crown Highlight
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
-    ctx.beginPath();
-    ctx.ellipse(
-      hx - headSize * 0.14,
-      hy - headSize * 0.2,
-      headSize * 0.24,
-      headSize * 0.13,
-      -Math.PI / 5,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-
-    // Snake Cute Cartoon Eyes with Kawaii Catchlights
-    const foodCoord = food
-      ? { x: food.position.x * cellSize + cellSize / 2, y: food.position.y * cellSize + cellSize / 2 }
-      : null;
-    this.drawSnakeEyes(ctx, hx, hy, headSize, snake.direction, foodCoord);
-
     ctx.restore();
   }
 
-  private drawSnakeTongue(
-    ctx: CanvasRenderingContext2D,
-    hx: number,
-    hy: number,
-    headSize: number,
-    direction: SnakeState['direction'],
-    time: number
-  ) {
-    // Gentle periodic tongue flicking
-    const flick = Math.sin(time * 0.018);
-    if (flick < 0.2) return; // Only flick periodically
-
-    const tongueLen = (headSize * 0.38) * (flick * 0.8 + 0.2);
-    let startX = hx, startY = hy;
-    let endX = hx, endY = hy;
-    let fork1X = 0, fork1Y = 0;
-    let fork2X = 0, fork2Y = 0;
-
-    const forkSize = headSize * 0.12;
-
-    switch (direction) {
-      case 'UP':
-        startY = hy - headSize * 0.45;
-        endY = startY - tongueLen;
-        fork1X = endX - forkSize; fork1Y = endY - forkSize * 0.8;
-        fork2X = endX + forkSize; fork2Y = endY - forkSize * 0.8;
-        break;
-      case 'DOWN':
-        startY = hy + headSize * 0.45;
-        endY = startY + tongueLen;
-        fork1X = endX - forkSize; fork1Y = endY + forkSize * 0.8;
-        fork2X = endX + forkSize; fork2Y = endY + forkSize * 0.8;
-        break;
-      case 'LEFT':
-        startX = hx - headSize * 0.45;
-        endX = startX - tongueLen;
-        fork1X = endX - forkSize * 0.8; fork1Y = endY - forkSize;
-        fork2X = endX - forkSize * 0.8; fork2Y = endY + forkSize;
-        break;
-      case 'RIGHT':
-        startX = hx + headSize * 0.45;
-        endX = startX + tongueLen;
-        fork1X = endX + forkSize * 0.8; fork1Y = endY - forkSize;
-        fork2X = endX + forkSize * 0.8; fork2Y = endY + forkSize;
-        break;
-    }
-
+  private drawOrbitingStars(ctx: CanvasRenderingContext2D, hx: number, hy: number, headSize: number, time: number) {
     ctx.save();
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = Math.max(1.8, headSize * 0.06);
-    ctx.lineCap = 'round';
+    const orbitR = headSize * 0.72;
+    for (let k = 0; k < 3; k++) {
+      const angle = time * 0.005 + (k * Math.PI * 2) / 3;
+      const starX = hx + Math.cos(angle) * orbitR;
+      const starY = hy + Math.sin(angle) * (orbitR * 0.5) - headSize * 0.2;
 
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(endX, endY);
-    ctx.lineTo(fork1X, fork1Y);
-    ctx.moveTo(endX, endY);
-    ctx.lineTo(fork2X, fork2Y);
-    ctx.stroke();
-    ctx.restore();
-  }
+      ctx.save();
+      ctx.translate(starX, starY);
+      ctx.rotate(time * 0.01 + k);
+      ctx.fillStyle = '#fde047';
 
-  private drawSnakeEyes(
-    ctx: CanvasRenderingContext2D,
-    hx: number,
-    hy: number,
-    headSize: number,
-    direction: SnakeState['direction'],
-    foodCoord?: { x: number; y: number } | null
-  ) {
-    ctx.save();
-    ctx.shadowBlur = 0;
-
-    let eye1X = 0, eye1Y = 0;
-    let eye2X = 0, eye2Y = 0;
-    let pupilDx = 0, pupilDy = 0;
-
-    const eyeOffset = headSize * 0.28;
-    const eyeForward = headSize * 0.19;
-    const eyeRadius = headSize * 0.21;
-    const pupilRadius = headSize * 0.12;
-
-    switch (direction) {
-      case 'UP':
-        eye1X = hx - eyeOffset; eye1Y = hy - eyeForward;
-        eye2X = hx + eyeOffset; eye2Y = hy - eyeForward;
-        pupilDy = -pupilRadius * 0.5;
-        break;
-      case 'DOWN':
-        eye1X = hx - eyeOffset; eye1Y = hy + eyeForward;
-        eye2X = hx + eyeOffset; eye2Y = hy + eyeForward;
-        pupilDy = pupilRadius * 0.5;
-        break;
-      case 'LEFT':
-        eye1X = hx - eyeForward; eye1Y = hy - eyeOffset;
-        eye2X = hx - eyeForward; eye2Y = hy + eyeOffset;
-        pupilDx = -pupilRadius * 0.5;
-        break;
-      case 'RIGHT':
-        eye1X = hx + eyeForward; eye1Y = hy - eyeOffset;
-        eye2X = hx + eyeForward; eye2Y = hy + eyeOffset;
-        pupilDx = pupilRadius * 0.5;
-        break;
-    }
-
-    // Glance toward food if within range
-    if (foodCoord) {
-      const fdx = foodCoord.x - hx;
-      const fdy = foodCoord.y - hy;
-      const fdist = Math.hypot(fdx, fdy);
-      if (fdist > 0 && fdist < headSize * 6) {
-        pupilDx = (pupilDx * 0.4) + (fdx / fdist) * pupilRadius * 0.6;
-        pupilDy = (pupilDy * 0.4) + (fdy / fdist) * pupilRadius * 0.6;
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const a = (i * Math.PI) / 2;
+        ctx.lineTo(Math.cos(a) * 5.5, Math.sin(a) * 5.5);
+        ctx.lineTo(Math.cos(a + Math.PI / 4) * 2, Math.sin(a + Math.PI / 4) * 2);
       }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
-
-    // Eye outline ring for crisp cartoon pop
-    ctx.fillStyle = 'rgba(139, 0, 61, 0.35)';
-    ctx.beginPath();
-    ctx.arc(eye1X, eye1Y, eyeRadius + 1.2, 0, Math.PI * 2);
-    ctx.arc(eye2X, eye2Y, eyeRadius + 1.2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // White eye sclera
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(eye1X, eye1Y, eyeRadius, 0, Math.PI * 2);
-    ctx.arc(eye2X, eye2Y, eyeRadius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Dark berry pupils looking at food
-    ctx.fillStyle = '#260417';
-    ctx.beginPath();
-    ctx.arc(eye1X + pupilDx, eye1Y + pupilDy, pupilRadius, 0, Math.PI * 2);
-    ctx.arc(eye2X + pupilDx, eye2Y + pupilDy, pupilRadius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Primary bright specular catchlight (top-left of pupil)
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(
-      eye1X + pupilDx - pupilRadius * 0.35,
-      eye1Y + pupilDy - pupilRadius * 0.35,
-      pupilRadius * 0.44,
-      0,
-      Math.PI * 2
-    );
-    ctx.arc(
-      eye2X + pupilDx - pupilRadius * 0.35,
-      eye2Y + pupilDy - pupilRadius * 0.35,
-      pupilRadius * 0.44,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-
-    // Secondary smaller cute catchlight (bottom-right of pupil for anime/kawaii sparkle)
-    ctx.beginPath();
-    ctx.arc(
-      eye1X + pupilDx + pupilRadius * 0.38,
-      eye1Y + pupilDy + pupilRadius * 0.38,
-      pupilRadius * 0.22,
-      0,
-      Math.PI * 2
-    );
-    ctx.arc(
-      eye2X + pupilDx + pupilRadius * 0.38,
-      eye2Y + pupilDy + pupilRadius * 0.38,
-      pupilRadius * 0.22,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
-
     ctx.restore();
   }
 }

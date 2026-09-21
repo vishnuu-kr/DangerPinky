@@ -58,6 +58,18 @@ export const AudioSoundboard: React.FC<AudioSoundboardProps> = ({ compact = fals
     }
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const index = parseInt(e.key, 10) - 1;
+      if (index >= 0 && index < SOUNDBOARD_DATA.length) {
+        handleTrigger(SOUNDBOARD_DATA[index]);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const waveformColors: Record<string, { badge: string; ring: string; text: string }> = {
     sine: {
       badge: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
@@ -120,17 +132,31 @@ export const AudioSoundboard: React.FC<AudioSoundboardProps> = ({ compact = fals
               <button
                 key={item.id}
                 onClick={() => handleTrigger(item)}
-                className={`p-1.5 rounded-lg border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between group ${
+                className={`p-1.5 rounded-lg border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between group relative ${
                   isPlaying
                     ? 'bg-pink-600/30 border-pink-400 shadow-[0_0_12px_rgba(255,59,148,0.5)] -translate-y-0.5'
                     : 'bg-slate-900/70 border-slate-800 hover:border-pink-500/40 hover:bg-slate-850'
                 }`}
               >
+                {item.keyboardLabel && (
+                  <span className="absolute top-1 right-1 text-[7.5px] font-mono text-slate-500 bg-slate-950/80 border border-slate-800 px-0.5 rounded leading-none">
+                    {item.keyboardLabel}
+                  </span>
+                )}
                 <span className="text-base select-none group-hover:scale-110 transition-transform">{item.emoji}</span>
                 <span className="text-[9.5px] font-mono font-bold text-white truncate max-w-full mt-0.5">{item.name}</span>
-                <span className={`text-[7.5px] font-mono uppercase px-1 py-0.2 rounded border font-semibold mt-0.5 ${styling.badge}`}>
-                  {item.waveform}
-                </span>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className={`text-[7.5px] font-mono uppercase px-1 py-0.2 rounded border font-semibold ${styling.badge}`}>
+                    {item.waveform}
+                  </span>
+                  {isPlaying && (
+                    <span className="flex items-end gap-0.5 h-2">
+                      <span className="w-0.5 bg-pink-400 animate-pulse h-1.5" />
+                      <span className="w-0.5 bg-amber-400 animate-bounce h-2" />
+                      <span className="w-0.5 bg-emerald-400 animate-pulse h-1" />
+                    </span>
+                  )}
+                </div>
               </button>
             );
           })}
@@ -208,14 +234,30 @@ export const AudioSoundboard: React.FC<AudioSoundboardProps> = ({ compact = fals
               {/* Top Row: Emoji, Name, Waveform Badge */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-2xl select-none group-hover:scale-110 transition-transform">
-                    {item.emoji}
-                  </span>
-                  <span
-                    className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${styling.badge}`}
-                  >
-                    {item.waveform}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-2xl select-none group-hover:scale-110 transition-transform">
+                      {item.emoji}
+                    </span>
+                    {item.keyboardLabel && (
+                      <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-900 border border-slate-800 px-1 py-0.5 rounded">
+                        {item.keyboardLabel}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {isPlaying && (
+                      <span className="flex items-end gap-0.5 h-3">
+                        <span className="w-1 bg-pink-400 animate-bounce h-2" />
+                        <span className="w-1 bg-amber-400 animate-pulse h-3" />
+                        <span className="w-1 bg-emerald-400 animate-bounce h-2.5" />
+                      </span>
+                    )}
+                    <span
+                      className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${styling.badge}`}
+                    >
+                      {item.waveform}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="font-game font-bold text-sm text-white group-hover:text-pink-300 transition-colors">

@@ -45,3 +45,29 @@ export function saveConfig(config: GameConfig) {
     // Ignore storage errors
   }
 }
+
+const LEADERBOARD_KEY = 'dangerpinky_leaderboard_v1';
+
+export function getStoredLeaderboard(): import('../types/game').LeaderboardEntry[] {
+  try {
+    const val = localStorage.getItem(LEADERBOARD_KEY);
+    if (val) {
+      const parsed = JSON.parse(val);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
+
+export function saveLeaderboardEntry(entry: import('../types/game').LeaderboardEntry): import('../types/game').LeaderboardEntry[] {
+  try {
+    const list = getStoredLeaderboard();
+    const updated = [entry, ...list]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updated));
+    return updated;
+  } catch {}
+  return [];
+}
+

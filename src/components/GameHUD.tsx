@@ -1,4 +1,4 @@
-import { Trophy, Volume2, VolumeX, Pause, Play, Settings, RefreshCw, FolderOpen, Video, VideoOff, Flame, Crown } from 'lucide-react';
+import { Trophy, Volume2, VolumeX, Pause, Play, Settings, RefreshCw, FolderOpen, Video, VideoOff, Flame, Crown, Zap } from 'lucide-react';
 import { GameStatus } from '../types/game';
 
 interface GameHUDProps {
@@ -6,6 +6,7 @@ interface GameHUDProps {
   highScore: number;
   filesEatenCount: number;
   filesConsumedCount?: number;
+  comboCount?: number;
   status: GameStatus;
   soundMuted: boolean;
   onToggleSound: () => void;
@@ -27,6 +28,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   highScore,
   filesEatenCount,
   filesConsumedCount = 0,
+  comboCount = 1,
   status,
   soundMuted,
   onToggleSound,
@@ -230,6 +232,37 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           )}
         </div>
       </div>
+
+      {/* Dynamic Arcade Combo Fever Voltage Bar */}
+      {comboCount > 1 && (
+        <div className={`w-full px-3 sm:px-4 py-1 flex items-center justify-between text-xs transition-all duration-300 ${
+          comboCount >= 5
+            ? 'bg-gradient-to-r from-purple-950 via-slate-950 to-pink-950 border-b border-amber-400/80 shadow-[0_0_12px_rgba(251,191,36,0.3)]'
+            : 'bg-slate-950/90 border-b border-pink-500/30'
+        }`}>
+          <div className="flex items-center gap-1.5 font-game font-bold">
+            <Zap className={`w-3.5 h-3.5 ${comboCount >= 5 ? 'text-amber-400 fill-amber-400 animate-bounce' : 'text-pink-400'}`} />
+            <span className={`text-[11px] tracking-wider uppercase ${comboCount >= 5 ? 'text-amber-300 font-black animate-pulse' : 'text-pink-200'}`}>
+              {comboCount >= 5 ? '⚡ MAX FEVER MODE 5X! ⚡' : `COMBO VOLTAGE: ${comboCount}X`}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((lvl) => (
+              <span
+                key={lvl}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  lvl <= comboCount
+                    ? lvl === 5
+                      ? 'w-6 sm:w-8 bg-gradient-to-r from-amber-400 via-rose-400 to-cyan-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
+                      : 'w-4 sm:w-6 bg-gradient-to-r from-pink-500 to-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.6)]'
+                    : 'w-2.5 sm:w-3 bg-slate-800'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

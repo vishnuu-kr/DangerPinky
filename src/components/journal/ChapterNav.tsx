@@ -21,6 +21,9 @@ interface ChapterNavProps {
   canNext?: boolean;
   onShare?: () => void;
   onOpenShortcuts?: () => void;
+  spreadProgress?: number;
+  journeyMode?: boolean;
+  onToggleJourneyMode?: () => void;
 }
 
 interface NavItem {
@@ -29,6 +32,16 @@ interface NavItem {
   fullTitle: string;
   tag: string;
 }
+
+const MACRO_PHASES = [
+  { id: 'prologue', num: '00', name: 'Prologue', label: '00 Prologue', target: 'prologue', match: ['hero', 'prologue'] },
+  { id: 'nothing', num: '01', name: 'Nothing', label: '01 Nothing', target: 'chapter-01', match: ['chapter-01', 'chapter-02'] },
+  { id: 'coffee', num: '02', name: 'Coffee', label: '02 Coffee', target: 'chapter-03', match: ['chapter-03', 'chapter-04'] },
+  { id: 'build', num: '03', name: 'Build', label: '03 Build', target: 'chapter-05', match: ['chapter-05', 'chapter-06', 'chapter-07'] },
+  { id: 'chaos', num: '04', name: 'Chaos', label: '04 Chaos', target: 'chapter-08', match: ['chapter-08', 'chapter-09', 'chapter-10', 'chapter-11'] },
+  { id: 'finish', num: '05', name: 'Finish', label: '05 Finish', target: 'chapter-12', match: ['chapter-12', 'chapter-13', 'chapter-14'] },
+  { id: 'aftermath', num: '06', name: 'Aftermath', label: '06 Aftermath', target: 'closing', match: ['chapter-15', 'chapter-16', 'closing'] },
+];
 
 export const ChapterNav: React.FC<ChapterNavProps> = ({
   activeSection,
@@ -48,26 +61,35 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
   canPrev,
   canNext,
   onShare,
-  onOpenShortcuts
+  onOpenShortcuts,
+  spreadProgress,
+  journeyMode = false,
+  onToggleJourneyMode
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
-  const progressRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setScrolled(scrollY > 80);
+      if (rafRef.current) return;
+      rafRef.current = requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        setScrolled(scrollY > 80);
 
-      // Calculate reading progress
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0;
-      progressRef.current = progress;
-      setReadingProgress(progress);
+        // Calculate reading progress
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0;
+        setReadingProgress(progress);
+        rafRef.current = null;
+      });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   const navItems: NavItem[] = [
@@ -97,16 +119,6 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
     }
   ];
 
-  const macroPhases = [
-    { id: 'prologue', num: '00', name: 'Prologue', label: '00 Prologue', target: 'prologue', match: ['hero', 'prologue'] },
-    { id: 'nothing', num: '01', name: 'Nothing', label: '01 Nothing', target: 'chapter-01', match: ['chapter-01', 'chapter-02'] },
-    { id: 'coffee', num: '02', name: 'Coffee', label: '02 Coffee', target: 'chapter-03', match: ['chapter-03', 'chapter-04'] },
-    { id: 'build', num: '03', name: 'Build', target: 'chapter-05', match: ['chapter-05', 'chapter-06', 'chapter-07'] },
-    { id: 'chaos', num: '04', name: 'Chaos', target: 'chapter-08', match: ['chapter-08', 'chapter-09', 'chapter-10', 'chapter-11'] },
-    { id: 'finish', num: '05', name: 'Finish', target: 'chapter-12', match: ['chapter-12', 'chapter-13', 'chapter-14'] },
-    { id: 'aftermath', num: '06', name: 'Aftermath', target: 'closing', match: ['chapter-15', 'chapter-16', 'closing'] },
-  ];
-
   const handleNavClick = (id: string) => {
     setMobileMenuOpen(false);
     if (onSelectSection) {
@@ -120,7 +132,7 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
     }
   };
 
-  const activePhase = macroPhases.find((p) => p.match.includes(activeSection)) || macroPhases[0];
+  const activePhase = MACRO_PHASES.find((p) => p.match.includes(activeSection)) || MACRO_PHASES[0];
   const activeIndex = navItems.findIndex((item) => item.id === activeSection);
 
   return (
@@ -175,15 +187,17 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
 
         {/* Center: Clean 7 Macro Phases (Adaptive Accordion Pills) */}
         <nav className="hidden md:flex items-center gap-1 shrink-0 py-1 px-1">
-          {macroPhases.map((phase) => {
+          {MACRO_PHASES.map((phase) => {
             const isActive = phase.id === activePhase.id;
+            const isPillarPhase = ['prologue', 'coffee', 'build', 'finish'].includes(phase.id);
+            const journeyRing = journeyMode && isPillarPhase ? 'ring-1 ring-amber-400/60' : '';
             return (
               <button
                 key={phase.id}
                 type="button"
                 onClick={() => handleNavClick(phase.target)}
-                title={`${phase.num} ${phase.name}`}
-                className={`shrink-0 whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                title={`Chapters: ${phase.match.join(', ')}`}
+                className={`shrink-0 whitespace-nowrap px-2 xl:px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${journeyRing} ${
                   isActive
                     ? 'bg-pink-500/15 text-pink-300 font-bold border border-pink-500/40 shadow-[0_0_12px_rgba(236,72,153,0.2)]'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80 border border-transparent'
@@ -315,10 +329,27 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
             <ChevronDown className={`w-3 h-3 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
           </button>
 
+          {/* 5-Min Fast Track Toggle */}
+          {onToggleJourneyMode && (
+            <button
+              type="button"
+              onClick={onToggleJourneyMode}
+              className={`px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                journeyMode
+                  ? 'bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.6)]'
+                  : 'bg-slate-900 border border-slate-800 text-amber-400 hover:border-amber-500/50'
+              }`}
+              title={journeyMode ? 'Exit 5-Minute Fast Track' : 'Start 5-Minute 6-Pillar Fast Track'}
+            >
+              <span>5-MIN</span>
+              <span>⚡</span>
+            </button>
+          )}
+
           {/* Play button */}
           <button
             onClick={onPlayDemo ? onPlayDemo : () => handleNavClick('chapter-14')}
-            className="px-3 py-1.5 rounded bg-pink-600 hover:bg-pink-500 font-mono font-bold text-xs text-white flex items-center gap-1 cursor-pointer shadow transition-colors"
+            className="px-3 py-1.5 rounded bg-pink-600 hover:bg-pink-500 font-mono font-bold text-xs text-white flex items-center gap-1 cursor-pointer shadow transition-colors journal-play-glow"
           >
             <Play className="w-3 h-3 fill-white" />
             <span className="hidden sm:inline">PLAY</span>
@@ -339,9 +370,9 @@ export const ChapterNav: React.FC<ChapterNavProps> = ({
       <div
         className="reading-progress-bar"
         style={{
-          width: `${readingProgress}%`,
+          width: `${viewMode === 'spread' && spreadProgress !== undefined ? spreadProgress : readingProgress}%`,
           background: 'linear-gradient(90deg, #be185d 0%, #ec4899 50%, #ffba00 100%)',
-          boxShadow: readingProgress > 5 ? '0 0 6px rgba(236, 72, 153, 0.6)' : 'none',
+          boxShadow: (viewMode === 'spread' && spreadProgress !== undefined ? spreadProgress : readingProgress) > 5 ? '0 0 6px rgba(236, 72, 153, 0.6)' : 'none',
         }}
       />
 

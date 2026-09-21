@@ -30,7 +30,7 @@ export const RibbonBookmark: React.FC<RibbonBookmarkProps> = ({
       {/* Visual hanging satin ribbon physically anchored to top edge of book spine */}
       <div
         onClick={() => setOpen(!open)}
-        className="book-ribbon group cursor-pointer lg:left-1/2 lg:-translate-x-1/2 lg:right-auto right-4 sm:right-6 -top-2 lg:-top-3.5 z-40"
+        className="book-ribbon group cursor-pointer lg:left-1/2 lg:-translate-x-1/2 lg:right-auto right-4 sm:right-6 -top-2 lg:-top-3.5 z-40 hover:scale-105 transition-transform duration-200"
         title="Silk Bookmark Ribbon — Click for Table of Contents"
       >
         <div className="absolute top-1.5 lg:top-2 left-1/2 -translate-x-1/2 text-white/90 group-hover:text-white transition-colors">

@@ -127,7 +127,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     sound.setMuted(!config.soundEnabled);
     sound.setVolume(config.soundVolume);
-  }, [config.soundEnabled, config.soundVolume]);
+    sound.setBgmEnabled(config.musicEnabled !== false);
+    if (config.musicVolume !== undefined) {
+      sound.setBgmVolume(config.musicVolume);
+    }
+  }, [config.soundEnabled, config.soundVolume, config.musicEnabled, config.musicVolume]);
 
   const updateConfig = useCallback((patch: Partial<GameConfig>) => {
     setConfig((prev) => {
@@ -204,6 +208,7 @@ export const App: React.FC = () => {
   const cameraTracker = useCameraTracker({
     enabled: cameraActive,
     sensitivity: config.pinkySensitivity,
+    fingerMode: config.fingerMode,
     onDirection: handleDirection,
     onFrame: setLastPinkyFrame
   });
@@ -403,6 +408,7 @@ export const App: React.FC = () => {
               highScore={highScore}
               filesEatenCount={gameLoop.filesEaten.length}
               filesConsumedCount={gameLoop.filesConsumedCount}
+              comboCount={gameLoop.comboCount}
               status={gameLoop.status}
               soundMuted={!config.soundEnabled}
               onToggleSound={() => updateConfig({ soundEnabled: !config.soundEnabled })}
@@ -426,6 +432,12 @@ export const App: React.FC = () => {
               floatingNotes={gameLoop.floatingNotes}
               countdown={gameLoop.countdown}
               status={gameLoop.status}
+              boardTheme={config.boardTheme}
+              isScreenShaking={gameLoop.isScreenShaking}
+              isNearMiss={gameLoop.isNearMiss}
+              timeRemaining={gameLoop.timeRemaining}
+              gameMode={config.gameMode}
+              onSwipeDirection={handleDirection}
             />
           </div>
 

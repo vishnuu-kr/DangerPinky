@@ -103,7 +103,7 @@ export const RealModeConfirmModal: React.FC<RealModeConfirmModalProps> = ({
         {/* Safety Tip */}
         <div className="p-3 rounded-xl bg-slate-950/60 border border-amber-500/30 text-[11px] text-amber-100/90 leading-normal">
           <span className="text-amber-300 font-game font-bold">💡 Recommended Safety Rule: </span>
-          For your first game, we recommend selecting a folder containing copies of files you don't mind moving to Trash (e.g. <code>FileSnake-Test</code>).
+          For your first game, we recommend selecting a folder containing copies of files you don't mind moving to Trash (e.g. <code>DangerPinky-Test</code>).
         </div>
 
         {/* Empty folder warning */}

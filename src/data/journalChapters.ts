@@ -23,6 +23,8 @@ export interface Chapter {
   failureStories?: FailureCase[];
   breakthroughs?: Breakthrough[];
   metadata?: Record<string, unknown>;
+  readingTime?: number;
+  estimatedCommits?: number;
 }
 
 export interface TimelineMilestone {
@@ -62,6 +64,8 @@ export interface SoundboardItem {
   fileCategory: string;
   description: string;
   emoji: string;
+  shortcutKey: string;
+  keyboardLabel: string;
 }
 
 export interface ScreenshotAnnotation {
@@ -238,7 +242,9 @@ export const SOUNDBOARD_DATA: SoundboardItem[] = [
     duration: '0.17s',
     fileCategory: 'Images (.png, .jpg, .webp)',
     description: 'Bright, bell-like sine sweep triggering when the snake devours photos or graphic mockups.',
-    emoji: '🍒'
+    emoji: '🍒',
+    shortcutKey: '1',
+    keyboardLabel: '[1]'
   },
   {
     id: 'code',
@@ -249,7 +255,9 @@ export const SOUNDBOARD_DATA: SoundboardItem[] = [
     duration: '0.15s',
     fileCategory: 'Code (.ts, .py, .rs, .js)',
     description: 'Crisp 8-bit chip tune bite synthesized with a square wave for source code files.',
-    emoji: '🍉'
+    emoji: '🍉',
+    shortcutKey: '2',
+    keyboardLabel: '[2]'
   },
   {
     id: 'archive',
@@ -260,7 +268,9 @@ export const SOUNDBOARD_DATA: SoundboardItem[] = [
     duration: '0.16s',
     fileCategory: 'Archives (.zip, .tar.gz, .rar)',
     description: 'Heavy, raspy sawtooth impact signaling the digestion of large compressed folders.',
-    emoji: '📦'
+    emoji: '📦',
+    shortcutKey: '3',
+    keyboardLabel: '[3]'
   },
   {
     id: 'highscore',
@@ -271,7 +281,9 @@ export const SOUNDBOARD_DATA: SoundboardItem[] = [
     duration: '0.45s',
     fileCategory: 'Score & Celebration',
     description: 'Warm, four-note ascending harmonic triad synthesized entirely without audio samples.',
-    emoji: '👑'
+    emoji: '👑',
+    shortcutKey: '4',
+    keyboardLabel: '[4]'
   },
   {
     id: 'gameover',
@@ -282,7 +294,9 @@ export const SOUNDBOARD_DATA: SoundboardItem[] = [
     duration: '0.50s',
     fileCategory: 'Collision & Failure',
     description: 'Deep, comedic downward slide triggered when crashing into borders or eating your own neck.',
-    emoji: '💥'
+    emoji: '💥',
+    shortcutKey: '5',
+    keyboardLabel: '[5]'
   }
 ];
 
@@ -619,7 +633,9 @@ export const CHAPTERS: Chapter[] = [
     scrapbookTags: [
       '[ADD PHOTO: Teams setting up at the start of Useless Projects 3.0]',
       '[ADD SCREENSHOT: TinkerHub Instagram story from the event opening]'
-    ]
+    ],
+    readingTime: 2,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -646,7 +662,9 @@ export const CHAPTERS: Chapter[] = [
       '[ADD VIDEO: 11:58 PM Midnight Computer Lab — Participants buzzing before tea run]',
       '[ADD PHOTO: Event floor busy with teams building]',
       '[ADD SCREENSHOT: TinkerHub outreach content being created during the event]'
-    ]
+    ],
+    readingTime: 2,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -673,7 +691,9 @@ export const CHAPTERS: Chapter[] = [
     scrapbookTags: [
       '[ADD PHOTO: Late night coffee — the moment before the idea]',
       '[ADD SKETCH: First napkin sketch of "Pinky Snake" concept]'
-    ]
+    ],
+    readingTime: 2,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -710,7 +730,9 @@ if (head.x === food.x && head.y === food.y) {
 }`
       }
     ],
-    scrapbookTag: '[ADD SCREENSHOT: Raw v0.1 monochrome lime-green snake on black canvas]'
+    scrapbookTag: '[ADD SCREENSHOT: Raw v0.1 monochrome lime-green snake on black canvas]',
+    readingTime: 3,
+    estimatedCommits: 5
   },
 
   // -------------------------------------------------------------------------
@@ -759,7 +781,9 @@ if (head.x === food.x && head.y === food.y) {
         impact: 'Zero external audio files, 0KB network payload, and sub-5ms sound trigger response.'
       }
     ],
-    scrapbookTag: '[ADD SKETCH: The moment — napkin diagram of Snake + File + Recycle Bin = DangerPinky]'
+    scrapbookTag: '[ADD SKETCH: The moment — napkin diagram of Snake + File + Recycle Bin = DangerPinky]',
+    readingTime: 3,
+    estimatedCommits: 3
   },
 
   // -------------------------------------------------------------------------
@@ -787,7 +811,9 @@ if (head.x === food.x && head.y === food.y) {
       '[ADD PHOTO: SNMIMT Computer Lab — 65 participants hacking through the night]',
       '[ADD PHOTO: Event atmosphere — Live TinkerHub stories while coding]',
       '[ADD SCREENSHOT: TinkerHub social media posts going up during the build]'
-    ]
+    ],
+    readingTime: 3,
+    estimatedCommits: 12
   },
 
   // -------------------------------------------------------------------------
@@ -826,7 +852,9 @@ const rawDx = (tip.x - knuckle.x) / handScale;
 const rawDy = (tip.y - knuckle.y) / handScale;`
       }
     ],
-    scrapbookTag: '[ADD SCREENSHOT: First working camera HUD showing landmark dots on hand]'
+    scrapbookTag: '[ADD SCREENSHOT: First working camera HUD showing landmark dots on hand]',
+    readingTime: 3,
+    estimatedCommits: 8
   },
 
   // -------------------------------------------------------------------------
@@ -874,7 +902,9 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
     scrapbookTags: [
       '[ADD BUG SCREENSHOT: The 180° suicide turn death screen — snake in its own neck]',
       '[ADD TERMINAL LOG: IPC race condition error dump from the deletion test]'
-    ]
+    ],
+    readingTime: 4,
+    estimatedCommits: 15
   },
 
   // -------------------------------------------------------------------------
@@ -898,7 +928,9 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
       "By this point I also had the visual overhaul done — went from lime-green squares to plump 3D candy fruit rendered entirely with HTML5 canvas radial gradients. Apples with specular highlights. Oranges with texture. Grapes in clusters. Strawberries with tiny quadratic curves for the seeds.",
       "It looked ridiculous. In a good way. The whole thing looked like a candy arcade game designed to eat your tax documents."
     ],
-    scrapbookTag: '[ADD SCREENSHOT: First working Danger Mode — snake eating real file, Recycle Bin confirmation]'
+    scrapbookTag: '[ADD SCREENSHOT: First working Danger Mode — snake eating real file, Recycle Bin confirmation]',
+    readingTime: 3,
+    estimatedCommits: 18
   },
 
   // -------------------------------------------------------------------------
@@ -922,6 +954,8 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
       "This journal is basically me making up for that."
     ],
     scrapbookTag: '[ADD PHOTO: Vishnu K R at the testing workstation with live webcam HUD]',
+    readingTime: 2,
+    estimatedCommits: 0,
     metadata: {
       builder: 'Vishnu K R',
       institution: 'SNM Institute of Management and Technology (SNMIMT)',
@@ -959,7 +993,9 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
       "That's what 03:45 AM at a makeathon feels like. The room smells like instant noodles and hot laptops. Half the hall is asleep face-down on tables. The other half is in this strange trance where you spend fifteen minutes debugging hardware as a software bug and you just laugh at yourself and keep typing.",
       "The webcam stayed firmly plugged in after that."
     ],
-    scrapbookTag: '[ADD PHOTO: Corridor dinner break — hackathon food and snacks]'
+    scrapbookTag: '[ADD PHOTO: Corridor dinner break — hackathon food and snacks]',
+    readingTime: 2,
+    estimatedCommits: 4
   },
 
   // -------------------------------------------------------------------------
@@ -1000,7 +1036,9 @@ const rawDy = (tip.y - knuckle.y) / handScale;`
     scrapbookTags: [
       '[ADD VIDEO: 05:18 AM Dawn Lab Fatigue — Pushing through exhaustion to sunrise]',
       '[ADD SCREENSHOT: Terminal output of vitest showing 39 green test passes]'
-    ]
+    ],
+    readingTime: 3,
+    estimatedCommits: 22
   },
 
   // -------------------------------------------------------------------------
@@ -1054,7 +1092,9 @@ Electron Native IPC Bridge (Session Token Validation)
   ▼
 Windows Recycle Bin (shell.trashItem)`
       }
-    ]
+    ],
+    readingTime: 2,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -1087,7 +1127,9 @@ Windows Recycle Bin (shell.trashItem)`
         allowCamera: true,
         externalLaunchUrl: 'https://vishnuu-kr.github.io/DangerPinky/'
       }
-    }
+    },
+    readingTime: 1,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -1109,7 +1151,9 @@ Windows Recycle Bin (shell.trashItem)`
       "Lesson 3: Computer vision in the browser is actually good now. I'd never built anything with MediaPipe before this. Running WASM GPU delegates in a browser tab with sub-20ms latency, no cloud backend, no privacy concerns — that's genuinely impressive. I expected it to be harder. It wasn't.",
       "Also: always respect the user's hard drive. Even in a joke project. The Recycle Bin integration, the session tokens, the path containment checks — none of that was required for a hackathon submission. But I did it anyway because the alternative was software that could randomly delete files. And that would have been a different kind of useless.",
       "The biggest thing I took away is probably this: I spent the whole event documenting everyone else's process. This journal is me finally documenting mine."
-    ]
+    ],
+    readingTime: 3,
+    estimatedCommits: 0
   },
 
   // -------------------------------------------------------------------------
@@ -1155,7 +1199,9 @@ Windows Recycle Bin (shell.trashItem)`
           tag: 'AUDIO'
         }
       ]
-    }
+    },
+    readingTime: 2,
+    estimatedCommits: 0
   }
 ];
 
@@ -1183,6 +1229,42 @@ export const FINAL_REFLECTION = {
   persistentLinks: PERSISTENT_LINKS,
   footerCredit: 'Handcrafted with ❤️, midnight coffee, and MediaPipe by Vishnu K R for TinkerHub Useless Projects 3.0.',
   copyright: '© 2026 Vishnu K R • DangerPinky Open Source Project'
+};
+
+// ---------------------------------------------------------------------------
+// 5-Min Journey Mode Pillar IDs
+// ---------------------------------------------------------------------------
+export const JOURNEY_PILLARS: string[] = [
+  'chapter-01',
+  'chapter-03',
+  'chapter-04',
+  'chapter-05',
+  'chapter-13',
+  'chapter-14',
+];
+
+// ---------------------------------------------------------------------------
+// Chapter Accent Colors (for consistent theming across components)
+// ---------------------------------------------------------------------------
+export const CHAPTER_COLORS: Record<string, string> = {
+  'prologue':    'text-pink-300',
+  'chapter-01':  'text-rose-400',
+  'chapter-02':  'text-amber-400',
+  'chapter-03':  'text-amber-300',
+  'chapter-04':  'text-rose-400',
+  'chapter-05':  'text-pink-400',
+  'chapter-06':  'text-cyan-400',
+  'chapter-07':  'text-emerald-400',
+  'chapter-08':  'text-rose-500',
+  'chapter-09':  'text-pink-400',
+  'chapter-10':  'text-emerald-400',
+  'chapter-11':  'text-amber-300',
+  'chapter-12':  'text-cyan-300',
+  'chapter-13':  'text-pink-300',
+  'chapter-14':  'text-pink-500',
+  'chapter-15':  'text-emerald-300',
+  'chapter-16':  'text-cyan-400',
+  'closing':     'text-pink-300',
 };
 
 // ---------------------------------------------------------------------------
